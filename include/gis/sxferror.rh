@@ -1,0 +1,25 @@
+#include "mmapmenu.rh"
+
+#define SXF_ERROR_MEMORY                   IDT_SXF2MAP + 150
+#define SXF_ERROR_OPEN                     SXF_ERROR_MEMORY + 1
+#define  SXF_ERROR_CREATE                  SXF_ERROR_MEMORY + 2
+#define  SXF_ERROR_STRUCT                  SXF_ERROR_MEMORY + 3
+#define  SXF_ERROR_OPEN_LIST               SXF_ERROR_MEMORY + 4
+#define  SXF_ERROR_CREATE_LIST             SXF_ERROR_MEMORY + 5
+#define  SXF_ERROR_READ_RECORD             SXF_ERROR_MEMORY + 6
+#define  SXF_ERROR_DEFORM_RECORD           SXF_ERROR_MEMORY + 7
+#define  SXF_ERROR_WRITE_RECORD            SXF_ERROR_MEMORY + 8
+#define  SXF_ERROR_REGISTER                SXF_ERROR_MEMORY + 9
+#define  SXF_ERROR_METRIC                  SXF_ERROR_MEMORY + 10
+#define  SXF_ERROR_SEMANTIC                SXF_ERROR_MEMORY + 11
+#define  SXF_ERROR_APPEND_POINT            SXF_ERROR_MEMORY + 12
+#define  SXF_ERROR_APPEND_SUBOBJECT        SXF_ERROR_MEMORY + 13
+#define  SXF_ERROR_APPEND_POINT_SUBOBJECT  SXF_ERROR_MEMORY + 14
+#define  SXF_ERROR_SEMANTIC_STRUCT         SXF_ERROR_MEMORY + 15
+#define  SXF_ERROR_SEMANTIC_ACSESS         SXF_ERROR_MEMORY + 16
+#define  MAP_ERROR_TEXT_GET                SXF_ERROR_MEMORY + 17
+#define  MAP_ERROR_TEXT_PUT                SXF_ERROR_MEMORY + 18
+#define  MAP_ERROR_TEXT_STRUCT             SXF_ERROR_MEMORY + 19
+#define  SXF_ERROR_STRUCT_NUMBER           SXF_ERROR_MEMORY + 20
+#define  SXF_ERROR_COUNT_OBJECT            SXF_ERROR_MEMORY + 21
+

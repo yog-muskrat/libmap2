@@ -1,0 +1,180 @@
+
+#ifndef ERRTYPE_RH
+
+#ifndef MAPVIEW_RH
+  #include "mapview.rh"
+#endif
+
+#define     IEC_MAP_STRUCT          3   // Ошибка в структуре данных
+#define     IEC_DAT_EQUAL           6   // Двойные точки в метрике
+#define     IEC_DAT_CLOSE           7   // Oбъект не замкнут
+#define     IEC_DAT_LOOP            8   // Петля у объета
+#define     IEC_SEM_PASS            0   // Нет обязательных характеристик
+#define     IEC_SEM_UNEXPECTED      1   // Лишняя семантика
+#define     IEC_DAT_BORDER          4   // Габариты объекта
+#define     IEC_DAT_NULL            2   // Вырожденный объект
+#define     IEC_SEM_HEIGHT          5   // Абсолютной высоты
+#define     IEC_SEM_VALUE           9   // Недопустимое значение
+#define     IEC_DAT_ADJUST          10  // Ошибка в сводке
+#define     IEC_DAT_REACH           11  // Ошибка дотягивания до рамки
+#define     IEC_DAT_SUBJECT         12  // Ошибка входимости
+#define     IEC_DAT_TITLE           13  // Ошибка метрики подписи
+#define     IEC_DAT_MIXED           14  // Ошибка метрики шаблона
+
+// Ошибки в высотах
+#define     IEC_KWA_NOHEIGHT        15  // Нет высоты в списке
+#define     IEC_KWA_ERRHEIGHT       16  // Ошибка в высоте
+#define     IEC_KWA_ERRCODE         17  // Несоответствие кода и высоты
+#define     IEC_KWA_NOMAIN          18  // Пропуск утолщенной горизонтали
+#define     IEC_KWA_GLOBALERR       19  // Грубая ошибка в высоте
+#define     IEC_KWA_ERROR           20  // Прочие ошибки в высотах
+
+#define     IEC_DAT_ADJUST_CODE     21  // Ошибка сводки по коду
+#define     IEC_DAT_ADJUST_SEM      22  // Ошибка сводки по семантике
+#define     IEC_DAT_ADJUST_DAT      23  // Ошибка сводки по метрике
+
+#define     IEC_MTW_ERROR           24  // Неопределенный объект гидрографии
+
+
+// КОДЫ СООБЩЕНИЙ ГЕНЕРАЛИЗАЦИИ ИЗОЛИНИЙ           
+
+#define  IEC_GEN_ISOLINE_DELETE_ISOLINE            25
+#define  IEC_GEN_ISOLINE_DELETE_BERGSTRICH         26
+#define  IEC_GEN_ISOLINE_DELETE_TITLE              27
+#define  IEC_GEN_ISOLINE_CONVERT_ISOLINE           28  
+
+// КОДЫ СООБЩЕНИЙ ГЕНЕРАЛИЗАЦИИ ПЛОЩАДНЫХ РЕК      
+
+#define  IEC_GEN_SQRIVER_DELETE_SQUARE             29
+#define  IEC_GEN_SQRIVER_CREATE_SQUARE             30
+#define  IEC_GEN_SQRIVER_CREATE_LINE               31
+
+// КОДЫ СООБЩЕНИЙ ГЕНЕРАЛИЗАЦИИ МАЛЫХ ОБЪЕКТОВ И КВАРТАЛОВ    
+
+#define  IEC_GEN_CREATE_OBJECTS                    32
+#define  IEC_GEN_DELETE_OBJECTS                    33
+#define  IEC_GEN_RECODE_OBJECTS                    34
+#define  IEC_GEN_UNION_OBJECTS                     35
+#define  IEC_GEN_CHANGE_METRICS                    36
+
+// Общее число IEC-кодов (используется в maperrpr.rh)
+#define  IEC_TYPECOUNT                             37   
+
+
+//==================================================================
+// КОДЫ СТРОК СООБЩЕНИЙ
+//==================================================================
+
+#define  IEC_ERROR_TYPE          WM_USER + 5 
+
+//------------------------------------------------------------------
+// КОНТРОЛЬ ДАННЫХ
+//------------------------------------------------------------------
+                                 // Ошибка в структуре данных
+#define STR_IEC_MAP_STRUCT       IEC_ERROR_TYPE+IEC_MAP_STRUCT
+
+                                 // Двойные точки в метрике
+#define STR_IEC_DAT_EQUAL        IEC_ERROR_TYPE+IEC_DAT_EQUAL
+
+                                 // Oбъект не замкнут
+#define STR_IEC_DAT_CLOSE        IEC_ERROR_TYPE+IEC_DAT_CLOSE
+
+                                 // Петля у объекта
+#define STR_IEC_DAT_LOOP         IEC_ERROR_TYPE+IEC_DAT_LOOP
+
+                                 // Нет обязательных характеристик
+#define STR_IEC_SEM_PASS         IEC_ERROR_TYPE+IEC_SEM_PASS
+
+                                 // Лишняя семантика
+#define STR_IEC_SEM_UNEXPECTED   IEC_ERROR_TYPE+IEC_SEM_UNEXPECTED
+
+                                 // Ошибка габаритов объекта
+#define STR_IEC_DAT_BORDER       IEC_ERROR_TYPE+IEC_DAT_BORDER
+
+                                 // Вырожденный объект
+#define STR_IEC_DAT_NULL         IEC_ERROR_TYPE+IEC_DAT_NULL
+
+                                 // Ошибка абсолютной высоты
+#define STR_IEC_SEM_HEIGHT       IEC_ERROR_TYPE+IEC_SEM_HEIGHT
+
+                                 // Недопустимое значение
+#define STR_IEC_SEM_VALUE        IEC_ERROR_TYPE+IEC_SEM_VALUE
+
+                                 // Ошибка в сводке
+#define STR_IEC_DAT_ADJUST       IEC_ERROR_TYPE+IEC_DAT_ADJUST
+
+                                 // Ошибка дотягивания до рамки
+#define STR_IEC_DAT_REACH        IEC_ERROR_TYPE+IEC_DAT_REACH
+
+                                 // Ошибка входимости
+#define STR_IEC_DAT_SUBJECT      IEC_ERROR_TYPE+IEC_DAT_SUBJECT
+
+                                 // Ошибка метрики подписи
+#define STR_IEC_DAT_TITLE        IEC_ERROR_TYPE+IEC_DAT_TITLE
+
+                                 // Ошибка метрики шаблона
+#define STR_IEC_DAT_MIXED        IEC_ERROR_TYPE+IEC_DAT_MIXED
+
+                                 // Отсутствие высоты в списке
+#define STR_IEC_KWA_NOHEIGHT     IEC_ERROR_TYPE+IEC_KWA_NOHEIGHT
+
+                                 // Ошибка в высоте
+#define STR_IEC_KWA_ERRHEIGHT    IEC_ERROR_TYPE+IEC_KWA_ERRHEIGHT
+
+                                 // Несоответствие кода и высоты
+#define STR_IEC_KWA_ERRCODE      IEC_ERROR_TYPE+IEC_KWA_ERRCODE
+
+                                 // Пропуск утолщенной горизонтали
+#define STR_IEC_KWA_NOMAIN       IEC_ERROR_TYPE+IEC_KWA_NOMAIN
+
+                                 // Грубая ошибка в высоте
+#define STR_IEC_KWA_GLOBALERR    IEC_ERROR_TYPE+IEC_KWA_GLOBALERR
+
+                                 // Прочие ошибки в высотах
+#define STR_IEC_KWA_ERROR        IEC_ERROR_TYPE+IEC_KWA_ERROR
+
+                                 // Ошибка сводки по коду
+#define STR_IEC_DAT_ADJUST_CODE  IEC_ERROR_TYPE+IEC_DAT_ADJUST_CODE
+
+                                 // Ошибка сводки по семантике
+#define STR_IEC_DAT_ADJUST_SEM   IEC_ERROR_TYPE+IEC_DAT_ADJUST_SEM
+
+                                 // Ошибка сводки по метрике
+#define STR_IEC_DAT_ADJUST_DAT   IEC_ERROR_TYPE+IEC_DAT_ADJUST_DAT
+
+//------------------------------------------------------------------
+// ??????????????????????????????????
+//------------------------------------------------------------------
+
+                                 // Необработанный объект гидрографии
+#define STR_IEC_MTW_ERROR        IEC_ERROR_TYPE+IEC_MTW_ERROR
+
+
+//------------------------------------------------------------------
+// ГЕНЕРАЛИЗАЦИЯ ИЗОЛИНИЙ                                  
+//------------------------------------------------------------------
+
+#define STR_IEC_GEN_ISOLINE_DELETE_ISOLINE  IEC_ERROR_TYPE + IEC_GEN_ISOLINE_DELETE_ISOLINE
+#define STR_IEC_GEN_ISOLINE_DELETE_BERGSTRICH  IEC_ERROR_TYPE + IEC_GEN_ISOLINE_DELETE_BERGSTRICH
+#define STR_IEC_GEN_ISOLINE_DELETE_TITLE  IEC_ERROR_TYPE + IEC_GEN_ISOLINE_DELETE_TITLE
+#define STR_IEC_GEN_ISOLINE_CONVERT_ISOLINE  IEC_ERROR_TYPE + IEC_GEN_ISOLINE_CONVERT_ISOLINE
+
+//------------------------------------------------------------------
+// ГЕНЕРАЛИЗАЦИЯ ПЛОЩАДНЫХ РЕК                             
+//------------------------------------------------------------------
+
+#define STR_IEC_GEN_SQRIVER_DELETE_SQUARE  IEC_ERROR_TYPE + IEC_GEN_SQRIVER_DELETE_SQUARE
+#define STR_IEC_GEN_SQRIVER_CREATE_SQUARE  IEC_ERROR_TYPE + IEC_GEN_SQRIVER_CREATE_SQUARE
+#define STR_IEC_GEN_SQRIVER_CREATE_LINE    IEC_ERROR_TYPE + IEC_GEN_SQRIVER_CREATE_LINE
+
+//------------------------------------------------------------------
+// ГЕНЕРАЛИЗАЦИЯ МАЛЫХ ОБЪЕКТОВ И КВАРТАЛОВ                
+//------------------------------------------------------------------
+
+#define STR_IEC_GEN_CREATE_OBJECTS   IEC_ERROR_TYPE + IEC_GEN_CREATE_OBJECTS
+#define STR_IEC_GEN_DELETE_OBJECTS   IEC_ERROR_TYPE + IEC_GEN_DELETE_OBJECTS
+#define STR_IEC_GEN_RECODE_OBJECTS   IEC_ERROR_TYPE + IEC_GEN_RECODE_OBJECTS
+#define STR_IEC_GEN_UNION_OBJECTS    IEC_ERROR_TYPE + IEC_GEN_UNION_OBJECTS
+#define STR_IEC_GEN_CHANGE_METRICS   IEC_ERROR_TYPE + IEC_GEN_CHANGE_METRICS
+
+#endif

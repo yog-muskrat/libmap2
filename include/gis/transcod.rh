@@ -1,0 +1,73 @@
+
+#ifndef TRANSCOD_RH
+ #define TRANSCOD_RH 
+
+//==================================================================
+//        СЕКЦИЯ ПАНОРАМЫ
+//==================================================================
+
+#define TAC_PAN_NEWRSC       5000         // Изменен классификатор
+
+#define TAC_PAN_SXFUPDATE    6000         // Обновление карты из SXF
+#define TAC_PAN_TXFUPDATE    6001         // Обновление карты из TXF
+
+
+//==================================================================
+//        СЕКЦИЯ РЕДАКТОРА ВЕКТОРНОЙ КАРТЫ
+//==================================================================
+
+
+#define TAC_MED_CREATEOBJECT 4001         //  Создание объекта
+#define TAC_MED_UNDO         4002         //  Отмена
+#define TAC_MED_DELETEOBJECT 4003         //  Удаление объекта
+#define TAC_MED_PASTE        4004         //  Сшивка объектов
+#define TAC_MED_MOVEKNOT     4005         //  Перемещение узлов
+#define TAC_MED_MOVEPART     4006         //  Перемещение участка объекта
+#define TAC_MED_EDITPART     4007         //  Редактирование участка объекта
+#define TAC_MED_LINECUT      4008         //  Рассечение линейного объекта
+#define TAC_MED_ADJUST       4009         //  Согласование объектов
+#define TAC_MED_SPLINE       4010         //  Сглаживание объектов
+#define TAC_MED_FILTER       4011         //  Фильтрация объектов
+#define TAC_MED_REVERT       4012         //  Изменение направления
+#define TAC_MED_CUT          4013         //  Разрезание объекта
+#define TAC_MED_POLYTITLE    4014         //  Сборка сложной подписи
+#define TAC_MED_SEMAPPEND    4015         //  Добавление семантики
+#define TAC_MED_SEMUPDATE    4016         //  Обновление семантики
+#define TAC_MED_SEMDELETE    4017         //  Удаление семантики
+#define TAC_MED_ROTATE       4018         //  Вращение объекта
+#define TAC_MED_MOVE         4019         //  Перемещение объекта
+#define TAC_MED_MODIFY       4020         //  Изменение кода объекта
+#define TAC_MED_HIGHT        4021         //  Редактирование высоты
+#define TAC_MED_TITLE        4022         //  Редактирование текста
+#define TAC_MED_BOTTOP       4023         //  Изменение границ видимости
+#define TAC_MED_MOVEROTATE   4024         //  Масштабирование и поворот объектов
+
+#define TAC_MED_SCENARIO     4025         //  Создание сценария
+#define TAC_MED_SCENEOBJECT  4026         //  Создание/обновление объекта по сценарию
+#define TAC_MED_DRAWEDIT     4027         //  Редактирование графики объекта     
+
+//==================================================================
+//        СЕКЦИЯ КОНТРОЛЯ ВЕКТОРНОЙ КАРТЫ                                  
+//==================================================================
+
+#define TAC_CNTR_BASE                    4500                                  
+#define TAC_CNTR_METRICS_STRUCT          TAC_CNTR_BASE+1         //  "Ошибка структуры метрики"
+#define TAC_CNTR_METRICS_COORDINATE      TAC_CNTR_BASE+2         //  "Ошибка в координатах метрики"
+#define TAC_CNTR_SEMANTIC_STRUCT         TAC_CNTR_BASE+3         //  "Ошибка структуры семантики"
+#define TAC_CNTR_SEMANTIC_PERMISSIBLE    TAC_CNTR_BASE+4         //  "Наличие недопустимой семантики"
+#define TAC_CNTR_SEMANTIC_REPLY          TAC_CNTR_BASE+5         //  "Наличие недопустимой(повторной) семантики"
+#define TAC_CNTR_METRICS_LOOP            TAC_CNTR_BASE+6         //  "Наличие петель в метрике"
+#define TAC_CNTR_METRICS_BELONG          TAC_CNTR_BASE+7         //  "Ошибка входимости"
+#define TAC_CNTR_METRICS_CLOSE           TAC_CNTR_BASE+8         //  "Ошибка замкнутости"
+#define TAC_CNTR_METRICS_DUPLICATEPOINT  TAC_CNTR_BASE+9         //  "Дублирование точек метрики"
+#define TAC_CNTR_METRICS_MOVETOFRAME     TAC_CNTR_BASE+10        //  "Дотягивание до рамки листа"
+#define TAC_CNTR_TITLE_STRUCT            TAC_CNTR_BASE+11        //  "Ошибка в структуре подписи или названия"
+#define TAC_CNTR_METRICS_DIRECTION       TAC_CNTR_BASE+12        //  "Ошибка направления цифрования"
+#define TAC_CNTR_METRICS_VECTOR          TAC_CNTR_BASE+13        //  "Ошибка метрики векторного объекта"
+#define TAC_CNTR_METRICS_TITLE           TAC_CNTR_BASE+14        //  "Ошибка метрики подписи"
+#define TAC_CNTR_METRICS_3D              TAC_CNTR_BASE+15        //  "Редактирование Z координаты"
+#define TAC_CNTR_HYDROAGREE              TAC_CNTR_BASE+16        //  "Согласование объектов гидрографии"
+#define TAC_CNTR_FRAMEEDIT               TAC_CNTR_BASE+17        //  "Редактирование рамки листа"
+#define TAC_CNTR_OBJECT_DUPLICATEBASEKEY TAC_CNTR_BASE+18        //  "Повторный номер объекта"
+
+#endif

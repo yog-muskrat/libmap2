@@ -1,0 +1,82 @@
+#if !defined(MSSIT_RH)
+  #define MSSIT_RH
+
+#include "mapview.rh"
+
+//-----------------------------------------------------------------
+//-----------------------------------------------------------------
+//     ДИАПАЗОН ДЛЯ РАСТРА  -  400  !!!
+//     ОСТАВШИЕСЯ 100 - ДЛЯ СИТУАЦИИ
+//-----------------------------------------------------------------
+//-----------------------------------------------------------------
+
+//**************** ДИАЛОГ ЗАКРЫТИЯ КАРТ СИТУАЦИЙ *********
+
+#define IDD_SIT_CLOSE          IDT_RSTCNTR + 400
+#define IDC_SIT_CLOSE_OK       IDD_SIT_CLOSE + 1
+#define IDC_SIT_CLOSE_CANCEL   IDD_SIT_CLOSE + 2
+#define IDC_SIT_CLOSE_RESET    IDD_SIT_CLOSE + 3
+#define IDC_SIT_CLOSE_HELP     IDD_SIT_CLOSE + 4
+#define IDC_SIT_CLOSE_LIST     IDD_SIT_CLOSE + 5
+#define IDC_SIT_CLOSE_ALL      IDD_SIT_CLOSE + 6
+#define IDC_SIT_CLOSE_SITCOUNT IDD_SIT_CLOSE + 7
+
+
+//***ВСПЛЫВАЮЩЕЕ МЕНЮ ПО ЩЕЛЧКУ ПРАВОЙ КНОПКИ МЫШИ ***
+
+//ВСПЛЫВАЮЩЕЕ МЕНЮ (ИЗ ПАНОРАМЫ)
+#define IDM_VIEW_SIT            IDD_SIT_CLOSE + 8
+#define CM_SIT_RESOLUTION       IDM_VIEW_SIT + 1
+#define CM_SIT_CONTENTS         IDM_VIEW_SIT + 2
+#define CM_SIT_VIEW             IDM_VIEW_SIT + 3
+#define CM_SIT_ORDER            IDM_VIEW_SIT + 4// Над картой 
+#define CM_SIT_GOTO             IDM_VIEW_SIT + 5
+#define CM_SIT_SELECTOBJECT     IDM_VIEW_SIT + 6 //Выбор объекта
+#define CM_SIT_SAVEAS           IDM_VIEW_SIT + 7 //файл сохранить как...
+#define CM_SIT_DELETE           IDM_VIEW_SIT + 8 //Удалить файл
+#define CM_SIT_SCALEVIEW        IDM_VIEW_SIT + 9 //Границы видимости 
+
+//ВСПЛЫВАЮЩЕЕ МЕНЮ (ИЗ приложения)
+#define IDM_VIEWSIT_APPLICATION IDM_VIEW_SIT + 10
+
+//             Список ПК
+//***Групповое ВСПЛЫВАЮЩЕЕ МЕНЮ ПО ЩЕЛЧКУ ПРАВОЙ КНОПКИ МЫШИ ***
+#define IDM_GROUP_SIT           IDM_VIEW_SIT + 11
+#define CM_SITGROUP_VIEW        IDM_GROUP_SIT + 1//Visibility
+#define CM_SITGROUP_RESOLUTION  IDM_GROUP_SIT + 2//Edit
+#define CM_SITGROUP_CLOSE       IDM_GROUP_SIT + 3//Close
+#define CM_SITGROUP_SELECTOBJECT  IDM_GROUP_SIT + 4//Выбор объекта
+#define CM_SITGROUP_SCALEVIEW     IDM_GROUP_SIT + 5 //Границы видимости 
+
+#define SITLIST_VIEW_SELECTED   IDM_GROUP_SIT + 6// Иконка "Отображаемые ПК"(выбранная ПК)
+#define SITLIST_VIEW            IDM_GROUP_SIT + 7// Иконка "Отображаемые ПК"(невыбранная ПК)
+
+#define SITLIST_NOVIEW_SELECTED IDM_GROUP_SIT + 8// Иконка "Неотображаемые ПК"(выбранная ПК)
+#define SITLIST_NOVIEW          IDM_GROUP_SIT + 9// Иконка "Неотображаемые ПК"(невыбранная ПК)
+
+#define SITLIST_VIEWSEL_NODRAG  IDM_GROUP_SIT + 10// Иконка "Отображаемые ПК"(выбранная ПК)
+                                               // Перемещение на недозволенную позицию
+#define SITLIST_NOVIEWSEL_NODRAG IDM_GROUP_SIT + 11// Иконка "Неотображаемые ПК"(выбранная ПК)
+                                               // Перемещение на недозволенную позицию
+
+#define IDS_SITTYPE1            IDM_GROUP_SIT + 12// "Map"
+#define IDS_SITTYPE2            IDM_GROUP_SIT + 13// "Sit"
+
+#define CM_SITSORT_NAME         IDM_GROUP_SIT + 14    // Упорядочить по имени
+#define CM_SIT_BRIGHTCONTRAST   IDM_GROUP_SIT + 15 //  "Яркость/контраст" 
+
+//**** ДИАЛОГ-ЗАКЛАДКА  "ИНФОРМАЦИЯ О пользовательских картах" *********
+
+#define  IDD_SITPIC_INFORMATION          IDM_GROUP_SIT + 16
+#define  IDC_SITINFORMATION_NAME         IDD_SITPIC_INFORMATION +1
+#define  IDC_SITINFORMATION_NOMENCLATURE IDD_SITPIC_INFORMATION +2
+#define  IDC_SITINFORMATION_CLASSIFIER   IDD_SITPIC_INFORMATION +3
+#define  IDC_SITINFORMATION_SCALE        IDD_SITPIC_INFORMATION +4
+#define  IDC_SITINFORMATION_OBJECTCOUNT  IDD_SITPIC_INFORMATION +5
+#define  IDC_SITINFORMATION_ACCESS       IDD_SITPIC_INFORMATION +6
+#define  IDC_SITINFORMATION_EDIT	        IDD_SITPIC_INFORMATION +7
+
+#define  CM_SITPIC_INFORMATION           IDD_SITPIC_INFORMATION +8
+#define  CM_SITPIC_PICTURE               IDD_SITPIC_INFORMATION +9
+
+#endif // MSSIT_RH

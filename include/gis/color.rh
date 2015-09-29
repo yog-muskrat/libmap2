@@ -1,0 +1,31 @@
+
+#include "mmapmenu.rh"
+
+#define IDD_MAIN_CLRS           MAP_COLOR + 0
+#define IDC_CLR_CONTROL         MAP_COLOR + 1
+
+#define IDD_COLRS            MAP_COLOR + 2
+#define IDC_COMCOL_BUTTON1   MAP_COLOR + 3
+#define IDC_COMCOL_BUTTON2   MAP_COLOR + 4
+#define IDC_COMCOL_BUTTON3   MAP_COLOR + 5
+
+#define IDD_PALL             MAP_COLOR + 6
+#define IDC_COLOR_TRACK1     MAP_COLOR + 7
+#define IDC_COLOR_TRACK2     MAP_COLOR + 8
+#define IDD_COLOR_BOX        MAP_COLOR + 9
+
+#define IDC_PALL16           MAP_COLOR + 10
+
+#define IDD_MPALL            MAP_COLOR + 11
+#define IDC_COLOR_TRM1       MAP_COLOR + 12
+#define IDC_COLOR_TRM2       MAP_COLOR + 13
+#define IDC_COLOR_GROUP	     MAP_COLOR + 14
+#define IDC_COLOR_BUTT2	     MAP_COLOR + 15
+#define IDC_COLOR_BUTT1	     MAP_COLOR + 16
+
+#define IDRESET              MAP_COLOR + 17
+#define IDC_PALMTR           MAP_COLOR + 18
+
+#define IDC_COMCOL_THICK     MAP_COLOR + 19
+
+#define IDD_RPALL            MAP_COLOR +20

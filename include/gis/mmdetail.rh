@@ -1,0 +1,384 @@
+#ifndef MMDETAIL_RH
+#define MMDETAIL_RH
+
+#ifndef MMAPMENU_RH
+   #include "mmapmenu.rh"
+#endif
+
+#ifndef MAPEDIT_RH            
+   #include "mapedit.rh"
+#endif
+
+// Идентификаторы ресурсов диалогов DetailInfo
+// --------------------------------------------------------
+
+// Select Object               из mmapmenu.rh
+//#define IDD_SELECT_OBJECT    IDD_MAPMENU+10
+// зарезервировано 100 номеров
+#define IDD_DETAIL      IDD_SELECT_OBJECT
+
+// Additional Select Object                из mmapmenu.rh
+//#define IDD_ADDITIONAL_SELECT_OBJECT     IDD_MAPMENU+410
+// зарезервировано 30 номеров
+#define IDD_ADDOBJ           IDD_ADDITIONAL_SELECT_OBJECT
+// взяла еще 20 номеров сразу вслед IDD_MAPMENU+410   то есть IDD_MAPMENU+410+30
+// наезжает на "Диалог выбора слайда"   (зарезервировано 20 номеров)
+//#define IDD_SLIDECOPY                    IDD_MAPMENU+440
+#define IDD_ADDDUBL2OBJ      IDD_ADDOBJ+30    // = IDD_MAPMENU+440
+
+//******************************************************
+//IDD_SELECT_OBJECT(1 - 100)
+//------------------------------------------------------
+//+1 - +16, 83,84,97,98  коды сообщений
+//+9 - +26 диалог выбора объекта
+// + 39 - +40 функционирование закладок
+//Правое меню метрики объекта IDD_DETAIL+26 - +39, 41 - 47   !!!!!!!
+//Получается, что номера IDD_DETAIL +45 теперь свободны   ???
+//Перекрывающийся STRINGTABLE
+//+9 - +44 STRINGTABLE диалога выбора объекта и           
+//         функционирования закладок
+//+86 - +95 коды правого меню
+//------------------------------------------------------
+
+//------------------------------------------------------
+//+46 - +56 диалог границ видимости объекта
+//в том числе +54 STRINGTABLE границ видимости объекта
+//Перекрывающийся STRINGTABLE - +47
+//------------------------------------------------------
+
+//------------------------------------------------------
+//+57 - +66   диалог семантики объекта
+//+92 - +95   ADJUSTMENT
+//------------------------------------------------------
+//******************************************************
+
+//******************************************************
+//------------------------------------------------------
+//IDD_ADDITIONAL_SELECT_OBJECT(1 - 30)
+//+0, +1 - +29 диалог метрики объекта
+//в том числе +1 - +6, +22, +23, +24
+//Перекрывающийся STRINGTABLE
+//+1 - + 6,  +7 - +18,   +22 - +24    STRINGTABLE диалога метрики объекта
+//IDD_DETAIL+85 Диалог рисования схемы объекта
+//IDD_DETAIL+96 тоже относится к диалогу метрики объекта
+//IDD_DETAIL+97 относится к диалогу вида объекта          
+//IDD_DETAIL+98 относится к диалогу вида объекта
+//IDD_DETAIL+26 - +39 Правое меню метрики объекта
+//IDD_ADDITIONAL_SELECT_OBJECT+0 - +6 Выравнивание метрики подписей
+//------------------------------------------------------
+//******************************************************
+
+// Select Object
+#define UM_DETAIL                     IDD_DETAIL+1
+#define UM_CLIPREPAINT                IDD_DETAIL+2
+#define UM_MAPREPAINT                 IDD_DETAIL+3
+#define UM_OBJEXTRACT                 IDD_DETAIL+4
+#define UM_OBJUNEXTRACT               IDD_DETAIL+5
+#define UM_STATREPAINT                IDD_DETAIL+6
+#define UM_GET_SELOBJ_WRECT           IDD_DETAIL+7
+#define UM_SELOBJ_WRECT               IDD_DETAIL+8
+#define UM_TEXTALIGNCHANGE            IDD_DETAIL+9
+#define UM_MAPMARKERREPAINT           IDD_DETAIL+10   
+#define UM_MAPMARKERSWITCH            IDD_DETAIL+11   
+#define UM_RESETOBJECT                IDD_DETAIL+12   
+#define UM_SETCHANGE                  IDD_DETAIL+13   
+#define UM_OBJECTLISTCOMPLETE         IDD_DETAIL+14   
+#define UM_OBJECTEXCODECHANGE         IDD_DETAIL+15   
+#define UM_SETSEMANTICREGULATE        IDD_DETAIL+16   
+
+#define IDC_SO_OK                     IDD_DETAIL+9
+#define IDC_SO_CANCEL                 IDD_DETAIL+10
+#define IDC_SO_NEXT                   IDD_DETAIL+11
+#define IDC_SO_PREV                   IDD_DETAIL+12
+#define IDC_SO_HELP                   IDD_DETAIL+13
+#define IDW_SO_CODE                   IDD_DETAIL+14
+#define IDW_SO_NUMBER                 IDD_DETAIL+15
+#define IDW_SO_NAME                   IDD_DETAIL+16
+#define IDW_SO_LAYER                  IDD_DETAIL+17
+#define IDW_SO_SQUARE                 IDD_DETAIL+18
+#define IDW_SO_LENGTH                 IDD_DETAIL+19
+#define IDW_SO_CLIP                   IDD_DETAIL+20
+#define IDC_SO_INFO                   IDD_DETAIL+21
+#define IDW_SO_MAP                    IDD_DETAIL+22
+#define IDW_SO_TYPE                   IDD_DETAIL+23
+#define IDW_TSO_LENGTH                IDD_DETAIL+24
+#define IDC_SO_MAP                    IDD_DETAIL+25
+#define IDW_SO_RSCKEY                 IDD_DETAIL+26    
+
+#define STR_INFO_COM                    IDD_DETAIL+9
+#define STR_INFO_COM_METER              STR_INFO_COM            // +9
+#define STR_INFO_COM_KILOMETER          STR_INFO_COM+1          // +10
+#define STR_INFO_COM_SQMETER            STR_INFO_COM+2          // +11
+#define STR_INFO_COM_SQKILOMETER        STR_INFO_COM+3          // +12
+#define STR_INFO_COM_NULLSELECTCAPTION  STR_INFO_COM+4          // +13
+#define STR_INFO_COM_SELECTCAPTION      STR_INFO_COM+5          // +14
+#define STR_INFO_COM_NULLCREATECAPTION  STR_INFO_COM+6          // +15
+#define STR_INFO_COM_CREATECAPTION      STR_INFO_COM+7          // +16
+#define STR_INFO_COM_SO_OK              STR_INFO_COM+8          // +17
+#define STR_INFO_COM_LENGTH             STR_INFO_COM+9          // +18
+#define STR_INFO_COM_PERIMETER          STR_INFO_COM+10         // +19
+#define STR_INFO_COM_HECTARE            STR_INFO_COM+11         // +20 
+#define STR_INFO_COM_MILLIMETER         STR_INFO_COM+12         // +21 
+#define STR_INFO_COM_SQMILLIMETER       STR_INFO_COM+13         // +22 
+
+#define STR_INFO_INFO                   STR_INFO_COM+14         // +23 
+#define STR_INFO_DETAIL                 STR_INFO_INFO           // +23
+#define STR_INFO_DETAIL_EDITSEM         STR_INFO_INFO+1         // +24
+#define STR_INFO_DETAIL_EDITMETR        STR_INFO_INFO+2         // +25
+#define STR_INFO_DETAIL_EDITVISIBILITY  STR_INFO_INFO+3         // +26
+#define STR_INFO_DETAIL_EDITIMAGE       STR_INFO_INFO+4         // +27
+#define STR_INFO_DETAIL_EDITPRNIMAGE    STR_INFO_INFO+5         // +28
+#define STR_INFO_DETAIL_EDITSITEIMAGE   STR_INFO_INFO+6         // +29
+
+#define STR_INFO_ERROR_SEM              STR_INFO_INFO+7         // +30
+#define STR_INFO_ERROR_METR             STR_INFO_INFO+8         // +31
+#define STR_INFO_ERROR_VISIBILITY       STR_INFO_INFO+9         // +32
+#define STR_INFO_ERROR_IMAGE            STR_INFO_INFO+10        // +33
+#define STR_INFO_ERROR_PRNIMAGE         STR_INFO_INFO+11        // +34
+#define STR_INFO_ERROR_SITEIMAGE        STR_INFO_INFO+12        // +35
+#define STR_INFO_ERROR_SEMUNDO          STR_INFO_INFO+13        // +36
+#define STR_INFO_MESS_SEM               STR_INFO_INFO+14        // +37
+
+//Получается, что номера IDD_DETAIL +43 - +46 теперь свободны
+
+#define IDD_OBJECT_INFO                 IDD_DETAIL+39
+#define IDC_OBJECT_INFO_TABCONTROL      IDD_DETAIL+40
+
+#define STR_OBJECT_INFO_TABSEMANTIC     STR_INFO_INFO+15        // +38
+#define STR_OBJECT_INFO_TABMETRIC       STR_INFO_INFO+16        // +39
+#define STR_OBJECT_INFO_TABVISIBILITY   STR_INFO_INFO+17        // +40
+#define STR_OBJECT_INFO_TABIMAGE        STR_INFO_INFO+18        // +41
+#define STR_OBJECT_INFO_TABPRN          STR_INFO_INFO+19        // +42
+#define STR_OBJECT_INFO_TABSITE         STR_INFO_INFO+20        // +43
+#define STR_INFO_MESS_SEMSET            STR_INFO_INFO+21        // +44  
+#define STR_OBJECT_INFO_TABSET          STR_INFO_INFO+22        // +45  
+#define STR_INFO_COM_AREA               STR_INFO_INFO+23        // +46  
+#define STR_OBJECT_INFO_TAB3D           STR_INFO_INFO+24        // +47  
+
+#define IDC_OBJECT_INFO_TABIMAGE       STR_OBJECT_INFO_TABIMAGE
+#define IDC_OBJECT_INFO_TABPRN         STR_OBJECT_INFO_TABPRN
+#define IDC_OBJECT_INFO_TABSITE        STR_OBJECT_INFO_TABSITE
+
+#define RSC_OBJECT_VISIBILITY           IDD_DETAIL+46               
+#define IDD_OBJECT_VISIBILITY           IDD_DETAIL+47
+
+#define IDD_OBJECT_INFO_VISIBILITY          IDD_OBJECT_VISIBILITY
+#define RSC_OBJECT_INFO_VISIBILITY          RSC_OBJECT_VISIBILITY    
+#define IDC_INFO_METRIC_VISIBILITY_LISTBOT  IDD_OBJECT_VISIBILITY+1
+#define IDC_INFO_METRIC_VISIBILITY_LISTTOP  IDD_OBJECT_VISIBILITY+2
+#define IDC_INFO_VISIBILITY_SAVE            IDD_OBJECT_VISIBILITY+3
+#define IDC_INFO_VISIBILITY_UNDO            IDD_OBJECT_VISIBILITY+4
+#define IDC_INFO_VISIBILITY_RANGE           IDD_OBJECT_VISIBILITY+5
+#define STR_INFO_VISIBILITY_TOPERROR        IDD_OBJECT_VISIBILITY+7   //+47+7=54  // 02/110/06
+#define STR_INFO_VISIBILITY_BOTTOMERROR     IDD_OBJECT_VISIBILITY+8   //+47+8=55  // 02/110/06
+#define IDC_INFO_VISIBILITY_ALL_SCALE       IDD_OBJECT_VISIBILITY+6
+#define IDC_INFO_VISIBILITY_CLASSIFICATOR   IDD_OBJECT_VISIBILITY+8
+
+#define IDD_COMMENT_SCALE             IDD_OBJECT_VISIBILITY+9
+
+#define IDD_DETAIL_METRIC             IDD_ADDOBJ
+
+//Правое меню метрики объекта
+#define IDM_METRIC_MENU               IDD_DETAIL+26
+#define IDM_INFO_METRIC_RIGHTMENU     IDM_METRIC_MENU                             //+26
+#define CM_INFO_METRIC_MENU_DIRECTION IDM_METRIC_MENU+1                           //+27
+
+//#define CM_INFO_METRIC_MENU_NORMAL    IDM_METRIC_MENU+3
+#define CM_INFO_METRIC_MENU_SUBJECT_DELETE  IDM_METRIC_MENU+2                     //+28
+#define CM_INFO_METRIC_MENU_ALLSUBJECT_DELETE  IDM_METRIC_MENU+3                  //+29
+#define CM_INFO_METRIC_MENU_HIGHT_VIEW   IDM_METRIC_MENU+4                        //+30
+#define CM_INFO_METRIC_MENU_INSERTH      IDM_METRIC_MENU+5  
+#define CM_INFO_METRIC_MENU_DELETEH      IDM_METRIC_MENU+6  
+#define CM_INFO_METRIC_MENU_PRINT        IDM_METRIC_MENU+7  
+#define CM_INFO_METRIC_MENU_PRINT_YAZIMUTH     IDM_METRIC_MENU+8  
+#define CM_INFO_METRIC_MENU_PRINT_LEFTANGLE    IDM_METRIC_MENU+9  
+#define CM_INFO_METRIC_MENU_PRINT_RIGHTANGLE   IDM_METRIC_MENU+10  
+#define CM_INFO_METRIC_MENU_SETFIRSTPOINT      IDM_METRIC_MENU+11  
+#define CM_INFO_METRIC_MENU_COORDINATEPRINT    IDM_METRIC_MENU+12  
+#define CM_INFO_METRIC_MENU_H_RELATIVE         IDM_METRIC_MENU+13  
+#define CM_INFO_METRIC_MENU_SPLINETYPE_SMOOTH         IDD_DETAIL+45  
+#define CM_INFO_METRIC_MENU_SPLINETYPE_POINTS         IDD_DETAIL+46  
+
+#define IDD_OBJECT_INFO_METRIC        IDD_DETAIL_METRIC
+
+#define STR_PLANEPOINT                IDD_DETAIL_METRIC+1
+#define STR_MAPPOINT                  IDD_DETAIL_METRIC+2
+#define STR_PICTUREPOINT              IDD_DETAIL_METRIC+3
+#define STR_GEORAD                    IDD_DETAIL_METRIC+4
+#define STR_GEOGRAD                   IDD_DETAIL_METRIC+5
+#define STR_GEOGRADMIN                IDD_DETAIL_METRIC+6
+#define STR_GEORAD_WGS1984            IDD_DETAIL_METRIC+16
+#define STR_GEOGRAD_WGS1984           IDD_DETAIL_METRIC+17
+#define STR_GEOGRADMIN_WGS1984        IDD_DETAIL_METRIC+18
+
+#define IDC_INFODTL_METRIC_COMBOBOX   IDD_DETAIL_METRIC+7
+#define IDC_INFODTL_TOTAL_POINT       IDD_DETAIL_METRIC+8
+#define IDC_INFODTL_TOTAL_SUBOBJECT   IDD_DETAIL_METRIC+9
+#define IDC_INFODTL_SUBOBJECT_METRIC  IDD_DETAIL_METRIC+10
+#define IDC_INFODTL_DISTANCE          IDD_DETAIL_METRIC+11
+#define IDC_INFODTL_ANGLE             IDD_DETAIL_METRIC+12
+#define IDC_METRIC_TEXT               IDD_DETAIL_METRIC+13
+#define IDC_INFODTL_METRIC_COMBOBOX_SUBOBJECT    IDD_DETAIL_METRIC+14
+#define IDC_METRIC_EDIT               IDD_DETAIL_METRIC+15
+#define IDC_METRICLIST                IDD_DETAIL_METRIC+16
+#define IDC_METR_INSERT               IDD_DETAIL_METRIC+17
+#define IDC_METR_DELETE               IDD_DETAIL_METRIC+18
+#define IDC_METR_SAVE                 IDD_DETAIL_METRIC+19
+#define IDC_METR_UNDO                 IDD_DETAIL_METRIC+20
+#define IDC_METR_FRAME                IDD_DETAIL_METRIC+21
+#define STR_INFO_ERROR_GEO            IDD_DETAIL_METRIC+22
+#define STR_INFO_ERROR_GEOTOPLANE     IDD_DETAIL_METRIC+23
+#define IDC_METR_INSERTH              IDD_DETAIL_METRIC+23
+#define STR_INFO_EDITMETRIC_DELETE    IDD_DETAIL_METRIC+24
+#define IDC_METR_ZOOMIN               IDD_DETAIL_METRIC+25
+#define IDC_METR_ZOOMOUT              IDD_DETAIL_METRIC+26
+#define IDC_INFODTL_SCALE             IDD_DETAIL_METRIC+27
+#define IDC_METR_EDIT_TEXT            IDD_DETAIL_METRIC+28
+#define IDC_METR_TEXT_FRAME           IDD_DETAIL_METRIC+29
+#define IDC_METR_MARKPOINT            IDD_DETAIL+96      
+//IDD_DETAIL_METRIC +1 - +6  уже STRINGTABLE
+#define STR_INFO_METR                    IDD_DETAIL_METRIC+7
+#define STR_INFO_METR_INSERTHBUTTON      STR_INFO_METR
+#define STR_INFO_METR_DELETEHBUTTON      STR_INFO_METR+1
+#define STR_INFO_METR_SUBJECTDELETE      STR_INFO_METR+2
+#define STR_INFO_METR_ALLSUBJECTDELETE   STR_INFO_METR+3
+#define STR_INFO_METR_TEXTSCALE        IDD_DETAIL_METRIC+11
+#define STR_INFO_METR_HEIGHT_ERROR     IDD_DETAIL_METRIC+12    
+#define STR_INFO_METR_COORD_ERROR      IDD_DETAIL_METRIC+13    
+#define STR_INFO_METR_TXTFILENAME_CHOICE  IDD_DETAIL_METRIC+14   
+#define STR_INFO_METR_TXTFILENAME_EXIST   IDD_DETAIL_METRIC+15   
+
+#define IDD_SEM  	                    IDD_DETAIL+57
+
+#define IDD_SEM_DIALOG	              IDD_SEM
+#define IDC_SEM_DELETE	              IDD_SEM+1
+#define IDC_SEM_APPEND	              IDD_SEM+2
+#define IDC_SEM_LIST	                 IDD_SEM+3
+#define IDC_SEM_SAVE                  IDD_SEM+4
+#define IDC_SEM_NAME	                 IDD_SEM+5
+#define IDC_SEM_VALUE	              IDD_SEM+6
+#define IDC_SEM_UNDO	                 IDD_SEM+7
+#define IDF_SEM_FRAME                 IDD_SEM+8
+#define IDC_SEM_VALUE1                IDD_SEM+9
+
+// Заголовки ListBox
+#define STR_SEM_FL                    IDD_SEM+1
+#define STR_SEM_NAME                  IDD_SEM+2
+#define STR_SEM_CODE                  IDD_SEM+3
+#define STR_SEM_VALUE                 IDD_SEM+4
+#define STR_SEM_MUST                  IDD_SEM+5
+
+// Stringtable
+#define STR_SEM_DLGNAME               IDD_SEM+6
+#define STR_SEM_MESS                  IDD_SEM+7
+#define STR_SEM_APPCAPT               IDD_SEM+8
+#define STR_INFO_MESSAGE_SEM_PROGRAMM IDD_SEM+9
+#define STR_SEM_FILE                  IDD_SEM+10
+#define STR_SEM_CLEARFILE             IDD_SEM+11
+#define STR_OBJECT_SETKEY             IDD_SEM+12  
+#define STR_OBJECT_SETSQUARE          IDD_SEM+13
+#define STR_OBJECT_SETLENGTH          IDD_SEM+14
+#define STR_OBJECT_SETGENERAL         IDD_SEM+15
+#define STR_OBJECT_SETITOG            IDD_SEM+16
+#define STR_INFO_DETAIL_EDITSET       IDD_SEM+17  
+#define STR_SEM_IMAGE                 IDD_SEM+18  
+
+// Данные из классификатора
+#define IDD_SEM_CLASS	               IDD_SEM+1
+#define IDC_SEM_CLASS	               IDD_SEM+1
+
+// Числовые данные
+#define IDD_SEM_NUM	                  IDD_SEM+2
+#define IDC_SEM_NUMVAL	               IDD_SEM+1
+#define IDC_SEM_MAX	                  IDD_SEM+2
+
+// Добавление семантики
+#define IDD_SEM_APPEND                IDD_SEM+3
+#define IDC_SEM_APPLIST               IDD_SEM+1
+
+// Данные типа ссылка
+#define IDD_IDD_SEM_KEY               IDD_SEM+4
+#define IDC_SEM_KEYUNION              IDD_SEM+1
+#define IDC_SEM_KEYMEMBER             IDD_SEM+2
+#define IDC_SEM_SEPARATOR             IDD_SEM+3
+#define IDC_SEM_SEPARATOR_GR          IDD_SEM+4
+#define IDC_SEM_SEPARATOR_MIN         IDD_SEM+5
+#define IDC_SEM_SEPARATOR_SEC         IDD_SEM+6
+#define IDC_SEM_GRAD                  IDD_SEM+7
+#define IDC_SEM_MIN                   IDD_SEM+8
+#define IDC_SEM_SEC                   IDD_SEM+9
+#define IDC_SEM_SEPARATOR_1           IDD_SEM+10
+#define IDC_SEM_SEPARATOR_2           IDD_SEM+11
+#define IDC_SEM_DD                    IDD_SEM+12
+#define IDC_SEM_MM                    IDD_SEM+13
+#define IDC_SEM_GGGG                  IDD_SEM+14
+#define IDC_SEM_TIME                  IDD_SEM+15
+#define IDC_SEM_TIMEM                 IDD_SEM+16
+#define IDC_SEM_TIMES                 IDD_SEM+17
+#define IDC_SEM_SEPARATORT1           IDD_SEM+18
+#define IDC_SEM_SEPARATORT2           IDD_SEM+19
+
+// Данные типа собственное название
+#define IDD_SEM_TITLE                 IDD_SEM+5
+#define IDC_SEM_TITLEBOX              IDD_SEM+1
+#define IDC_SEM_TITLEEDITN            IDD_SEM+2
+#define IDC_SEM_TITLEBUTTON           IDD_SEM+3
+#define IDC_SEM_TITLEEDITF            IDD_SEM+4
+#define IDC_SEM_TITLECHECK            IDD_SEM+5
+#define IDC_SEM_TITLECLEAR            IDD_SEM+6
+#define IDC_STATICTEXT2	              IDD_SEM+7
+
+#define IDD_OBJECT_SET                IDD_SEM+11
+#define IDC_OBJECT_SETCOUNT           IDD_OBJECT_SET
+#define IDC_OBJECT_SETLIST            IDD_OBJECT_SET+1
+#define IDC_OBJECT_SETINFO            IDD_OBJECT_SET+2
+#define IDB_OBJECT_SETOK              IDD_OBJECT_SET+3
+#define IDB_OBJECT_SETDELETE          IDD_OBJECT_SET+4
+#define IDB_OBJECT_SETUPDATE          IDD_OBJECT_SET+5
+#define IDB_OBJECT_SETSAVE            IDD_OBJECT_SET+6
+#define IDB_OBJECT_SETRESTORE         IDD_OBJECT_SET+7
+#define IDC_OBJECT_SETGROUPLIST       IDD_OBJECT_SET+8            
+#define IDC_OBJECT_SETGROUPLISTLABEL  IDD_OBJECT_SET+9            
+
+// Отклик на расширение окна
+#define UM_INFOLARGE                  IDD_DETAIL+83
+#define UM_INFOMIDDLE                 IDD_DETAIL+84
+
+// Диалог рисования схемы объекта
+#define IDD_OBJECT_METRIC_SCHEME      IDD_DETAIL+85
+
+#define IDM_SELECT_OBJECT_RIGHTMENU   IDD_DETAIL+86
+#define CM_OBJECTFULLSCREEN           IDD_DETAIL+87
+#define CM_OBJECTDETAIL               IDD_DETAIL+88
+#define CM_OBJECTSHORT                IDD_DETAIL+89
+#define CM_OPENFILESEM                IDD_DETAIL+90
+#define CM_PROGRAMVIEW                IDD_DETAIL+91
+#define CM_CLASSIFIEREDITOR           IDD_DETAIL+92
+#define CM_OBJSTATISTICSCALCULATE     IDD_DETAIL+93   
+#define CM_OBJECTSQUAREMETRE          IDD_DETAIL+41   
+#define CM_OBJECTSQUAREHECTARE        IDD_DETAIL+42   
+#define CM_OBJECTVIEWLAYER            IDD_DETAIL+43   
+#define CM_OBJECTVIEWOBJECT           IDD_DETAIL+44   
+#define CM_OBJECTSQUAREMILLIMETRE     IDD_DETAIL+47   
+#define CM_OBJECTNUMBERKEYFORMAT      IDD_DETAIL+94   
+#define CM_OBJECTNUMBERKEYNOTFORMAT   IDD_DETAIL+95   
+#define CM_SEMANTICBYCODE             IDD_DETAIL+48   
+#define CM_SEMANTICBYNAME             IDD_DETAIL+49   
+#define CM_SEMANTICBYORDER            IDD_DETAIL+50   
+
+#define IDD_ADJUSTMENT                IDD_DETAIL+92
+#define IDC_ADJUSTMENT_BMPPCX         IDD_DETAIL+93
+#define IDC_ADJUSTMENT_TXT            IDD_DETAIL+94
+#define IDC_ADJUSTMENT_HELP           IDD_DETAIL+95
+
+// Отклик для согласования принтерного и экранногог вида объектов  
+#define UM_INFOAGREE                  IDD_DETAIL+97   
+#define UM_INFOAGREEPARAM             IDD_DETAIL+98   
+
+
+// Диалог списка объектов
+//#define IDD_OBJECTLIST                IDD_ADDDUBL2OBJ
+//#define IDC_OBJECTLIST_LISTBOX        IDD_ADDDUBL2OBJ+1
+
+#endif
+

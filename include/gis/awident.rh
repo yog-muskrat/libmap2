@@ -1,0 +1,111 @@
+
+#ifndef AWIDENT_RH
+#define AWIDENT_RH
+
+#ifndef MAPSYST_H    
+#include "mapsyst.h"
+#endif
+
+#ifdef WIN32API      
+#include <owl\docview.rh>
+#include <owl\mdi.rh>
+#include <owl\window.rh>
+#include <owl\printer.rh>
+#endif
+
+#ifndef PANORAMA_RH
+  #include "panorama.rh"
+#endif
+
+#ifndef BUILD_DLLTASK
+ #ifndef AWHELPID_RH
+   #include "awhelpid.rh"
+ #endif
+#endif
+
+// File *********************************************************
+
+#define CM_FILEOPEN_RST       CM_PAN_OPENRST
+#define CM_FILEOPEN_MATRIX    CM_PAN_OPENMTR
+#define CM_FILECLOSE_MATRIX   CM_PAN_CLOSEMTR
+#define CM_FILEOPEN_MATRIXLAYER    CM_PAN_OPENMTL   
+#define CM_FILECLOSE_MATRIXLAYER   CM_PAN_CLOSEMTL  
+#define CM_FILEOPEN_MATRIXQUALITY  CM_PAN_OPENMTQ   
+#define CM_FILECLOSE_MATRIXQUALITY CM_PAN_CLOSEMTQ  
+#define CM_FILEOPEN_TINMODEL       CM_PAN_OPENTIN   
+#define CM_FILECLOSE_TINMODEL      CM_PAN_CLOSETIN  
+#define CM_LOAD               CM_PAN_LOAD
+#define CM_PRINTSETUP         CM_PAN_PRINTSETUP
+#define CM_MOVE_RST           CM_PAN_MOVERST
+#define CM_FILEOPEN_SIT       CM_PAN_OPENSITE
+#define CM_FILECLOSE_SIT      CM_PAN_CLOSESITE
+#define CM_MAPTREEOPEN        CM_PAN_MAPTREEOPEN
+#define CM_FILECLOSE_RST      CM_PAN_CLOSERST
+#define CM_UPDATE             CM_PAN_UPDATE
+#define CM_FILECLOSE_BUTTON   CM_PAN_FILECLOSE
+
+// Edit *********************************************************
+
+#define CM_UNDO               CM_PAN_UNDO
+#define CM_VIEWCOPY           CM_PAN_VIEWCOPY
+#define CM_COPYTO             CM_PAN_COPYTO
+#define CM_WINDOWCOPY         CM_PAN_WINDOWCOPY
+#define CM_WINDOWCOPYTO       CM_PAN_WINDOWCOPYTO
+#define CM_SLIDECOPY          CM_PAN_SLIDECOPY
+#define CM_SLIDECOPYTO        CM_PAN_SLIDECOPYTO
+#define CM_PUTTOMAP           CM_PAN_PUTTOMAP
+
+// Language *****************************************************
+
+#define CM_ENGLISH            CM_PAN_ENGLISH
+#define CM_RUSSIAN            CM_PAN_RUSSIAN
+
+//Классификатор(легенда) карты **********************************
+#define CM_MAPCLASSIFIERCMP   IDT_APPLICATION+100
+//зарезервировано 20 номеров
+
+//***************************************************************
+#define CM_CHANGEPANEL         IDT_APPLICATION+121
+
+// Dialogs ******************************************************
+#define IDC_ABOUT_SERIAL_NUMBER  IDT_APPLICATION+201
+
+// Навигатор
+#define IDT_NAVIGATOR         IDT_APPLICATION+350
+//зарезервировано 10 номеров
+
+// Topic List for HELP
+#define IDN_MAPCLASS_LAYER          5060
+#define IDN_MAPCLASS_SEMANTIC       5061
+#define IDN_MAPPASPTOPO             5062
+#define IDN_MAPPASPGEOG             5063
+#define IDN_MAPPASPAERO             5064
+#define IDN_MAPPASPNOM              5065
+
+
+// ----------------------------------------------
+#define IDN_MAPBASE                 6000
+
+// ----------------------------------------------
+
+#define IDN_INFO_OBJECT             6700
+#define IDN_INFO_SEM                6701
+#define IDN_UPDATE                  6702
+#define IDN_STAFFD                  6703
+#define IDN_SEARCHD                 6704
+#define IDN_SEARCH_FORM             6705
+#define IDN_ADJUST                  6706
+#define IDN_SEARCH_NAME             6707
+
+#define IDN_GROUP_OBJECT            6708
+#define IDN_GRAPHIC_OBJECT          6709
+
+#define IDN_RASTER                  6711
+#define IDN_MATRIX                  6712
+
+#define IDN_AREASEEK                6714
+
+#define IDN_MARKBYRECT              6716 
+
+#endif
+

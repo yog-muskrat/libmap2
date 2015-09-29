@@ -1,0 +1,479 @@
+#ifndef MSRST_RH
+#define MSRST_RH
+
+#include "mapview.rh"
+#include "awhelpid.rh"
+
+//-----------------------------------------------------------------
+///-----------------------------------------------------------------
+//     ДИАПАЗОН ДЛЯ РАСТРА  -  300  !!!
+//              ДЛЯ РЕДАКТОРА РАСТРА - 300 - 400
+//              ДЛЯ ПОЛЬЗ. КАРТЫ     - 400 - 512
+//-----------------------------------------------------------------
+//-----------------------------------------------------------------
+
+
+
+//*************** COMMAND ******************
+
+// Команда для запуска процесса "ПОЗИЦИОНИРОВАНИЕ РАСТРА"
+#define CM_RST_POSITION         IDT_RSTCNTR + 1
+
+// Команда для привязки растра по двум точкам
+#define CM_RST_ATTACH           IDT_RSTCNTR + 2
+
+// Команда для привязки растра по двум точкам с поворотом
+#define CM_RST_RSTMOVE          IDT_RSTCNTR + 3
+
+// Команда для создания рамки растра по выбранному объекту
+#define CM_RST_SETBORDEROBJECT  IDT_RSTCNTR + 4
+
+// Команда для создания рамки растра по заданному контуру
+#define CM_RST_SETBORDERCONTOUR  IDT_RSTCNTR + 5
+
+// Команда для поворота растра без масштабирования
+#define CM_RST_RSTROTATE        IDT_RSTCNTR + 6
+
+// Команда для поворота растра горизонтально
+#define CM_RST_RSTGORIZONT      IDT_RSTCNTR + 7
+
+// Команда для выбора отключаемого цвета из растра
+// (посылается из диалога ВЫБОРА ЦВЕТА ИЗ ПАЛИТРЫ РАСТРА)
+#define CM_RSTCOLOR_SELECT	     IDT_RSTCNTR + 8
+
+// Команда для выбора заменяемого цвета из растра
+// (посылается из диалога ВЫБОРА ЦВЕТА ИЗ ПАЛИТРЫ РАСТРА)
+#define CM_RSTCOLOR_SELECTANDCHANGE IDT_RSTCNTR + 9
+
+// Команда для запуска диалога "Понижение цвета растра"
+#define CM_RST_COLORDIVIDE      IDT_RSTCNTR + 10
+
+// Команда для запуска режима "Гистограмма области растрового изображения" 
+#define CM_RST_HISTAREA         IDT_RSTCNTR + 11
+
+// Команда для запуска режима "Показать рамку" 
+#define CM_RSTACTION_BORDERVIEW    IDT_RSTCNTR + 12
+
+// Команда для запуска режима "Отредактировать рамку" 
+#define CM_RSTACTION_BORDEREDIT    IDT_RSTCNTR + 13
+
+// Команда для создания рамки ВСЕХ РАСТРОВ по выбранному объекту  
+#define CM_ALLRST_SETBORDEROBJECT  IDT_RSTCNTR + 14
+
+// Команда для создания рамки ВСЕХ РАСТРОВ по заданному контуру   
+#define CM_ALLRST_SETBORDERCONTOUR  IDT_RSTCNTR + 15
+
+// Команда для запуска режима "Нарезка растров по выбранному фрагменту" 
+#define CM_RSTACTION_CUTTING        IDT_RSTCNTR + 16
+// Команда для запуска режима "Нарезка растров по выбранным номенклатурам" 
+#define CM_RSTACTION_CUTTINGNOMENCL IDT_RSTCNTR + 17
+
+// Команда для поворота растра вертикально
+#define CM_RST_VERTICAL             IDT_RSTCNTR + 18         
+
+// Команда для запуска процесса "привязка ю-з угла растра"
+#define CM_RST_POSITION_BYANGLE     IDT_RSTCNTR + 19         
+
+// Команда для для посылки сообщения о смене растра в настройке гистограммы
+#define CM_RST_GHANGENUMBER         IDT_RSTCNTR + 20         
+
+#define IDC_BEGIN              100
+
+
+//************** MENU******************
+// Всплывающее меню по щелчку правой кнопки мыши
+// или клавиши "СВОЙСТВА"
+
+//ВСПЛЫВАЮЩЕЕ МЕНЮ (ИЗ ПАНОРАМЫ)
+#define IDM_VIEW_RST         IDT_RSTCNTR + 21
+#define CM_RST_FILL          IDM_VIEW_RST+1
+#define CM_RST_DEEP          IDM_VIEW_RST+2
+#define CM_RST_TRANSLUCENT   IDM_VIEW_RST+3
+#define CM_RST_MIDDLE        IDM_VIEW_RST+4
+#define CM_RST_TRANSPARENT   IDM_VIEW_RST+5
+#define CM_RST_NONE          IDM_VIEW_RST+6
+#define CM_RSTINVERT         IDM_VIEW_RST+7
+#define CM_RSTOVERMAP        IDM_VIEW_RST+8
+#define CM_SCALE             IDM_VIEW_RST+9
+#define CM_RESOLUTION        IDM_VIEW_RST+10
+#define CM_POSITION          IDM_VIEW_RST+11
+#define CM_PALETTE           IDM_VIEW_RST+12
+#define CM_GOTO_FRAME        IDM_VIEW_RST+13
+#define CM_MOOVE             IDM_VIEW_RST+14
+#define CM_MOOVE_SOUTHWESTER IDM_VIEW_RST+15
+#define CM_RSTMOVE           IDM_VIEW_RST+16
+#define CM_SETBORDER_CONTOUR IDM_VIEW_RST+17
+#define CM_SETBORDER_OBJECT  IDM_VIEW_RST+18
+#define CM_DELETEBORDER      IDM_VIEW_RST+19
+#define CM_COMPRESS_RST      IDM_VIEW_RST+20
+#define CM_COMPRESS_MTR      IDM_VIEW_RST+21
+#define CM_RSTROTATE         IDM_VIEW_RST+22
+#define CM_RSTGORIZONT       IDM_VIEW_RST+23
+#define CM_RSTCOLORDIVIDE    IDM_VIEW_RST+24
+#define CM_SAVE_AS_RST       IDM_VIEW_RST+25
+#define CM_RSTMIRROR         IDM_VIEW_RST+26// "&Зеркало"  
+#define CM_RST_HISTOGRAM_SCREEN     IDM_VIEW_RST+27// Гистограмма оконного фрагмента 
+#define CM_RST_HISTOGRAM_SELECTAREA IDM_VIEW_RST+28// Гистограмма выбранной области  
+#define CM_RST_DELETE        IDM_VIEW_RST+29 // Удалить файл с диска
+#define CM_RST_BRIGHTCONTRAST IDM_VIEW_RST+30 //  "Яркость/контраст",
+#define CM_RST_BORDERVIEW    IDM_VIEW_RST+31 //  "Показать рамку",
+#define CM_RST_BORDEREDIT    IDM_VIEW_RST+32 //  "Отредактировать рамку",
+#define CM_RST_BINARIZATION  IDM_VIEW_RST+33 // "Бинаризация(пороговая обработка)"  
+#define CM_RST_SCALEVIEW     IDM_VIEW_RST+34 // Границы видимости                   
+#define CM_RST_SHOWBYMASK    IDM_VIEW_RST+35  // Отображать растр по маске            
+//                             IDM_VIEW_RST+36
+#define CM_RST_SETMASK       IDM_VIEW_RST+37  // Установить маску по текстовому файлу 
+
+#define CM_RST_SETBORDER_MASK IDM_VIEW_RST+38 // Установить рамку по текстовому файлу 
+#define CM_RST_CUTTING        IDM_VIEW_RST+39 // Нарезка растра по выбранной области  
+#define CM_RST_PROJECTION     IDM_VIEW_RST+40 // Параметры проекции   
+#define CM_RST_VERTICALITEM   IDM_VIEW_RST+41 // Вертикальное выравнивание 
+#define CM_POSITION_BYANGLE   IDM_VIEW_RST+42 // При&вязка растра          
+#define CM_RST_CUTTING_SELECTEDOBJ IDM_VIEW_RST+43 // Нарезка растра по выделенным объектам 
+
+//ВСПЛЫВАЮЩЕЕ МЕНЮ (ИЗ приложения)
+#define IDM_VIEWRST_APPLICATION IDM_VIEW_RST+44
+//ВСПЛЫВАЮЩЕЕ МЕНЮ (без вызова дополнительных dll)
+#define IDM_VIEW_RST_SHORT   IDM_VIEWRST_APPLICATION + 1
+
+//             Список растров
+//***Групповое ВСПЛЫВАЮЩЕЕ МЕНЮ ПО ЩЕЛЧКУ ПРАВОЙ КНОПКИ МЫШИ ***
+#define IDM_GROUP_RST           IDM_VIEW_RST_SHORT+1
+#define CM_RSTGROUP_FILL        IDM_GROUP_RST+1 // Отображение Полное
+#define CM_RSTGROUP_DEEP        IDM_GROUP_RST+2 // Отображение Насыщенное
+#define CM_RSTGROUP_TRANSLUCENT IDM_GROUP_RST+3 // Отображение По&лупрозрачное
+#define CM_RSTGROUP_MIDDLE      IDM_GROUP_RST+4 // Отображение Среднее
+#define CM_RSTGROUP_TRANSPARENT IDM_GROUP_RST+5 // Отображение Прозрачное
+#define CM_RSTGROUP_NONE        IDM_GROUP_RST+6 // Отображение  Отсутствует
+#define CM_RSTGROUP_OVERMAP     IDM_GROUP_RST+7 // Над картой
+#define CM_RSTGROUP_HISTOGRAM   IDM_GROUP_RST+8 // Гистограмма
+#define CM_RSTGROUP_INVERT      IDM_GROUP_RST+9 // Инвертировать
+#define CM_RSTGROUP_MOOVE_SOUTHWESTER IDM_GROUP_RST+10 // Подвинуть в \376го-западный угол
+#define CM_RSTGROUP_DELETEBORDER IDM_GROUP_RST+11// Отобразить по рамке
+#define CM_RSTGROUP_CLOSE       IDM_GROUP_RST+12 // Закрыть все растры
+#define CM_RSTGROUP_BORDERVIEW  IDM_GROUP_RST+13 //  "Показать рамку"
+#define CM_RSTSORT_NAME         IDM_GROUP_RST+14 // "Упорядочить по имени"    
+//#define CM_RSTSORT_SIZE       IDM_GROUP_RST+ // "Упорядочить по размеру"  
+//#define CM_RSTSORT_DATA       IDM_GROUP_RST+ // "Упорядочить по дате"     
+#define CM_RSTGROUP_SCALEVIEW   IDM_GROUP_RST+15 // Границы видимости       
+#define CM_RSTGROUP_SETBORDER_OBJ  IDM_GROUP_RST+16 // Установить рамку по объекту          
+#define CM_RSTGROUP_SETBORDER_MASK IDM_GROUP_RST+17 // Установить рамку по текстовому файлу  
+#define CM_RSTGROUP_SETBORDER_FRAME IDM_GROUP_RST+18// Установить рамку по контуру          
+#define CM_RSTGROUP_PALETTE     IDM_GROUP_RST+19    // Палитра   
+#define CM_RSTGROUP_SHOWBYMASK  IDM_GROUP_RST+20    // Отображать растр по маске            
+#define CM_RSTGROUP_SETMASK     IDM_GROUP_RST+21    // Установить маску по текстовому файлу 
+#define CM_RST_CUTTING_NMENKL   IDM_GROUP_RST+22    // Нарезка растров по выбранным номенклатурам 
+#define CM_RSTGROUP_MOOVE_LOCATION IDM_GROUP_RST+23 // Сдвиг растров на dX, dY       
+#define CM_RSTGROUP_PROJECTION  IDM_GROUP_RST+24    // Изменение параметров проекции 
+
+#define RSTLIST_VIEW            IDM_GROUP_RST+25    // Иконка "Отображаемые растры"(невыбранный растр)
+#define RSTLIST_VIEW_SELECTED   RSTLIST_VIEW+1      // Иконка "Отображаемые растры"(выбранный растр)
+#define RSTLIST_NOVIEW_SELECTED RSTLIST_VIEW+2      // Иконка "Неотображаемые растры"(выбранный растр)
+#define RSTLIST_NOVIEW          RSTLIST_VIEW+3      // Иконка "Неотображаемые растры"(невыбранный растр)
+#define RSTLIST_VIEWSEL_NODRAG  RSTLIST_VIEW+4      // Иконка "Отображаемые растры" (выбранный растр)
+                                                    // Перемещение на недозволенную позицию
+#define RSTLIST_NOVIEW_NODRAG   RSTLIST_VIEW+5      // Иконка "Неотображаемые растры"
+                                                    // Перемещение на недозволенную позицию
+
+#define IDS_RSTBORDERON      RSTLIST_VIEW+6  // "Отобразить по &рамке растр"
+#define IDS_RSTBORDEROF      RSTLIST_VIEW+7  // "Отобразить &целиком растр"
+
+#define IDS_RSTTYPE1            RSTLIST_VIEW+8// "Raster"
+#define IDS_RSTTYPE2            RSTLIST_VIEW+9// "Raster of quality"
+#define IDS_RSTTYPE3            RSTLIST_VIEW+10// "Raster of visible"
+
+#define CM_RST_CUTTINGSHORT     RSTLIST_VIEW+11// Вырезать изображение растра(для LINUX)  
+#define CM_RST_CUTTINGFROM      RSTLIST_VIEW+12// Вырезать изображение растра из одного(для LINUX)  
+
+//************** DIALOG******************
+//  Диалог привязки растрового фона по двум точкам (поворот)
+
+#define IDD_RSTROTATE_DIALOG	  RSTLIST_VIEW+13
+#define IDC_RSTROTATE_PROGRESS  IDD_RSTROTATE_DIALOG+1
+#define IDC_RSTROTATE_CANCEL    IDD_RSTROTATE_DIALOG+2
+#define IDC_RSTROTATE_RSTNAME	  IDD_RSTROTATE_DIALOG+3
+#define IDC_RSTROTATE_RSTCOPY	  IDD_RSTROTATE_DIALOG+4
+
+
+//************** DIALOG******************
+// Диалог списка растров с изображением активного растра
+
+#define IDD_RSTPIC_DIALOGLIST IDD_RSTROTATE_DIALOG+5
+#define IDC_RSTPIC_ADDITION   IDD_RSTPIC_DIALOGLIST+1
+#define IDC_RSTPIC_DELETE     IDD_RSTPIC_DIALOGLIST+2
+#define IDC_RSTPIC_PROPERTY   IDD_RSTPIC_DIALOGLIST+3
+#define IDC_RSTPIC_HELP       IDD_RSTPIC_DIALOGLIST+4
+#define IDC_RSTPIC_LIST       IDD_RSTPIC_DIALOGLIST+5
+#define IDW_RSTPIC_PREVIEW	   IDD_RSTPIC_DIALOGLIST+6
+
+
+//************** DIALOG******************
+// Диалог списка растров для закрытия растра
+
+#define IDD_RSTDIALOG        IDD_RSTPIC_DIALOGLIST+7
+#define IDC_RSTLIST          IDC_BEGIN+1
+#define IDC_RST_OK           IDC_BEGIN+2
+#define IDC_RST_CANCEL       IDC_BEGIN+3
+#define IDC_RST_RESET        IDC_BEGIN+4
+#define IDC_RST_HELP         IDC_BEGIN+5
+#define IDC_RST_CLOSEALL     IDC_BEGIN+6
+#define IDC_RST_COUNT        IDC_BEGIN+7
+
+//**** ДИАЛОГ ВЫБОРА ЦВЕТА ИЗ ПАЛИТРЫ РАСТРА  *********
+
+#define IDD_RSTCOLOR               IDD_RSTDIALOG + 1
+#define IDC_RSTCOLOR_HELP	        IDC_BEGIN + 1
+#define IDC_RSTCOLOR_FILENAME      IDC_BEGIN + 2
+#define IDD_RSTCOLOR_TABCNT	     IDC_BEGIN + 3
+#define IDC_RSTCOLOR_APPLY	        IDC_BEGIN + 4
+// "Отмена отображения цвета":
+#define IDD_RSTCOLOR_CANCELCOLOR   IDD_RSTCOLOR + 1
+#define IDC_RSTCOLOR_RESET	        IDC_BEGIN + 1
+#define IDC_RSTCOLOR_INVERT        IDC_BEGIN + 2
+#define IDC_RSTCOLOR_SELECT        IDC_BEGIN + 3
+#define IDW_RSTCOLOR_WIN           IDC_BEGIN + 4
+#define IDC_RSTCOLOR_R             IDC_BEGIN + 5
+#define IDC_RSTCOLOR_G             IDC_BEGIN + 6
+#define IDC_RSTCOLOR_B             IDC_BEGIN + 7
+#define IDC_RSTCOLOR_IND           IDC_BEGIN + 8
+#define IDC_RSTCOLORCAN_WRITEFILE  IDC_BEGIN + 9
+
+//"Замена цвета на новый(из палитры растра)":
+#define IDD_RSTCOLOR_CHANGCOLORNEW IDD_RSTCOLOR + 2
+#define IDC_RSTCOLOR_BACKNEW       IDC_BEGIN + 1
+#define IDC_RSTCOLOR_CHANGENEW     IDC_BEGIN + 2
+#define IDC_RSTCOLOR_SELECTNEW     IDC_BEGIN + 3
+#define IDC_RSTCOLOR_CHANGWINPAL   IDC_BEGIN + 4
+#define IDW_RSTCOLOR_WINNEW        IDC_BEGIN + 5
+#define IDC_RSTCOLOR_WRITEFILE     IDC_BEGIN + 6
+#define IDC_RSTCOLOR_RESETNEW      IDC_BEGIN + 7
+#define IDC_RSTCOLOR_RED	        IDC_BEGIN + 8
+#define IDC_RSTCOLOR_GREEN	        IDC_BEGIN + 9
+#define IDC_RSTCOLOR_BLUE	        IDC_BEGIN + 10
+#define IDC_RSTCOLOR_INDEX	        IDC_BEGIN + 11
+
+// Посылается сообщение родительскому окну
+// Отслеживание цвета, над которым движется указатель мыши
+#define WM_RSTCOLORDISPLAY         IDD_RSTCOLOR + 3
+
+//"Выбор устанавливаемого цвета"
+#define IDD_COLOR_PALETTE          IDD_RSTCOLOR + 4
+#define IDW_PALETTE_WIN	           IDC_BEGIN + 1
+#define IDW_PALETTE_COLOR	        IDC_BEGIN + 2
+
+// Пункт меню "Использование стандартной палитры Windows"
+#define ID_RSTCOLOR_RSTPALETTE     IDD_RSTCOLOR + 5 // "Raster palette\t"
+#define ID_RSTCOLOR_WINPALETTE     IDD_RSTCOLOR + 6 // "Windows palette\t"
+ // Пункт меню "Запись палитры в файл"
+#define ID_RSTCOLOR_WRITEFILE      IDD_RSTCOLOR + 7 // "With filing\t"
+#define ID_RSTCOLOR_DONOTWRITE     IDD_RSTCOLOR + 8 // "Without filing\t"
+
+
+//**** ДИАЛОГ ВЫБОРА ЦВЕТА ИЗ ПАЛИТРЫ РАСТРА (ИЗ приложения) *********
+#define IDD_RSTCOLOR_APPLICATION IDD_RSTCOLOR + 9
+
+//**** ДИАЛОГ СПИСКА РАСТРОВ С ЗАКЛАДКАМИ*********
+
+// Команда для перерисовки растра
+#define CM_RSTPIC_PAINT               IDD_RSTCOLOR + 10
+#define CM_RSTPIC_PAINTINFORM         IDD_RSTCOLOR + 11
+
+
+//**** ДИАЛОГ-ЗАКЛАДКА С ИЗОБРАЖЕНИЕМ РАСТРА *********
+
+#define IDD_RSTPIC_PICTURE        IDD_RSTCOLOR + 12
+
+
+//**** ДИАЛОГ-ЗАКЛАДКА  "ИНФОРМАЦИЯ О РАСТРЕ" *********
+
+#define IDD_RSTPIC_INFORMATION    IDD_RSTCOLOR + 13
+#define IDC_INFORMATION_SIZE	    IDD_RSTPIC_INFORMATION +1
+#define IDC_INFORMATION_WIDTH	    IDD_RSTPIC_INFORMATION +2
+#define IDC_INFORMATION_HIEGTH    IDD_RSTPIC_INFORMATION +3
+#define IDC_INFORMATION_PALETTE	 IDD_RSTPIC_INFORMATION +4
+#define IDC_INFORMATION_PRECISION IDD_RSTPIC_INFORMATION +5
+#define IDC_INFORMATION_SCALE  	 IDD_RSTPIC_INFORMATION +6
+#define IDC_IFORMATION_X          IDD_RSTPIC_INFORMATION +7
+#define IDC_IFORMATION_Y          IDD_RSTPIC_INFORMATION +8
+#define IDC_INFORMATION_ACCESS	 IDD_RSTPIC_INFORMATION +9
+#define IDC_INFORMATION_BITPIXEL  IDD_RSTPIC_INFORMATION +10
+#define IDC_IFORMATION_ESC        IDD_RSTPIC_INFORMATION +11
+#define IDC_INFORMATION_COMPRESS	 IDD_RSTPIC_INFORMATION +12
+#define IDC_INF_PRECISIONEXT	    IDD_RSTPIC_INFORMATION +13
+#define IDC_INFORMATION_METELEM	 IDD_RSTPIC_INFORMATION +14
+#define IDC_INFORMATION_FORMAT_X	 IDD_RSTPIC_INFORMATION +15
+#define IDC_INFORMATION_FORMAT_Y	 IDD_RSTPIC_INFORMATION +16
+#define IDC_INFORMATION_FORMAT_VALUE IDD_RSTPIC_INFORMATION +17
+#define IDS_PRECISIONEXT_INCH     IDD_RSTPIC_INFORMATION +18
+#define IDS_PRECISIONEXT_METER    IDD_RSTPIC_INFORMATION +19
+
+//**** ДИАЛОГ "СПИСОК ДАННЫХ ЭЛЕКТРОННОЙ КАРТЫ С ЗАКЛАДКАМИ" *********
+
+#define IDD_ALLLIST_DIALOGTABCONTROL IDD_RSTPIC_INFORMATION +20
+#define IDC_ALLLIST_TABCONTROL    IDD_ALLLIST_DIALOGTABCONTROL + 1
+#define IDD_RSTPAGE_DIALOG        IDD_ALLLIST_DIALOGTABCONTROL + 2
+
+
+//**** ДИАЛОГ СПИСКА РАCТРОВ И ПК С РАДИОКНОПКАМИ*********
+
+#define IDD_RSTPAGERADIO_DIALOG         IDD_ALLLIST_DIALOGTABCONTROL + 3
+#define IDC_RSTPAGERADIO_FRAME          IDD_RSTPAGERADIO_DIALOG + 1
+#define IDC_RSTPAGERADIO_GROUPBOX       IDD_RSTPAGERADIO_DIALOG + 2
+#define IDC_RSTPAGERADIO_VIEWBUTTON     IDD_RSTPAGERADIO_DIALOG + 3
+#define IDC_RSTPAGERADIO_PROPERTYBUTTON IDD_RSTPAGERADIO_DIALOG + 4
+
+//**** ДИАЛОГ СПИСКА МАТРИЦ С РАДИОКНОПКАМИ*********
+
+#define IDD_MTRPAGERADIO_DIALOG         IDD_RSTPAGERADIO_DIALOG + 5
+
+//      BITMAP для ДИАЛОГа "СПИСоК МАТРИЦ С РАДИОКНОПКАМИ"
+
+//Иконка "Отображаемые матрицы" (выбранная матрица)
+#define LIST_VIEW_SELECTED              IDD_RSTPAGERADIO_DIALOG + 6
+//Иконка "Отображаемые матрицы" (невыбранная матрица)
+#define LIST_VIEW                       IDD_RSTPAGERADIO_DIALOG + 7
+
+//Иконка "Отображаемые матрицы" (выбранная матрица)
+#define LIST_NOVIEW_SELECTED            IDD_RSTPAGERADIO_DIALOG + 8
+//Иконка "Отображаемые матрицы" (невыбранная матрица)
+#define LIST_NOVIEW                     IDD_RSTPAGERADIO_DIALOG + 9
+
+// Иконка "Отображаемые матрицы" (выбранная матрица)
+// Перемещение на недозволенную позицию
+#define LISTVIEW_MTRSEL_NODRAG          IDD_RSTPAGERADIO_DIALOG + 10
+
+// Иконка "Неотображаемые матрицы" (выбранная матрица)
+// Перемещение на недозволенную позицию
+#define LISTNOVIEW_MTRSEL_NODRAG        IDD_RSTPAGERADIO_DIALOG + 11
+
+// STRINGTABLE "Матрица высот"
+#define IDS_MTRTYPE1                    IDD_RSTPAGERADIO_DIALOG + 13
+// STRINGTABLE "Матрица слоев"
+#define IDS_MTRTYPE2                    IDD_RSTPAGERADIO_DIALOG + 14
+// STRINGTABLE "Матрица качеств"
+#define IDS_MTRTYPE3                    IDD_RSTPAGERADIO_DIALOG + 15
+// STRINGTABLE "TIN"
+#define IDS_TINTYPE1                    IDD_RSTPAGERADIO_DIALOG + 16
+
+
+// ++++++++++++++  РЕДАКТОР РАСТРА  ++++++++++++++++++
+
+//*** Диалог "Редактируемый растр" ***
+
+#define IDD_RSWCURRENT          IDD_RSTPAGERADIO_DIALOG + 16
+#define IDC_RSWCURRENT_COMBOBOX	IDD_RSWCURRENT + 1
+#define IDC_RSWCURRENT_ADDITION IDD_RSWCURRENT + 2
+#define IDM_RSWCURRENT_CLOSE    IDD_RSWCURRENT + 3
+
+// *** Диалог "Выбор растра" ***                              
+#define IDD_RSWSELECT           IDD_RSWCURRENT + 4
+
+//**** ДИАЛОГ ВЫБОРА ЦВЕТА ДЛЯ ФОНА И ПЕРА ИЗ ПАЛИТРЫ РАСТРА  *********
+
+#define IDD_RECOLORSELECT      IDD_RSWCURRENT + 5
+#define IDC_RECOLORSELECT_HELP IDD_RECOLORSELECT + 1
+#define IDW_RECOLORSELECT_WIN  IDD_RECOLORSELECT + 2
+#define IDW_RECOLORSELECT_FON  IDD_RECOLORSELECT + 3
+#define IDW_RECOLORSELECT_PEN  IDD_RECOLORSELECT + 4
+#define IDC_RECOLORSELECT_PEN  IDD_RECOLORSELECT + 5
+#define IDC_RECOLORSELECT_FON  IDD_RECOLORSELECT + 6
+
+//**** ДИАЛОГ ВЫБОРА ЦВЕТА ДЛЯ ПЕРА И КИСТИ ИЗ СТАНДАРТНОЙ ПАЛИТРЫ
+//                                             ДЛЯ РАСТРА TRUE COLOR*********
+#define IDD_RETRUECOLORSELECT  IDD_RECOLORSELECT + 7
+
+
+//**** ДИАЛОГ ПОНИЖЕНИЯ ЦВЕТНОСТИ РАСТРА
+#define IDD_RSTCOLORDIVIDE_DOUBLE         IDD_RECOLORSELECT + 8
+#define IDC_RSTCOLORDIVIDE_TABCNTSOURS    IDD_RSTCOLORDIVIDE_DOUBLE+1
+#define IDC_RSTCOLORDIVIDE_CLEAR          IDD_RSTCOLORDIVIDE_DOUBLE + 2
+#define IDC_RSTCOLORDIVIDE_HELP           IDD_RSTCOLORDIVIDE_DOUBLE + 3
+#define IDC_RSTCOLORDIVIDE_PROGRESSBAR    IDD_RSTCOLORDIVIDE_DOUBLE + 4
+
+//********* Меню в режиме "Отключение отображаемых цветов" ********
+#define ID_RSTVIE_SELECTAREA              IDD_RSTCOLORDIVIDE_DOUBLE+5
+#define ID_RSTVIE_SELECTPOINT             IDD_RSTCOLORDIVIDE_DOUBLE+6
+#define IDS_RSTVIE_SELECTPOINT            IDD_RSTCOLORDIVIDE_DOUBLE+7
+#define IDS_RSTVIE_SELECTAREA             IDD_RSTCOLORDIVIDE_DOUBLE+8
+
+
+//**** ДИАЛОГ ПОНИЖЕНИЯ ЦВЕТНОСТИ РАСТРА (с окном предварительного просмотра)
+//**** ДИАЛОГ "ПОНИЖЕНИЯ ЦВЕТНОСТИ РАСТРА" С ЗАКЛАДКАМИ*********
+#define IDD_RSTCOLOR_DIVIDE_PREVIEW       IDD_RSTCOLORDIVIDE_DOUBLE+9
+#define IDC_RSTCOLORDIVIDE_TABCONTROL     IDD_RSTCOLORDIVIDE_DOUBLE+10
+
+#define IDS_RSTCOLORDIVIDE_SOURSPALETTE   IDD_RSTCOLORDIVIDE_DOUBLE+11
+#define IDS_RSTCOLORDIVIDE_TARGETPALETTE  IDD_RSTCOLORDIVIDE_DOUBLE+12
+#define IDS_RSTCOLORDIVIDE_TARGETVIEW     IDD_RSTCOLORDIVIDE_DOUBLE+13
+
+
+//**** ДИАЛОГ-ЗАКЛАДКА  "Формируемый растр"
+#define IDD_RSTCOLOR_CREATERSW            IDD_RSTCOLORDIVIDE_DOUBLE+14
+#define IDC_RSTCOLORDIVIDE_TAGETNAME      IDD_RSTCOLOR_CREATERSW+1
+#define IDC_RSTCOLORDIVIDE_CHANGETAGET    IDD_RSTCOLOR_CREATERSW+2
+#define IDC_RSTCOLORDIVIDEE_GROUP         IDD_RSTCOLOR_CREATERSW+3
+#define IDC_RSTCOLORDIVIDE_RADIO1         IDD_RSTCOLOR_CREATERSW+4
+#define IDC_RSTCOLORDIVIDE_RADIO4         IDD_RSTCOLOR_CREATERSW+5
+#define IDC_RSTCOLORDIVIDE_RADIOSELECT    IDD_RSTCOLOR_CREATERSW+6
+#define IDC_RSTCOLORDIVIDE_RADIOAREA      IDD_RSTCOLOR_CREATERSW+7
+#define IDC_RSTCOLORDIVIDE_RADIOPOINT     IDD_RSTCOLOR_CREATERSW+8
+#define IDW_RSTCOLORDIVIDE_TAGETPALETTE   IDD_RSTCOLOR_CREATERSW+9
+
+//**** ДИАЛОГ-ЗАКЛАДКА  "ИСХОДНЫЙ РАСТР"
+#define IDD_RSTCOLORDIALOG_SOURS          IDD_RSTCOLOR_CREATERSW+10
+#define IDC_RSTCOLORDIVIDE_SOURSNAME      IDD_RSTCOLORDIALOG_SOURS+1
+#define IDW_RSTCOLORDIVIDE_SOURSPALETTE   IDD_RSTCOLORDIALOG_SOURS+2
+#define IDC_RSTCOLORDIVIDE_RESET          IDD_RSTCOLORDIALOG_SOURS+3
+#define IDC_RSTCOLORDIVIDE_FROMRASTER     IDD_RSTCOLORDIALOG_SOURS+4
+#define IDC_RSTCOLORDIVIDE_INVERT         IDD_RSTCOLORDIALOG_SOURS+5
+
+//**** ДИАЛОГ-ЗАКЛАДКА  "PREVIEW"
+#define IDD_RSTCOLOR_VIEW                 IDD_RSTCOLORDIALOG_SOURS+6
+#define IDW_RSTCOLOR_VIEWWIN              IDD_RSTCOLOR_VIEW+1
+#define IDC_RSTCOLORDIVIDE_VIEWMIN        IDD_RSTCOLOR_VIEW+2
+#define IDC_RSTCOLORDIVIDE_VIEWMAX        IDD_RSTCOLOR_VIEW+3
+#define IDC_RSTCOLORDIVIDE_VIEWSELECT     IDD_RSTCOLOR_VIEW+4
+#define IDC_RSTCOLORDIVIDE_VIEWSCALE      IDD_RSTCOLOR_VIEW+5
+
+ // Пункт меню "Ввод координат с клавиатуры"  (Привязка растра по 1-ой точке)
+#define ID_RSTPOSITIONING_KEY             IDD_RSTCOLOR_VIEW+6
+#define ID_RSTPOSITIONING_DONOTKEY        IDD_RSTCOLOR_VIEW+7
+
+
+//********* Меню в режиме "Редактирование рамки" ********
+#define  IDS_BORDEREDIT_MOVE              IDD_RSTCOLOR_VIEW+8  // "Перемещение рамки"
+#define  IDS_BORDEREDIT_POINTMOVE         IDD_RSTCOLOR_VIEW+9  // "Перемещение точки рамки"
+#define  IDS_BORDEREDIT_POINTADD          IDD_RSTCOLOR_VIEW+10 // "Создание точки рамки"
+#define  IDS_BORDEREDIT_POINTDEL          IDD_RSTCOLOR_VIEW+11 // "Удаление точки рамки"
+
+#define  ID_BORDEREDIT_MOVE               IDD_RSTCOLOR_VIEW+12 // "Перемещение рамки"
+#define  ID_BORDEREDIT_POINTMOVE          IDD_RSTCOLOR_VIEW+13 // "Перемещение точки рамки"
+#define  ID_BORDEREDIT_POINTADD           IDD_RSTCOLOR_VIEW+14 // "Создание точки рамки"
+#define  ID_BORDEREDIT_POINTDEL           IDD_RSTCOLOR_VIEW+15 // "Удаление точки рамки"
+
+
+// ДИАЛОГ Границы видимости
+
+#define  IDD_VIEWIMAGEBYSCALE             IDD_RSTCOLOR_VIEW+16
+#define  IDC_VIEWIMAGE_ALL_SCALE          IDC_BEGIN + 4
+#define  IDC_VIEWIMAGE_LISTBOT            IDC_BEGIN + 5
+#define  IDC_VIEWIMAGE_LISTTOP            IDC_BEGIN + 6
+#define  IDC_VIEWIMAGE_RANGE              IDC_BEGIN + 7
+
+
+
+//  НОМЕРА ДЛЯ HELPa
+
+//#define IDN_RSW_EDIT_PAINTCOLOR    6661
+//#define IDN_RSW_EDIT_CHANGERSW    6662
+//#define IDN_RSW_EDIT_ERASE        6663
+//#define IDN_RSW_EDIT_PAINT        6664
+//#define IDN_RSW_EDIT_LINE         6665
+//#define IDN_RSW_EDIT_RECT         6666
+//#define IDN_RSW_EDIT_CIRCLE       6667
+//#define IDN_RSW_EDIT_CHOSECOLOR   6668
+//#define IDN_RSW_EDIT_PALETTECOLOR 6669
+
+                          //      6670 - занято другими
+#endif // MSRST_RH
+

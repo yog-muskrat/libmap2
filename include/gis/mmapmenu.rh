@@ -1,0 +1,274 @@
+
+#ifndef MMAPMENU_RH
+#define MMAPMENU_RH
+
+#ifndef PANORAMA_RH
+   #include "panorama.rh"
+#endif
+
+#ifndef MAPTYPE_RH
+   #include "maptype.rh"
+#endif
+
+// Список данных ---------------------------------------------
+#define CM_MAPDATALIST            CM_PAN_MAPDATALIST
+#define CM_RASTERLIST             CM_PAN_RASTERLIST
+#define CM_MATRIXLIST             CM_PAN_MATRIXLIST
+#define CM_SITELIST               CM_PAN_SITELIST
+
+// Идентификаторы ресурсов диалогов
+// --------------------------------------------------------
+#define IDD_MAPMENU                   IDT_MAPCNTR
+
+// Select Object
+#define IDD_SELECT_OBJECT             IDD_MAPMENU+10
+// зарезервировано 100 номеров
+
+// Запуск приложений ----------------------------------------
+#define IDT_RUNTASK                   IDD_MAPMENU+111
+//  зарезервировано 14 номеров
+
+// Отредактировать классификатор
+#define MM_RSCEDITEXECUTE             IDD_MAPMENU+126
+
+#define MAP_MESS                      IDD_MAPMENU+140
+// зарезервировано 50 номеров
+
+// Fonts --------------------------------------------------------
+#define IDD_FONTS_TABLE          IDD_MAPMENU+201
+#define IDC_FONT_STRING          IDD_MAPMENU+202   
+#define IDC_FONT_TABLE           IDD_MAPMENU+203   
+#define IDC_FONT_OK              IDD_MAPMENU+204   
+#define IDC_FONT_CLASS           IDD_MAPMENU+205
+// IDD_MAPMENU+206 IDD_MAPMENU+214 свободны  
+
+// Options ------------------------------------------------------
+
+#define CM_FONTSTABLE            CM_PAN_FONTSTABLE
+
+#define CM_GEOPOPUP              CM_PAN_GEOPOPUP
+#define CM_GEOGRADMIN            CM_PAN_GEOGRADMIN
+#define CM_GEOGRAD               CM_PAN_GEOGRAD
+#define CM_GEORAD                CM_PAN_GEORAD
+#define CM_GEOGRADMIN_WGS84      CM_PAN_GEOGRADMIN_WGS84
+#define CM_GEOGRAD_WGS84         CM_PAN_GEOGRAD_WGS84
+#define CM_GEORAD_WGS84          CM_PAN_GEORAD_WGS84
+#define CM_PICTUREPOINT          CM_PAN_PICTUREPOINT
+#define CM_MAPPOINT              CM_PAN_MAPPOINT
+#define CM_PLANEPOINT            CM_PAN_PLANEPOINT
+
+#define CM_REPAINT               CM_PAN_REPAINT
+#define CM_SCREENCALIBRATION     CM_PAN_SCREENCALIBRATION
+
+// Контроль карты -----------------------------------------------
+#define CM_GENERALMAPCONTR       CM_PAN_GENERALMAPCONTR
+#define CM_MAPKWA                CM_PAN_MAPKWA
+#define CM_CHECKTITLE            CM_PAN_CHECKTITLE
+
+// Search -------------------------------------------------------
+#define IDD_SEARCH_SEARCH        IDD_MAPMENU+244
+#define IDC_SEARCH_MARK          IDD_MAPMENU+245
+#define IDC_SEARCH_SCOPE         IDD_MAPMENU+246
+#define IDC_SEARCH_VISUAL        IDD_MAPMENU+247
+
+// MESSAGE for Delete ObjectSelectDialog ---
+#define WM_DELETESELECTDIALOG       IDD_MAPMENU+267
+
+// MESSAGE for ScreenCreateObjectDialog--------------------------
+#define WM_SCREENCREATEOBJECT       IDD_MAPMENU+268  //метрика
+#define WM_CREATESEMANTICOBJECT     IDD_MAPMENU+269  //семантика
+
+
+// MESSAGE for Grid ---------------------------------------------
+#define WM_MGD_ITEMCHANGED          IDD_MAPMENU+270
+#define WM_MGD_SELECTIONCHANGED     IDD_MAPMENU+271
+#define WM_MGD_ITEMNOTCHANGED       IDD_MAPMENU+272
+#define WM_MGD_ITEMDELETE           IDD_MAPMENU+273
+#define WM_MGD_ITEMINSERT           IDD_MAPMENU+274
+#define WM_MGD_DBLCLICK             IDD_MAPMENU+275                 
+#define WM_MGD_ITEMCLICK       IDD_MAPMENU+276                     
+
+// Task Message -------------------------------------------------
+
+#define CM_TASKMESSAGE           IDD_MAPMENU+280    // до 20
+
+#define MT_CLEARSELECT           CM_TASKMESSAGE+2
+#define MT_SCALEUP               CM_TASKMESSAGE+3
+#define MT_SCALEDOWN             CM_TASKMESSAGE+4
+#define MT_SCALEBASE             CM_TASKMESSAGE+5
+#define MT_DETACHTASK            CM_TASKMESSAGE+6
+#define MT_COMMITACTION          CM_TASKMESSAGE+7
+#define MT_VIEWOBJECT            CM_TASKMESSAGE+9    
+
+// --------------------------------------------------------------
+
+#define IDM_MM_RIGHTMENU         IDD_MAPMENU+300
+
+// View Map Contens
+#define IDD_VMC_STAFF                 IDD_MAPMENU+301
+#define IDC_VMC_NOTE                  IDD_MAPMENU+302
+#define IDC_VMC_OK                    IDD_MAPMENU+303
+#define IDC_VMC_CANCEL                IDD_MAPMENU+304
+#define IDC_VMC_HELP                  IDD_MAPMENU+305
+#define IDC_VMC_LISTMAP               IDD_MAPMENU+306
+#define IDC_VMC_RESET                 IDD_MAPMENU+249    // !!
+
+#define IDD_VMC_LAYERS                IDD_MAPMENU+307
+#define IDC_VMC_LAYERSRESET           IDD_MAPMENU+308
+#define IDC_VMC_TYPESRESET            IDD_MAPMENU+309
+#define IDC_VMC_LISTBOX1              IDD_MAPMENU+310
+#define IDC_VMC_LISTBOX2              IDD_MAPMENU+311
+#define IDC_VMC_LAYERSCOUNT           IDD_MAPMENU+312
+#define IDC_VMC_SELLAYCOUNT           IDD_MAPMENU+313
+
+#define IDD_VMC_OBJECTS               IDD_MAPMENU+314
+#define IDC_VMC_OBJECTRESET           IDD_MAPMENU+315
+#define IDC_VMC_OBJLIST               IDD_MAPMENU+316
+#define IDC_VMC_OBJNAME	              IDD_MAPMENU+317
+#define IDC_VMC_OBJCOUNT              IDD_MAPMENU+318
+#define IDC_VMC_SELOBJCOUNT           IDD_MAPMENU+319
+
+#define IDD_VMC_LISTS                 IDD_MAPMENU+320
+#define IDC_VMC_LISTRESET             IDD_MAPMENU+321
+#define IDC_VMC_LISTLIST              IDD_MAPMENU+322
+#define IDC_VMC_LSTCOUNT              IDD_MAPMENU+323
+#define IDC_VMC_SELLSTCOUNT           IDD_MAPMENU+324
+
+#define IDD_VMC_KEYS                  IDD_MAPMENU+325
+#define IDC_VMC_RADIO_ALL_NUMBERS     IDD_MAPMENU+326
+#define IDC_VMC_RADIO_SEL_NUM	        IDD_MAPMENU+327
+#define IDC_VMC_KEYMIN	               IDD_MAPMENU+328
+#define IDC_VMC_MIN1	                 IDD_MAPMENU+329
+#define IDC_VMC_MIN2	                 IDD_MAPMENU+330
+#define IDC_VMC_KEYMAX	               IDD_MAPMENU+331
+#define IDC_VMC_MAX1	                 IDD_MAPMENU+332
+#define IDC_VMC_MAX2	                 IDD_MAPMENU+333
+
+#define IDD_VMC_MODELS                IDD_MAPMENU+334
+#define IDC_VMC_MODELS_LIST           IDD_MAPMENU+335
+#define IDC_VMC_MODELS_NAME           IDD_MAPMENU+336
+#define IDC_VMC_MODELS_OK             IDD_MAPMENU+337
+#define IDC_VMC_MODELS_CREATE         IDD_MAPMENU+338
+#define IDC_VMC_MODELS_DELETE         IDD_MAPMENU+339
+#define IDC_VMC_MODELS_COUNT          IDD_MAPMENU+340
+
+// Search -------------------------------------------------------
+
+#define IDC_SEARCH_NOTE                  IDC_VMC_NOTE
+
+#define IDD_SEARCH_SEMANTICS             IDD_MAPMENU+341
+#define IDC_SEARCH_SEMHOLDER             IDD_MAPMENU+342
+#define IDC_SEARCH_SEMAPPEND             IDD_MAPMENU+343
+#define IDC_SEARCH_SEMDELETE             IDD_MAPMENU+344
+#define IDC_SEARCH_SEMUNDO               IDD_MAPMENU+345
+#define IDC_SEARCH_SEMTABL               IDD_MAPMENU+346
+#define IDC_SEARCH_SEMLINK               IDD_MAPMENU+347
+#define IDC_SEARCH_SEMALL	               IDD_MAPMENU+348
+#define IDC_SEARCH_SEMSOME	              IDD_MAPMENU+349
+#define IDC_SEARCH_SEMCONDITION          IDD_MAPMENU+350
+#define IDC_SEARCH_SEMCLEAR              IDD_MAPMENU+351
+
+#define IDD_SEARCH_CODESELECT            IDD_MAPMENU+352
+#define IDC_SEARCH_CODENAME              IDD_MAPMENU+353
+#define IDC_SEARCH_CODEOK                IDD_MAPMENU+354
+#define IDC_SEARCH_CODECANCEL            IDD_MAPMENU+355
+#define IDC_SEARCH_CODEFIND              IDD_MAPMENU+356
+#define IDC_SEARCH_CODERADIO1            IDD_MAPMENU+357
+#define IDC_SEARCH_CODERADIO2            IDD_MAPMENU+358
+#define IDC_SEARCH_CODEGRP1              IDD_MAPMENU+361
+
+#define WM_CONDCHOICE                    IDD_MAPMENU+370
+#define WM_VALUECHOICE                   IDD_MAPMENU+371
+#define WM_NAMECHOICE                    IDD_MAPMENU+372
+#define WM_TABCLICK                      IDD_MAPMENU+373
+#define WM_LAYERSCHANGE                  IDD_MAPMENU+374
+#define WM_NOTEUPDATE                    IDD_MAPMENU+375
+#define WM_NOTECHANGE                    IDD_MAPMENU+376
+
+// Сообщения из MMSAVE -----------------------------------
+#define MM_SAVEASBMP                     IDD_MAPMENU+381
+#define MM_SAVEASEMF                     IDD_MAPMENU+382
+#define MM_SAVEASMTR                     IDD_MAPMENU+383
+#define MM_SAVEASEPS                     IDD_MAPMENU+384 
+// -------------------------------------------------------
+#define MAP_COLOR                        IDD_MAPMENU+385
+// зарезервировано 25 номеров
+
+// Additional Select Object
+#define IDD_ADDITIONAL_SELECT_OBJECT     IDD_MAPMENU+410
+// зарезервировано 30 номеров
+
+// Диалог выбора слайда
+#define IDD_SLIDECOPY                    IDD_MAPMENU+440
+// зарезервировано 20 номеров
+
+
+// -------------------------------------------------------
+
+#define CM_FINDSTAFF                     CM_PAN_FINDSTAFF
+//Поиск по форме
+#define IDD_SEARCH_FORM                  IDD_MAPMENU+461
+// зарезервировано 30 номеров
+
+//Поиск по измерениям
+#define IDD_VMC_MEASURE	                 IDD_MAPMENU+490
+// зарезервировано 20 номеров
+
+// Информация об установленных критериях отбора объектов
+#define IDD_VMC_SELREPORT                IDD_MAPMENU+510
+#define IDC_VMC_INFO                     IDD_MAPMENU+524
+// зарезервировано 15 номеров
+
+// Сообщение для изменения заголовка окна диалога поиска     
+#define WM_SEARCHTITLE                   IDC_VMC_INFO
+#define IDS_SEEK_TITLE                   IDC_VMC_INFO+1      // Заголовок
+
+// -------------------------------------------------------
+#define IDC_WORK_PUBLIC                  IDD_MAPMENU+525
+// зарезервировано 30 номеров
+
+// Image Repaint Period-----------------------------------
+#define IDD_REPAINT_PERIOD               IDC_WORK_PUBLIC
+#define IDC_REPAINT_PERIOD               IDC_WORK_PUBLIC+1
+#define IDC_REPAINT_PERIOD_OK            IDC_WORK_PUBLIC+2
+#define IDC_REPAINT_PERIOD_HELP          IDC_WORK_PUBLIC+3
+
+// Параметры экрана --------------------------------------
+#define IDD_SCREENCALIBRATION            IDC_WORK_PUBLIC+10
+#define IDC_SCREENAPPLY                  IDC_WORK_PUBLIC+11
+#define IDC_SCREENSIZE                   IDC_WORK_PUBLIC+12
+#define IDC_SCREENSCALE                  IDC_WORK_PUBLIC+13
+#define IDC_SCREENPRECISION              IDC_WORK_PUBLIC+14
+#define IDC_SCREENWIDTH                  IDC_WORK_PUBLIC+15  
+
+
+// Поиск по заданной области (меню и диалог) -------------
+#define IDD_SEARCH_AREA                  IDD_MAPMENU+600
+#define CM_SEARCH_BY_AREA                IDD_SEARCH_AREA   
+#define CM_AREA_OBJECT                   IDD_SEARCH_AREA+1
+#define CM_AREA_PART                     IDD_SEARCH_AREA+2
+// зарезервировано 40 номеров
+
+// -------------------------------------------------------
+#define IDM_TASKMESSAGE                  IDD_MAPMENU+700
+// зарезервировано 100 номеров
+
+// -------------------------------------------------------
+// Strings
+#define IDS_SAVE_FILTER                  IDD_MAPMENU+801
+#define IDS_SAVE_SHORTFILTER             IDD_MAPMENU+802
+#define IDS_UPDATE_FILTER                IDD_MAPMENU+803
+#define IDS_UPDATE_SHORTFILTER           IDD_MAPMENU+804
+#define IDS_EDIT_SHORTFILTER             IDD_MAPMENU+805  
+
+
+// ----- 
+//Поиск по названию
+// зарезервировано 25 номеров
+#define CM_SEARCH_NAME                   CM_PAN_SEARCH_NAME
+#define IDD_SEARCH_NAME                  IDD_MAPMENU+811
+
+// ----- 
+#define CM_MAPFORMER                     IDD_MAPMENU+905
+
+#endif

@@ -1,0 +1,27 @@
+#ifndef MMRUNAP_RH
+#define MMRUNAP_RH
+
+#include "mmapmenu.rh"
+
+#define IDD_RUNAP	                 IDT_RUNTASK+1
+#define IDC_RUNAP_OK	              IDT_RUNTASK+1
+#define IDC_RUNAP_APPEND	          IDT_RUNTASK+2
+#define IDC_RUNAP_DELETE	          IDT_RUNTASK+3
+#define IDC_RUNAP_BROWSE	          IDT_RUNTASK+4
+#define IDC_RUNAP_HELP  	          IDT_RUNTASK+5
+#define IDC_RUNAP_EDIT  	          IDT_RUNTASK+6
+#define IDC_RUNAP_EDITDLL          IDT_RUNTASK+7
+#define IDC_RUNAP_VIEW             IDT_RUNTASK+8
+#define IDC_RUNAP_APPENDLEVEL      IDT_RUNTASK+9
+#define IDC_RUNAP_DELETELEVEL      IDT_RUNTASK+10
+#define IDC_RUNAP_DELETETASK       IDT_RUNTASK+11
+
+#define STR_RUNAP       	          IDT_RUNTASK+1
+#define STR_RUNAP_FILE  	          IDT_RUNTASK+2
+#define STR_RUNAP_ERROR 	          IDT_RUNTASK+3
+#define IDI_RUNAP_ICON 	           IDT_RUNTASK+1
+#define IDI_RUNAP_FILE             IDT_RUNTASK+2
+#define IDI_RUNAP_NOFIND           IDT_RUNTASK+3
+
+#endif
+

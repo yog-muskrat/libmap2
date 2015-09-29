@@ -1,0 +1,41 @@
+
+#if !defined(CLSTYPE_RH)
+#define CLSTYPE_RH
+
+/*
+enum TYPESCALING          // МАСШТАБИРУЕМОСТЬ
+{
+  SCALING     = 1,  // объект масштабируется
+  NOTSCALING  = 0   // объект масштабируется
+};
+
+enum TYPEDIRECT           // НАПРАВЛЕНИЕ ЦИФРОВАНИЯ
+{
+  RANDOM           = 0,   // произвольное
+  ONEVALUED        = 1,   // однозначное
+  OBJECTONRIGHT    = 2,   // объект справа
+  OBJECTONLEFT     = 4,   // объект слева
+  RIGHTLOW         = 3    // справа ниже
+
+};
+  */
+#define IDT_CLSEDIT_DEFINE     IDT_CLSEDIT+100
+#define IDT_CLS_TYPEDIRECT     IDT_CLSEDIT_DEFINE
+
+#define RANDOM_DIRECTION         0       //произвольное
+#define ONEVALUED_DIRECTION      1       //однозначное
+#define OBJECTONRIGHT_DIRECTION  2       //объект справа
+#define OBJECTONLEFT_DIRECTION   4       //объект слева
+#define RIGHTLOW_DIRECTION       3       //справа ниже
+
+#define STR_RANDOM_DIRECTION         IDT_CLS_TYPEDIRECT    //произвольное
+#define STR_ONEVALUED_DIRECTION      IDT_CLS_TYPEDIRECT+1  //однозначное
+#define STR_OBJECTONRIGHT_DIRECTION  IDT_CLS_TYPEDIRECT+2  //объект справа
+#define STR_OBJECTONLEFT_DIRECTION   IDT_CLS_TYPEDIRECT+3  //объект слева
+#define STR_RIGHTLOW_DIRECTION       IDT_CLS_TYPEDIRECT+4  //справа ниже
+
+
+
+
+
+#endif    //CLSTYPE_RH

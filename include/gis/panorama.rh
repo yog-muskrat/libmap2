@@ -1,0 +1,476 @@
+
+#ifndef PANORAMA_RH
+#define PANORAMA_RH
+
+#ifndef MAPVIEW_RH
+   #include "mapview.rh"
+#endif
+
+// --- Идентификаторы строк ---------------------------------
+#define PANSTRING            0x100
+
+#define IDS_PAN_BACKTITLE     PANSTRING+1
+#define IDS_PAN_EXITQUESTION  PANSTRING+2
+#define IDS_PAN_APPLICATION   PANSTRING+3
+
+#define IDS_PAN_RBACKTITLE    PANSTRING+4
+#define IDS_PAN_REXITQUESTION PANSTRING+5
+#define IDS_PAN_RAPPLICATION  PANSTRING+6
+
+#define IDD_ABOUT_PAN         PANSTRING+7
+#define IDD_ABOUT_RPAN        PANSTRING+8
+
+#define IDS_CANCELPROCESS     PANSTRING+10
+#define IDS_CANCELPROCESSRU   PANSTRING+11
+
+// --- Идентификаторы меню ----------------------------------
+#define IDM_MAIN              0x200
+#define IDM_MAINRU            0x201
+
+// Accelerators ---------------------------------------------
+#define COMMACCEL             0x300
+#define IDA_MAPVIEW           0x301
+
+// Icon -----------------------------------------------------
+#define IDC_OPENHELP          0x302
+#define IDI_ABOUTSM           0x303
+
+// ----------------------------------------------------------
+// Резерв - 512 номеров
+// ----------------------------------------------------------
+
+// --- Редактирование OLE-объктов ---------------------------
+#define CM_OLEPOPUP                      IDT_MAINIDENT
+#define CM_OLEOBJECTS_VISIBLE            IDT_MAINIDENT+1
+#define CM_OLEOBJECTS_UNVISIBLE          IDT_MAINIDENT+2
+#define CM_EDITDELETEALL                 IDT_MAINIDENT+3
+#define CM_DOCPRINT                      IDT_MAINIDENT+4
+#define CM_OLEOBJECTS_LIST               IDT_MAINIDENT+5
+// --- Редактирование ВРЕЗКИ ---------------------------    
+#define CM_INSETPOPUP                    IDT_MAINIDENT+6
+#define CM_INSET_VIEW                    IDT_MAINIDENT+7  // Отображение
+#define CM_INSET_PLACEFRAGMENT           IDT_MAINIDENT+8  // Размещение - Заданный фрагмент
+#define CM_INSET_PLACEALLMAP             IDT_MAINIDENT+9  // Размещение - Вся карта
+#define CM_INSET_SCALERANGE              IDT_MAINIDENT+10 // Границы видимости
+#define CM_INSET_COLORBACKGROUND         IDT_MAINIDENT+11 // Цвет фона
+#define CM_INSET_BORDERVIEW              IDT_MAINIDENT+12 // Отображение рамки
+#define CM_INSET_BORDEROPTIONS           IDT_MAINIDENT+13 // Параметры рамки
+#define CM_INSET_DELETE                  IDT_MAINIDENT+14 // Удалить
+
+// --- Идентификатор команды OpenHelp -----------------------
+#define CM_HELPON                        IDT_MAINIDENT+31
+#define CM_HELPOFF                       IDT_MAINIDENT+32
+
+#define IDF_HELPACTIVE   4     // Признак вызова системы HELP
+#define IDF_HELPCURSOR   8     // Признак установки курсора HELP
+
+// --- Идентификаторы иконок ---------------------------------
+#define IDI_ABOUT                        IDT_MAINIDENT+40
+#define IDM_MAP                          IDT_MAINIDENT+41
+
+// -----------------------------------------------------------
+// --- Идентификаторы главного меню --------------------------
+// -----------------------------------------------------------
+
+// Файл ------------------------------------------------------
+#define CM_PAN_FILESAVE                  IDT_MAINIDENT+50
+#define CM_PAN_FILESAVEAS                IDT_MAINIDENT+51
+#define CM_PAN_FILEOPEN                  IDT_MAINIDENT+52
+#define CM_PAN_FILECLOSE                 IDT_MAINIDENT+53
+#define CM_PAN_MAPTREEOPEN               IDT_MAINIDENT+54
+
+#define CM_PAN_NEWMAP                    IDT_MAINIDENT+55
+#define CM_PAN_NEWPLAN                   IDT_MAINIDENT+56
+#define CM_PAN_NEWSITE                   IDT_MAINIDENT+57
+#define CM_PAN_NEWMTR                    IDT_MAINIDENT+58
+#define CM_PAN_NEWMTC                    IDT_MAINIDENT+59
+
+#define CM_PAN_APPENDSITE                IDT_MAINIDENT+60
+#define CM_PAN_OPENSITE                  IDT_MAINIDENT+61
+#define CM_PAN_CLOSESITE                 IDT_MAINIDENT+62
+#define CM_PAN_OPENRST                   IDT_MAINIDENT+63
+#define CM_PAN_CLOSERST                  IDT_MAINIDENT+64
+#define CM_PAN_MOVERST                   IDT_MAINIDENT+65
+#define CM_PAN_OPENMTR                   IDT_MAINIDENT+66
+#define CM_PAN_OPENMTL                   IDT_MAINIDENT+67  
+#define CM_PAN_CLOSEMTR                  IDT_MAINIDENT+68
+#define CM_PAN_CLOSEMTL                  IDT_MAINIDENT+69  
+
+#define CM_PAN_LOAD                      IDT_MAINIDENT+70
+#define CM_PAN_UPDATE                    IDT_MAINIDENT+71
+
+#define CM_PAN_PRINT                     IDT_MAINIDENT+72
+#define CM_PAN_PRINTSETUP                IDT_MAINIDENT+73
+
+#define CM_PAN_EXIT                      IDT_MAINIDENT+74
+
+#define CM_PAN_NEWMTL                    IDT_MAINIDENT+75  
+#define CM_PAN_NEWRSC                    IDT_MAINIDENT+76  
+
+#define CM_PAN_OPENMTQ                   IDT_MAINIDENT+77  
+#define CM_PAN_CLOSEMTQ                  IDT_MAINIDENT+78  
+//#define CM_PAN_NEWMTQ                    IDT_MAINIDENT+79  
+#define CM_PAN_PRINTPS                   IDT_MAINIDENT+80  
+
+// Правка ----------------------------------------------------
+#define CM_PAN_UNDO                      IDT_MAINIDENT+81
+#define CM_PAN_VIEWCOPY                  IDT_MAINIDENT+82
+#define CM_PAN_COPYTO                    IDT_MAINIDENT+83
+#define CM_PAN_WINDOWCOPY                IDT_MAINIDENT+84
+#define CM_PAN_WINDOWCOPYTO              IDT_MAINIDENT+85
+#define CM_PAN_SLIDECOPY                 IDT_MAINIDENT+86
+#define CM_PAN_SLIDECOPYTO               IDT_MAINIDENT+87
+#define CM_PAN_PUTTOMAP                  IDT_MAINIDENT+88
+#define CM_PAN_PASTEDOC                  IDT_MAINIDENT+89  
+
+// Вид -------------------------------------------------------
+#define CM_PAN_VIEWPOPUP                 IDT_MAINIDENT+90
+#define CM_PAN_VIEWNORMAL                IDT_MAINIDENT+91
+#define CM_PAN_VIEWNORMALNODE            IDT_MAINIDENT+92
+#define CM_PAN_VIEWSCHEMATICAL           IDT_MAINIDENT+93
+#define CM_PAN_VIEWSCHEMANODE            IDT_MAINIDENT+94
+#define CM_PAN_VIEWPRINTERVECTOR         IDT_MAINIDENT+95
+#define CM_PAN_VIEWPRINTERRASTER         IDT_MAINIDENT+96
+// номер занят (резерв)                  IDT_MAINIDENT+97
+#define CM_PAN_MATRIXVIEWCOLOR           IDT_MAINIDENT+98
+#define CM_PAN_MATRIXVIEWGRAY            IDT_MAINIDENT+99
+#define CM_PAN_MATRIXVIEWONLYSHADOW      IDT_MAINIDENT+100  
+
+// Список данных ---------------------------------------------
+#define CM_PAN_MAPDATALIST               IDT_MAINIDENT+101
+#define CM_PAN_RASTERLIST                IDT_MAINIDENT+102
+#define CM_PAN_MATRIXLIST                IDT_MAINIDENT+103
+#define CM_PAN_SITELIST                  IDT_MAINIDENT+104
+#define CM_PAN_RSWSHUTTER                IDT_MAINIDENT+105
+#define CM_PAN_TINLIST                   IDT_MAINIDENT+106  
+
+// Состав карты ----------------------------------------------
+#define CM_PAN_VIEWSTAFF                 IDT_MAINIDENT+110
+
+// Поиск объектов --------------------------------------------
+#define CM_PAN_SEARCH                    IDT_MAINIDENT+111
+#define CM_PAN_SEARCH_AGAIN              IDT_MAINIDENT+112
+#define CM_PAN_SEARCH_AGAIN_FROM         IDT_MAINIDENT+113
+#define CM_PAN_FINDSTAFF                 IDT_MAINIDENT+114
+#define CM_PAN_SEARCH_NAME               IDT_MAINIDENT+115
+#define CM_PAN_SEARCH_AREA               IDT_MAINIDENT+116
+#define CM_PAN_SEARCH_SETFILTER          IDT_MAINIDENT+117
+
+
+// Выделить объекты карты внутри фрагмента -------------------
+#define CM_PAN_MARK_BYRECT               IDT_MAINIDENT+118
+
+// Отменить выделение ----------------------------------------
+#define CM_PAN_UNDO_SELECT               IDT_MAINIDENT+119
+
+// Масштабирование карты -------------------------------------
+#define CM_PAN_SCALEBASE                 IDT_MAINIDENT+121
+#define CM_PAN_ZOOMALL                   IDT_MAINIDENT+122
+// номер занят                           IDT_MAINIDENT+123
+#define CM_PAN_SCALEDOWN                 IDT_MAINIDENT+124
+#define CM_PAN_SCALEUP                   IDT_MAINIDENT+125
+// номер занят                           IDT_MAINIDENT+126
+#define CM_PAN_MAPSCALE                  IDT_MAINIDENT+127
+#define CM_PAN_DRAFTSCALE                IDT_MAINIDENT+128
+#define CM_PAN_OBJECTSCALE               IDT_MAINIDENT+129   
+
+// Запуск приложений -----------------------------------------
+#define CM_PAN_RUNTASK                   IDT_MAINIDENT+130
+
+// Контроль карты --------------------------------------------
+#define CM_PAN_GENERALMAPCONTR           IDT_MAINIDENT+131
+#define CM_PAN_MAPKWA                    IDT_MAINIDENT+132
+#define CM_PAN_CHECKTITLE                IDT_MAINIDENT+133
+#define CM_PAN_RSCEDIT                   IDT_MAINIDENT+134
+
+// Масштабирование карты -------------------------------------
+#define CM_PAN_SELECTSCALE               IDT_MAINIDENT+135   
+
+// Выделение объектов ----------------------------------------
+#define CM_PAN_LISTSELECT                IDT_MAINIDENT+136   
+#define CM_PAN_TYPESELECT                IDT_MAINIDENT+137
+
+// Перемещение карты -----------------------------------------
+#define CM_PAN_MOVEMAP                   IDT_MAINIDENT+140
+#define CM_PAN_SAVEPOSITION              IDT_MAINIDENT+141
+#define CM_PAN_RESTOREPOSITION           IDT_MAINIDENT+142
+
+// Сетка на карте --------------------------------------------
+#define CM_PAN_GRIDACTIVE                IDT_MAINIDENT+143
+#define CM_PAN_GRIDPARM                  IDT_MAINIDENT+144
+
+// Формат отображения координат ------------------------------
+#define CM_PAN_GEOGRADMIN_PZ90           IDT_MAINIDENT+147           
+#define CM_PAN_GEOGRAD_PZ90              IDT_MAINIDENT+148
+#define CM_PAN_GEORAD_PZ90               IDT_MAINIDENT+149
+#define CM_PAN_GEOPOPUP                  IDT_MAINIDENT+150
+#define CM_PAN_GEOGRADMIN                IDT_MAINIDENT+151
+#define CM_PAN_GEOGRAD                   IDT_MAINIDENT+152
+#define CM_PAN_GEORAD                    IDT_MAINIDENT+153
+#define CM_PAN_GEOGRADMIN_WGS84          IDT_MAINIDENT+154
+#define CM_PAN_GEOGRAD_WGS84             IDT_MAINIDENT+155
+#define CM_PAN_GEORAD_WGS84              IDT_MAINIDENT+156
+#define CM_PAN_PICTUREPOINT              IDT_MAINIDENT+157
+#define CM_PAN_MAPPOINT                  IDT_MAINIDENT+158
+#define CM_PAN_PLANEPOINT                IDT_MAINIDENT+160
+#define CM_PAN_PLANE42POINT              IDT_MAINIDENT+161
+#define CM_PAN_GEORAD_GSK2011		 IDT_MAINIDENT+700
+#define CM_PAN_GEOGRAD_GSK2011		 IDT_MAINIDENT+701
+#define CM_PAN_GEOGRADMIN_GSK2011	 IDT_MAINIDENT+702
+
+// Синхронизация окон ----------------------------------------
+#define CM_PAN_SYNCHRONIZE               IDT_MAINIDENT+164
+
+// Настройка шрифтов -----------------------------------------
+#define CM_PAN_FONTSTABLE                IDT_MAINIDENT+165
+
+// Настройка цветов ------------------------------------------
+#define CM_PAN_COLORS                    IDT_MAINIDENT+166
+
+// Размеры экрана --------------------------------------------
+#define CM_PAN_SCREENCALIBRATION         IDT_MAINIDENT+167
+
+// Период обновления -----------------------------------------
+#define CM_PAN_REPAINT                   IDT_MAINIDENT+168
+
+// Выбор языка -----------------------------------------------
+#define CM_PAN_ENGLISH                   IDT_MAINIDENT+170
+#define CM_PAN_RUSSIAN                   IDT_MAINIDENT+171
+
+// Журнал транзакций -----------------------------------------
+#define CM_PAN_TRANSLOG                  IDT_MAINIDENT+172
+
+// Доступ на редактирование ----------------------------------
+#define CM_PAN_DONTEDIT                  IDT_MAINIDENT+173
+
+// ФОрмат номера объекта -------------------------------------
+#define CM_PAN_OBJECTKEYONE              IDT_MAINIDENT+175
+#define CM_PAN_OBJECTKEYTWO              IDT_MAINIDENT+176
+
+// Help ------------------------------------------------------
+#define CM_PAN_HELP                      IDT_MAINIDENT+180
+#define CM_PAN_ABOUT                     IDT_MAINIDENT+181
+#define CM_PAN_HOTKEYS                   IDT_MAINIDENT+182
+#define CM_PAN_OPENHELP                  IDT_MAINIDENT+183
+
+// Выбор объекта -------------------------- 
+#define CM_PAN_SKIPTEXT                  IDT_MAINIDENT+184
+#define CM_PAN_SELECTOBJECT              IDT_MAINIDENT+185
+#define CM_PAN_EDITSEMANTIC              IDT_MAINIDENT+186
+#define CM_PAN_EDITMETRIC                IDT_MAINIDENT+187
+#define CM_PAN_SEMANTICTABLE             IDT_MAINIDENT+188          
+
+// Протокол ------------------------------- 
+#define CM_PAN_PROTOCOL                  IDT_MAINIDENT+191
+#define CM_PAN_PROTOCOLSETUP             IDT_MAINIDENT+192
+
+// Правая кнопка -------------------------- 
+#define CM_PAN_RIGHTMENU                 IDT_MAINIDENT+194
+#define CM_PAN_RIGHTCOMMIT               IDT_MAINIDENT+195
+
+// Способ выделения объектов -------------- 
+#define CM_PAN_SELECTCOLOR               IDT_MAINIDENT+196
+#define CM_PAN_SELECTNOT                 IDT_MAINIDENT+197
+
+// Способ выделения объектов -------------- 
+#define CM_PAN_WHEELMOVING               IDT_MAINIDENT+198
+#define CM_PAN_WHEELSCALING              IDT_MAINIDENT+199
+
+// Информационная линейка -------------------------------------
+#define CM_PAN_SCALELIST                 IDT_MAINIDENT+200
+#define CM_PAN_GOPOINT                   IDT_MAINIDENT+201
+#define CM_PAN_CLOSE_GOPOINT             IDT_MAINIDENT+204      
+#define CM_PAN_MAPSHEET                  IDT_MAINIDENT+202
+
+// Настройка  моделей поиска ----------------------------------
+#define CM_PAN_CUSTOMIZE_MODELS          IDT_MAINIDENT+203
+
+// Правка ----------------------------------------------------- 
+#define CM_PAN_SELECTTOCLIP              IDT_MAINIDENT+210
+#define CM_PAN_SELECTTOMAP               IDT_MAINIDENT+211
+
+// Приложения ------------------------------------------------- 
+#define CM_PAN_ZONE                      IDT_MAINIDENT+221
+#define CM_PAN_SHOWLEGEND                IDT_MAINIDENT+222      
+#define CM_PAN_RUNGOOGLE                 IDT_MAINIDENT+223      
+
+// Команды меню БАЗА ------------------------------------------ 
+#define CM_PAN_MB_CREATEPRJ              IDT_MAINIDENT+230
+#define CM_PAN_MB_OPENPRJ                IDT_MAINIDENT+231
+#define CM_PAN_MB_CLOSEPRJ               IDT_MAINIDENT+232
+#define CM_PAN_MB_OPENTABLE              IDT_MAINIDENT+233
+#define CM_PAN_MB_CLOSETABLE             IDT_MAINIDENT+234
+#define CM_PAN_MB_SAVEPRJ                IDT_MAINIDENT+235
+#define CM_PAN_MB_SAVEPRJAS              IDT_MAINIDENT+236
+#define CM_PAN_MB_ADMINPRJ               IDT_MAINIDENT+237
+#define CM_PAN_MB_ADMINBDE               IDT_MAINIDENT+238
+#define CM_PAN_MB_ADMINODBC              IDT_MAINIDENT+239
+#define CM_PAN_MB_CLOSEALL               IDT_MAINIDENT+240
+#define CM_PAN_MB_CONSTRUCTOR            IDT_MAINIDENT+241
+#define CM_PAN_MB_OBJFORM                IDT_MAINIDENT+242
+#define CM_PAN_MB_STANDARDFORM           IDT_MAINIDENT+243
+
+#define CM_PAN_MB_STARTOPENPRJ           IDT_MAINIDENT+244   
+#define CM_PAN_MB_STARTADMINPRJ          IDT_MAINIDENT+245
+
+
+// Дополнительный раздел меню Вид (Вид матрицы / Тень) -------
+#define CM_PAN_MTRSHADOW_NONE            IDT_MAINIDENT+290  
+#define CM_PAN_MTRSHADOW_PALE            IDT_MAINIDENT+291
+#define CM_PAN_MTRSHADOW_WEAK            IDT_MAINIDENT+292
+#define CM_PAN_MTRSHADOW_MIDDLE          IDT_MAINIDENT+293
+#define CM_PAN_MTRSHADOW_HEAVY           IDT_MAINIDENT+294
+#define CM_PAN_MTRSHADOW_DEEP            IDT_MAINIDENT+295
+// Дополнительный раздел меню Вид (Вид / Вид карты / Цветовая модель /)---
+#define CM_PAN_VIEWCOLORMODEL_RGB        IDT_MAINIDENT+296  
+#define CM_PAN_VIEWCOLORMODEL_CMYK       IDT_MAINIDENT+297  
+
+// Дополнительный раздел меню Масштаб ------------------------
+#define CM_PAN_SETSCALE                  IDT_MAINIDENT+300
+// занято                                IDT_MAINIDENT+301 : 309
+#define CM_PAN_SETSCALELAST              IDT_MAINIDENT+309
+
+// Поиск по модели -------------------------------------------
+#define CM_PAN_SEARCH_MODEL_FIRST        IDT_MAINIDENT+310
+// занято                                IDT_MAINIDENT+311 : 325
+#define CM_PAN_SEARCH_MODEL_LAST         IDT_MAINIDENT+325
+
+// Списки объектов -------------------------------------------
+#define CM_PAN_OBJECT_SETS               IDT_MAINIDENT+326
+#define CM_PAN_CLOSE_SETS                IDT_MAINIDENT+327
+#define CM_PAN_ACTIVATE_SEARCH           IDT_MAINIDENT+328       
+
+// Инвертировать выделение -----------------------------------
+#define CM_PAN_INVERT_SELECT             IDT_MAINIDENT+329       
+
+// Вызвать диалог просмотра семантики ------------------------
+#define CM_PAN_VIEWSEM                   IDT_MAINIDENT+330       
+#define CM_PAN_VIEWMET                   IDT_MAINIDENT+331       
+
+// Импорт/Экспорт данных -------------------------------------
+#define CM_PAN_IMPORTDXF                 IDT_MAINIDENT+340       
+#define CM_PAN_IMPORTSHP                 IDT_MAINIDENT+341
+#define CM_PAN_IMPORTMIF                 IDT_MAINIDENT+342
+#define CM_PAN_IMPORTS57                 IDT_MAINIDENT+343
+#define CM_PAN_IMPORTBMP                 IDT_MAINIDENT+344
+#define CM_PAN_IMPORTSXF                 IDT_MAINIDENT+345
+
+#define CM_PAN_EXPORTSXF                 IDT_MAINIDENT+350
+#define CM_PAN_EXPORTDXF                 IDT_MAINIDENT+351
+#define CM_PAN_EXPORTSHP                 IDT_MAINIDENT+352
+#define CM_PAN_EXPORTMIF                 IDT_MAINIDENT+353
+#define CM_PAN_EXPORTBMP                 IDT_MAINIDENT+354
+#define CM_PAN_EXPORTMTW                 IDT_MAINIDENT+355    
+#define CM_PAN_EXPORTDBF                 IDT_MAINIDENT+356    
+#define CM_PAN_EXPORTS57                 IDT_MAINIDENT+357    
+
+// Атлас карт --------------------------------------------------
+#define CM_PAN_ATLASOPEN                 IDT_MAINIDENT+360    
+#define CM_PAN_ISATLASOPEN               IDT_MAINIDENT+360    
+#define CM_PAN_ATLASCLOSE                IDT_MAINIDENT+361
+#define CM_PAN_ATLASUP                   IDT_MAINIDENT+362
+#define CM_PAN_ATLASTOP                  IDT_MAINIDENT+363
+#define CM_PAN_ATLASDOWN                 IDT_MAINIDENT+364
+#define CM_PAN_ATLASBOTTOM               IDT_MAINIDENT+365
+#define CM_PAN_ATLASLIST                 IDT_MAINIDENT+366
+#define CM_PAN_ATLASUPPOINT              IDT_MAINIDENT+367
+#define CM_PAN_ATLASDOWNPOINT            IDT_MAINIDENT+368
+#define CM_PAN_ATLASBACK                 IDT_MAINIDENT+369    
+
+// Выбор фрагмента печати с обрезкой ---------------------------
+#define CM_PAN_PRINTSELECT               IDT_MAINIDENT+380    
+
+// TIN-модель --------------------------------------------------
+#define CM_PAN_NEWTIN                    IDT_MAINIDENT+400    
+#define CM_PAN_OPENTIN                   IDT_MAINIDENT+401    
+#define CM_PAN_CLOSETIN                  IDT_MAINIDENT+402    
+#define CM_PAN_TIN_VIEWNORMAL            IDT_MAINIDENT+403    
+#define CM_PAN_TIN_VIEWSCHEMATICAL       IDT_MAINIDENT+404    
+//  MTQ      --------------------------------------------------
+#define CM_PAN_NEWMTQ                    IDT_MAINIDENT+405    
+// Создание файла DIR
+#define CM_CREATE_DIR                    IDT_MAINIDENT+406
+// Задача создать объект, выбрав из классификатора
+// Параметры наносимого объекта хранятся в TMapWindow. 
+// (структура CreateObjectParm)
+#define CM_PAN_CREATEOBJECT              IDT_MAINIDENT+408          
+
+// -----------------------------------------------------------
+// --- Настройка панелей -------------------------------------
+//  зарезервировано 50 номеров (см. PanelDlg.rh)
+// -----------------------------------------------------------
+#define IDD_PANELCUSTOMIZER              IDT_MAINIDENT+450
+#define CM_PAN_CUSTOMIZEPANELS	          IDD_PANELCUSTOMIZER+1
+#define CM_PAN_MAINPANEL                 IDD_PANELCUSTOMIZER+2
+#define CM_CUSTOMIZE_PANELS	             CM_PAN_CUSTOMIZEPANELS
+#define CM_MAINPANEL	                    CM_PAN_MAINPANEL
+
+#define CM_PAN_NEWMTRQUALITY              IDT_MAINIDENT+500
+
+#define CM_PAN_APPENDWMTS			IDT_MAINIDENT+501
+#define CM_PAN_APPENDWFS			IDT_MAINIDENT+502
+
+#define CM_PAN_CLOSEWMTS			IDT_MAINIDENT+503
+#define CM_PAN_CLOSEWFS				IDT_MAINIDENT+504
+
+#define CM_PAN_OPENWMTS			IDT_MAINIDENT+505
+#define CM_PAN_OPENWFS			IDT_MAINIDENT+506
+
+#define CM_PAN_SETGRID                  IDT_MAINIDENT+507
+#define CM_PAN_SHOWGRID                 IDT_MAINIDENT+508
+#define CM_PAN_HIDEGRID                 IDT_MAINIDENT+509
+
+#define CM_PAN_SETSCALERULE                 IDT_MAINIDENT+510
+#define CM_PAN_SHOWSCALERULE                IDT_MAINIDENT+511
+#define CM_PAN_HIDESCALERULE                IDT_MAINIDENT+512
+
+// Topic List for HELP
+#define IDN_FILE                    5010
+#define IDN_EDIT                    5011
+#define IDN_SEARCH                  5012
+#define IDN_VIEW                    5013
+#define IDN_TOOLS                   5014
+#define IDN_SCALE                   5015
+#define IDN_OPTIONS                 5016
+#define IDN_WINDOW                  5017
+#define IDN_HELP                    5018
+#define IDN_BMPLOAD                 5019
+#define IDN_PCXLOAD                 5020
+#define IDN_SXFLOAD                 5021
+#define IDN_TXTLOAD                 5022
+#define IDN_TXTSAVE                 5023
+#define IDN_SXFSAVE                 5024
+#define IDN_MAPSORT                 5025
+#define IDN_MAPPASP                 5026
+#define IDN_MAPCOMP                 5027
+#define IDN_MAPRESR                 5028
+#define IDN_SCREENCALIBRATION       5029
+#define IDN_DIRLOAD                 5030
+#define IDN_DIRSAVE                 5031
+#define IDN_CREATE_NEW_FILE         5032
+#define IDN_CREATE_PLAN_FILE        5033
+#define IDN_REPAINT_PERIOD          5034
+#define IDN_OPTIONS_COLOR           5035
+#define IDN_FILEOPEN_SIT            5036
+#define IDN_PRINT                   5037
+#define IDN_MESSAGE_POINT           5038
+#define IDN_FONT_TABLE              5039
+#define IDN_SXF_FILTER              5040
+#define IDN_NAVIGATOR               5041
+#define IDN_CREATE_SITE_FILE        5042
+#define IDN_MOVE                    5043
+#define IDN_FILEOPEN                5044
+#define IDN_FILESAVE                5045
+#define IDN_LOADMAP                 5046
+#define IDN_MAPTREE                 5047
+#define IDN_IMAGE                   5048
+#define IDN_MAPEDIT                 5049
+#define IDN_MAPCLASS                5050
+#define IDN_MAPCLASSIFIC            5051
+#define IDN_CREATE_NEW_DIR          5052     
+
+#define IDN_RCSEDIT                 5067     
+
+#define IDN_PANELDIALOG             6715 
+
+#endif

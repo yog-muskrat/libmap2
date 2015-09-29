@@ -1,0 +1,955 @@
+// 09/07/09
+
+#ifndef MAPEDIT_RH
+
+#define IDB_BITMAP1	1
+#include "mapview.rh"
+
+ // ===============================================
+ // Кнопки
+ // ===============================================
+
+ // Панель "Создание"
+ #define MED_CREATEOBJECT    IDT_MAPEDIT+1
+ #define MED_P1_CREA         IDT_MAPEDIT+2
+ #define MED_CREATECOPY	     IDT_MAPEDIT+3
+ #define MED_CREATESUB 	     IDT_MAPEDIT+4
+ #define MED_COPY            IDT_MAPEDIT+5
+ #define MED_CHOICEMAP       IDT_MAPEDIT+6
+ #define MED_SAVEOBJECT	     IDT_MAPEDIT+7
+ #define MED_SIT_LINE        IDT_MAPEDIT+8
+ #define MED_SIT_SQUARE      IDT_MAPEDIT+9
+ #define MED_SIT_POINT       IDT_MAPEDIT+10
+ #define MED_SIT_TEXT        IDT_MAPEDIT+11
+ #define MED_LABELLINEFROMSEM  IDT_MAPEDIT+12
+ #define MED_LABELFROMSEM1     IDT_MAPEDIT+13
+ #define MED_LABELFROMSEM2     IDT_MAPEDIT+14
+ #define MED_CREATEOBJECTLABEL IDT_MAPEDIT+15
+ #define MED_MIRRORCOPY        IDT_MAPEDIT+16
+ #define MED_SHEMECREATE      IDT_MAPEDIT+17  // Создание по сценарию
+ #define MED_MULTIOBJECT      IDT_MAPEDIT+18  // Размножение объекта
+ #define MED_CROSSOBJECTS     IDT_MAPEDIT+19  // Пересечение двух объектов  
+ #define MED_CREATEPOINTOBJECT_BYREPER IDT_MAPEDIT+501  // Создание точечного объекта по реперу // 09/07/09
+
+  // Панель "Топология"
+ #define MED_PASTECUT	       IDT_MAPEDIT+20
+ #define MED_PASTE           IDT_MAPEDIT+21
+ #define MED_COPYPART	       IDT_MAPEDIT+22
+ #define MED_COPYSUB         IDT_MAPEDIT+23
+ #define MED_CROSSPOINT      IDT_MAPEDIT+24
+ #define MED_ADJUSPOINT      IDT_MAPEDIT+25
+ #define MED_ADJUSOBJECT     IDT_MAPEDIT+26
+ #define MED_KNOT            IDT_MAPEDIT+27
+ #define MED_SPLINE          IDT_MAPEDIT+28
+ #define MED_FILTR           IDT_MAPEDIT+29
+ #define MED_LINECUT         IDT_MAPEDIT+30
+ #define MED_LINEPOINTCUT    IDT_MAPEDIT+31
+ #define MED_SQARECUT        IDT_MAPEDIT+32
+ #define MED_ADJUST          IDT_MAPEDIT+33
+ #define MED_ADJSHORTPOINT   IDT_MAPEDIT+34
+ #define MED_ADJLINEFRAME    IDT_MAPEDIT+35
+ #define MED_CUTBLINE        IDT_MAPEDIT+36    
+ #define MED_ADJUSPOINTS     IDT_MAPEDIT+37    
+
+ // Панель "Удаление"
+ #define MED_DELETEOBJECT    IDT_MAPEDIT+40
+ #define MED_P2_DELETE       IDT_MAPEDIT+41
+ #define MED_DELONESUB	     IDT_MAPEDIT+42
+ #define MED_DELALLSUB	     IDT_MAPEDIT+43
+ #define MED_CUTAREAIN	     IDT_MAPEDIT+44
+ #define MED_CUTAREAOUT      IDT_MAPEDIT+45
+
+ // Панель "Точка"
+ #define MED_POINTEDIT       IDT_MAPEDIT+50
+ #define MED_MOVEPOINT       IDT_MAPEDIT+51
+ #define MED_POINTGROUP      IDT_MAPEDIT+52
+ #define MED_DELETEPOINT     IDT_MAPEDIT+53
+ #define MED_ADDPOINT        IDT_MAPEDIT+54
+ #define MED_LOCKOBJ         IDT_MAPEDIT+55
+ #define MED_REVERT          IDT_MAPEDIT+56
+ #define MED_ROTATE          IDT_MAPEDIT+57
+ #define MED_ROTATEVECTOR    IDT_MAPEDIT+58
+ #define MED_ROTATEVECTORCONST IDT_MAPEDIT+59
+ #define MED_RECTANGLE       IDT_MAPEDIT+60      
+
+  // Панель "Семантика"
+ #define MED_SEMAN           IDT_MAPEDIT+65      
+ #define MED_ADDSEM  	       IDT_MAPEDIT+66
+ #define MED_DELETESEM       IDT_MAPEDIT+67
+ #define MED_CHANGESEM       IDT_MAPEDIT+68
+ #define MED_CHANGESEMCODE   IDT_MAPEDIT+69
+ #define MED_LISTSEM         IDT_MAPEDIT+70
+ #define MED_ADDHEIGHTSEM    IDT_MAPEDIT+71      
+ #define MED_ADDHEIGHTFROMSEM IDT_MAPEDIT+72     
+ #define MED_ADDOBJECTSEM  	 IDT_MAPEDIT+73      
+ #define MED_UPDOBJECTSEM  	 IDT_MAPEDIT+74      
+ #define MED_ADDOBJECTDRAW 	 IDT_MAPEDIT+75      
+
+ // Панель "Текст"
+ #define MED_TITLE           IDT_MAPEDIT+80
+ #define MED_TITLEEDIT	      IDT_MAPEDIT+81
+ #define MED_TITLEPASTE      IDT_MAPEDIT+82
+ #define MED_TITLEMOVE       IDT_MAPEDIT+83
+ #define PRP_TITLEADJUST     IDT_MAPEDIT+84
+ #define PRP_LINECUT         IDT_MAPEDIT+85
+ #define PRP_SIZECLEAR       IDT_MAPEDIT+86
+ #define PRP_LEGENDSAVE      IDT_MAPEDIT+87
+ #define PRP_ISOLINES        IDT_MAPEDIT+88
+ #define PRP_MARKLINECUT     IDT_MAPEDIT+89
+ #define PRP_INDICATE        IDT_MAPEDIT+90
+ #define PRP_INDICATEM       IDT_MAPEDIT+91
+
+
+ // Кнопки "Способы создание" ( ИДЕНТИФИКАТОРЫ НЕ ТРОГАТЬ !!!)
+ // Они записаны в файле макетов
+ #define CREATEMODECOUNT     14
+ #define MED_KEY1	           IDT_MAPEDIT+93
+ #define MED_KEY2	           IDT_MAPEDIT+94
+ #define MED_KEY3	           IDT_MAPEDIT+95
+ #define MED_KEY4	           IDT_MAPEDIT+96
+ #define MED_KEY5	           IDT_MAPEDIT+97
+ #define MED_KEY6            IDT_MAPEDIT+98
+ #define MED_KEY7            IDT_MAPEDIT+99
+ #define MED_KEY8            IDT_MAPEDIT+100
+ #define MED_KEY9            IDT_MAPEDIT+101
+ #define MED_KEY10  	        IDT_MAPEDIT+102
+ #define MED_KEY11           IDT_MAPEDIT+103
+ #define MED_KEY12           IDT_MAPEDIT+104
+ #define MED_KEY13           IDT_MAPEDIT+105
+ #define MED_KEY14           IDT_MAPEDIT+106
+ #define MED_KEY15           IDT_MAPEDIT+107
+ #define MED_KEY16           IDT_MAPEDIT+108
+ #define MED_KEY17           IDT_MAPEDIT+338 
+
+
+ // Панель "Графические объекты"
+ #define MED_DRAW_PANEL      IDT_MAPEDIT+110
+ #define MED_DRAW_SELECT     IDT_MAPEDIT+111
+ #define MED_DRAW_UPDATE     IDT_MAPEDIT+112
+
+
+ // Панель "Участок"
+ #define MED_PARTEDIT        IDT_MAPEDIT+120
+ #define MED_LINECONTINUE    IDT_MAPEDIT+121
+ #define MED_PARTCORRECT     IDT_MAPEDIT+122
+ #define MED_PARTMOVE        IDT_MAPEDIT+123
+ #define MED_PARTTHICK       IDT_MAPEDIT+124
+ #define MED_ZONETHICK       IDT_MAPEDIT+125
+
+
+ // Панель "Выделенные"
+ #define MED_MARK         	  IDT_MAPEDIT+130
+ #define MED_RESTORESEEK     IDT_MAPEDIT+131
+ #define MED_SEEKCODE        IDT_MAPEDIT+132
+ #define MED_SEEKCROSS       IDT_MAPEDIT+133
+ #define MED_SEEKSPLINE      IDT_MAPEDIT+134
+ #define MED_SEEKFILTER	     IDT_MAPEDIT+135
+ #define MED_COPYSEEK        IDT_MAPEDIT+136
+ #define MED_DELSEEK         IDT_MAPEDIT+137
+ #define MED_SETBOTTOP       IDT_MAPEDIT+138
+ #define MED_SEEKHIGHTADD    IDT_MAPEDIT+139
+ #define MED_SEEKDELALSUB    IDT_MAPEDIT+140
+ #define MED_SEEKSUBJECT     IDT_MAPEDIT+141
+ #define MED_SEEKLINECUT     IDT_MAPEDIT+142
+ #define MED_SAVETOFILE      IDT_MAPEDIT+143
+ #define MED_EDITLISTITLE    IDT_MAPEDIT+144
+ #define MED_OBJECTUNION     IDT_MAPEDIT+145     
+ #define MED_ALIGNTITLE      IDT_MAPEDIT+146     
+ #define MED_LINEUNION       IDT_MAPEDIT+147     
+
+ // Панель "Работа с группой"
+ #define MED_GROUP           IDT_MAPEDIT+150
+ #define MED_GRPASTE         IDT_MAPEDIT+151
+ #define MED_GRCUT           IDT_MAPEDIT+152
+ #define MED_GRDESTROY       IDT_MAPEDIT+153
+ #define MED_GRCREATE        IDT_MAPEDIT+154
+ #define MED_GRTREE          IDT_MAPEDIT+155
+ #define MED_GRSELECT        IDT_MAPEDIT+156
+
+ // Панель "Высота"
+ #define MED_HIGHT           IDT_MAPEDIT+160
+ #define MED_ADDHIGHT        IDT_MAPEDIT+161
+ #define MED_COPYHIGHT       IDT_MAPEDIT+162
+ #define MED_COPYCHAINHIGHT  IDT_MAPEDIT+163
+
+ // Панель "Автофигуры"
+ #define MED_AUTOFIGURE      IDT_MAPEDIT+170
+ #define MED_EXCAVAT         IDT_MAPEDIT+171
+ #define MED_EMBANKMENT      IDT_MAPEDIT+172
+ #define MED_PLATFORM        IDT_MAPEDIT+173
+ #define MED_STAIRS          IDT_MAPEDIT+174
+ #define MED_STAIRSACTION    IDT_MAPEDIT+175
+ #define MED_ZIGZAG          IDT_MAPEDIT+176
+ #define MED_SEEKCITY        IDT_MAPEDIT+177
+ #define MED_CREATEZONE      IDT_MAPEDIT+178
+
+ // Панель "Выравнивание"
+ #define MED_ALIGNOBJ_LEFT     IDT_MAPEDIT+190
+ #define MED_ALIGNOBJ_RIGHT    IDT_MAPEDIT+191
+ #define MED_ALIGNOBJ_TOP      IDT_MAPEDIT+192
+ #define MED_ALIGNOBJ_BOT      IDT_MAPEDIT+193
+ #define MED_ALIGNOBJ_HOR      IDT_MAPEDIT+194
+ #define MED_ALIGNOBJ_VERT     IDT_MAPEDIT+195
+ #define MED_ALIGNOBJ_CENTERH  IDT_MAPEDIT+196
+ #define MED_ALIGNOBJ_CENTERV  IDT_MAPEDIT+197
+ #define MED_ALIGNOBJECT       IDT_MAPEDIT+198
+ #define MED_ALIGNOBJ_LINE     IDT_MAPEDIT+199
+ #define MED_ALIGNOBJ_TURN     IDT_MAPEDIT+200  
+
+
+ // Отдельные кнопки
+ #define MED_MOVEOBJECT	     IDT_MAPEDIT+210
+ #define MED_MODIFYOBJECT	   IDT_MAPEDIT+211
+ #define MED_VIEWERROR       IDT_MAPEDIT+212
+ #define MED_VIEWHIGHT       IDT_MAPEDIT+213
+ #define MED_MOVEROTATE      IDT_MAPEDIT+214
+ #define MED_BACK            IDT_MAPEDIT+215
+ #define MED_RESTORE         IDT_MAPEDIT+216
+ #define MED_ISGROUP         IDT_MAPEDIT+217   // Индикатор работы с группой
+ #define MED_MENU_CHANGE     IDT_MAPEDIT+218   // Смена карты
+ #define MED_BUILDING        IDT_MAPEDIT+219   // Построение кварталов
+ #define MED_VIEWSEM         IDT_MAPEDIT+220   // Просмотр семантики объекта 
+
+ // Комплект кнопок для линейки макетов
+ #define MED_TOOLS     	     IDT_MAPEDIT+230
+ #define MODELCOUNT 12
+ #define MED_SHAB1           IDT_MAPEDIT+231
+ #define MED_SHAB2           IDT_MAPEDIT+232
+ #define MED_SHAB3           IDT_MAPEDIT+233
+ #define MED_SHAB4           IDT_MAPEDIT+234
+ #define MED_SHAB5           IDT_MAPEDIT+235
+ #define MED_SHAB6           IDT_MAPEDIT+236
+ #define MED_SHAB7           IDT_MAPEDIT+237
+ #define MED_SHAB8           IDT_MAPEDIT+238
+ #define MED_SHAB9           IDT_MAPEDIT+239
+ #define MED_SHAB10          IDT_MAPEDIT+240
+ #define MED_SHAB11          IDT_MAPEDIT+241
+ #define MED_SHAB12          IDT_MAPEDIT+242
+
+
+
+ #define MED_REPEAL          IDT_MAPEDIT+249
+
+ // Кнопки выбора линеек
+ #define MODELLINECOUNT 10
+ #define MED_COLOR1          IDT_MAPEDIT+250
+ #define MED_COLOR2          IDT_MAPEDIT+251
+ #define MED_COLOR3          IDT_MAPEDIT+252
+ #define MED_COLOR4          IDT_MAPEDIT+253
+ #define MED_COLOR5          IDT_MAPEDIT+254
+ #define MED_COLOR6          IDT_MAPEDIT+255
+ #define MED_COLOR7          IDT_MAPEDIT+256
+ #define MED_COLOR8          IDT_MAPEDIT+257
+ #define MED_COLOR9          IDT_MAPEDIT+258
+ #define MED_COLOR10         IDT_MAPEDIT+259
+ #define MED_SHABPROP        IDT_MAPEDIT+260
+
+
+ // Кнопки диалога создания
+ #define BMP_VIEW1            IDT_MAPEDIT+270
+ #define BMP_VIEW2	           IDT_MAPEDIT+271
+ #define BMP_VIEW3	           IDT_MAPEDIT+272
+ #define BMP_VIEW4	           IDT_MAPEDIT+273
+ #define BMP_VIEW5	           IDT_MAPEDIT+274
+ #define BMP_VIEW6	           IDT_MAPEDIT+275
+ #define BMP_VIEW7	           IDT_MAPEDIT+276
+ #define BMP_VIEW8	           IDT_MAPEDIT+277
+ #define BMP_VIEW9	           IDT_MAPEDIT+278
+ #define BMP_VIEW10	          IDT_MAPEDIT+279
+ #define BMP_VIEW11	          IDT_MAPEDIT+280
+ #define BMP_VIEW12	          IDT_MAPEDIT+281
+ #define BMP_VIEW13	          IDT_MAPEDIT+282
+ #define BMP_VIEW14	          IDT_MAPEDIT+283
+ #define BMP_VIEW15	          IDT_MAPEDIT+284
+ #define BMP_VIEW16	          IDT_MAPEDIT+285
+ #define BMP_VIEW17	          IDT_MAPEDIT+286
+ #define BMP_VIEW18	          IDT_MAPEDIT+287
+
+  // Способы выравнивания
+ #define MED_ALIGNLEFT       IDT_MAPEDIT+290
+ #define MED_ALIGNCENTER     IDT_MAPEDIT+291
+ #define MED_ALIGNRIGHT      IDT_MAPEDIT+292
+ #define MED_ALIGNBOT        IDT_MAPEDIT+293
+ #define MED_ALIGNBASE       IDT_MAPEDIT+294
+ #define MED_ALIGNMIDDLE     IDT_MAPEDIT+295
+ #define MED_ALIGNTOP        IDT_MAPEDIT+296
+
+ // Параметры редактора
+ #define PANELMENU_OPTIONS   CM_PANEDITOPTIONS  // кнопка и меню
+
+ // Индикаторы состояния параметров (картинки кнопки разрезания)
+ #define MED_INDCUT1         IDT_MAPEDIT+300
+ #define MED_INDCUT2         IDT_MAPEDIT+301
+ #define MED_INDCUT3         IDT_MAPEDIT+302
+
+
+ #define MED_STAFFCREATE     IDT_MAPEDIT+303
+ #define MED_STAFFEDIT       IDT_MAPEDIT+304
+
+
+ // ===============================================
+ //  Обработчики и сообщения (без кнопок)
+ // ===============================================
+ #define MED_CREATELINE      IDT_MAPEDIT+310
+ #define MED_CREATETITLE     IDT_MAPEDIT+311
+ #define MED_CREATESQUARE    IDT_MAPEDIT+312
+ #define MED_CREATEPNT       IDT_MAPEDIT+313
+ #define MED_COPYALLSUB      IDT_MAPEDIT+314
+ #define MED_MOVEROTATEMARK  IDT_MAPEDIT+315
+ #define MED_SETREZIME       IDT_MAPEDIT+316
+ #define MED_SEEKADJUST      IDT_MAPEDIT+317
+
+ // Окончание топологического копирования
+ #define MED_ENDTOPOLOGY     IDT_MAPEDIT+318
+
+ // Сообщения в создании пользовательского объекта
+ #define PRESSBUTTON         IDT_MAPEDIT+319
+ #define DRAWOBJECT          IDT_MAPEDIT+320
+ #define PARAMOBJECT         IDT_MAPEDIT+321
+
+ // Отклики на кнопки в Диалоге свойств легенды
+ #define GROUPBUTTON1        IDT_MAPEDIT+322
+ #define GROUPBUTTON2        IDT_MAPEDIT+323
+ #define GROUPBUTTON3        IDT_MAPEDIT+324
+ #define GROUPBUTTON4        IDT_MAPEDIT+325
+ #define GROUPBUTTON5        IDT_MAPEDIT+326
+ #define GROUPBUTTON6        IDT_MAPEDIT+327
+ #define GROUPBUTTON7        IDT_MAPEDIT+328
+ #define GROUPBUTTON8        IDT_MAPEDIT+329
+ #define GROUPBUTTON9        IDT_MAPEDIT+330
+ #define GROUPBUTTON10       IDT_MAPEDIT+331
+ #define GROUPBUTTON11       IDT_MAPEDIT+332
+ #define GROUPBUTTON12       IDT_MAPEDIT+333
+ // 338 - занят в способе создания
+
+ // ===============================================
+ //  Меню
+ // ===============================================
+
+ // Меню свойств основной панели
+ #define PANELMENU_CREATE    IDT_MAPEDIT+340
+ #define PANELMENU_DELETE    IDT_MAPEDIT+341
+ #define PANELMENU_POINT     IDT_MAPEDIT+342
+ #define PANELMENU_PART      IDT_MAPEDIT+343
+ #define PANELMENU_TOPOLOGY  IDT_MAPEDIT+344
+ #define PANELMENU_GROUP     IDT_MAPEDIT+345
+ #define PANELMENU_SEMAN     IDT_MAPEDIT+346
+ #define MED_MENUFIGURE      IDT_MAPEDIT+347
+ #define MED_MENUMARK        IDT_MAPEDIT+348
+ #define MED_MENUHIGHT       IDT_MAPEDIT+349
+ #define MED_MENUTITLE       IDT_MAPEDIT+350
+ #define PANELMENU_LEGEND    IDT_MAPEDIT+351
+ #define MED_MENU_CHANGERST  IDT_MAPEDIT+352
+ #define MED_PANELTYPE       IDT_MAPEDIT+353
+ #define PANELMENU_HIDEALL   IDT_MAPEDIT+354
+ #define MED_MENUOPTION      IDT_MAPEDIT+355
+ #define MED_MENU_FILTER     IDT_MAPEDIT+356   // Отфильтровать
+ #define MED_MENU_SPLINE     IDT_MAPEDIT+357   // Сгладить
+ #define MED_MENUINSNOREPLY  IDT_MAPEDIT+358
+ #define MED_MENUCENTRE      IDT_MAPEDIT+359
+ #define MED_MENU_OPEN       IDT_MAPEDIT+360
+ #define MED_MENU_SAVE       IDT_MAPEDIT+361
+ #define MED_MODELMENU       IDT_MAPEDIT+362
+ #define MED_MENUSELECT      IDT_MAPEDIT+363
+ #define MED_MENUDRAW        IDT_MAPEDIT+364 // Графические  объекты
+ #define PANELMENU_ALIGN     IDT_MAPEDIT+365
+ #define PANELMENU_SUB       IDT_MAPEDIT+366
+
+
+ // Меню создания
+ #define MED_MENU_LOCK       IDT_MAPEDIT+370
+ #define MED_MENU_UNDO       IDT_MAPEDIT+371
+ #define MED_MENU_REALPOINT  IDT_MAPEDIT+372
+ #define MED_MENU_RECT       IDT_MAPEDIT+373
+ #define MED_MENU_CREATEPOINT IDT_MAPEDIT+374
+ #define MED_MENU_COPYPART   IDT_MAPEDIT+375
+ #define MED_MENU_SELECTPOINT IDT_MAPEDIT+376
+ #define MED_MENU_HORIZONT   IDT_MAPEDIT+377
+ #define MED_MENU_VERTICAL   IDT_MAPEDIT+378
+ #define MED_MENU_VARIABLE   IDT_MAPEDIT+379
+ #define MED_MENU_AUTO       IDT_MAPEDIT+380
+ #define MED_MENU_MEMORY     IDT_MAPEDIT+381
+ #define MED_MENU_REVERT     IDT_MAPEDIT+382
+ #define MED_SAVEPOINT       IDT_MAPEDIT+383
+ #define MED_GOTOLASTPOINT   IDT_MAPEDIT+384
+ #define MED_GOTOPREVPOINT   IDT_MAPEDIT+385
+ #define MED_MENU_DELETE     IDT_MAPEDIT+386
+ #define MED_MENU_INSERT     IDT_MAPEDIT+387
+ #define MED_MENU_SPACE      IDT_MAPEDIT+388
+ #define MED_MENU_PLACE      IDT_MAPEDIT+389
+
+ // Меню панели шаблонов
+ #define MED_MENU_LIB        IDT_MAPEDIT+390
+ #define MED_MENU_MODEL      IDT_MAPEDIT+391
+ #define MED_MENU_PROP       IDT_MAPEDIT+392
+
+ // Пункт меню ЗАДАТЬ РАЗМЕРЫ
+ #define MED_MENU_BARSIZE    IDT_MAPEDIT+393
+
+ // Меню панели макетов
+ #define MED_MENU_LINE       IDT_MAPEDIT+395
+ #define MED_MENU_SQUARE     IDT_MAPEDIT+396
+ #define MED_MENU_POINT      IDT_MAPEDIT+397
+ #define MED_MENU_TEXT       IDT_MAPEDIT+398
+ #define MED_MENU_SEMANTIC   IDT_MAPEDIT+399
+ #define MED_MENU_CLEAR      IDT_MAPEDIT+400
+ #define MED_MENU_REGIME     IDT_MAPEDIT+401
+ #define MED_MENU_SETOBJECTS IDT_MAPEDIT+402
+
+ // Изменение размеров кнопок шаблонов
+ #define MED_LITLEBUTTON     IDT_MAPEDIT+403
+ #define MED_NORMALBUTTON    IDT_MAPEDIT+404
+ #define MED_BIGBUTTON       IDT_MAPEDIT+405
+
+ // Меню по правой кнопке
+ #define IDM_VIEWOBJECT_RIGHTMENU IDT_MAPEDIT+406
+ #define CM_VIEWOBJADD        IDT_MAPEDIT+407
+ #define CM_VIEWOBJDELETE     IDT_MAPEDIT+408
+ #define CM_VIEWOBJCLEAR      IDT_MAPEDIT+409
+ #define CM_VIEWOBJRESTORE    IDT_MAPEDIT+410
+
+ #define IDM_MODELEX_MENU    IDT_MAPEDIT+411
+ #define CM_MODELEX_TUNMODEL IDT_MAPEDIT+412
+ #define CM_MODELEX_VIEWOBJECT IDT_MAPEDIT+413
+ #define CM_MODELEX_CUTDOWN  IDT_MAPEDIT+414
+
+ #define MED_MENU_PARAMROTATE   IDT_MAPEDIT+415 // Параметры перемещения 
+ #define CM_CHANGEREGIME        IDT_MAPEDIT+416 // Изменить режим создания
+ #define MED_MENU_POINTCENTER   IDT_MAPEDIT+417 // Точка привязки (центр габаритной рамки) 
+ #define MED_MENU_POINTCONTUR   IDT_MAPEDIT+418 // Точка привязки (точка контура)
+ #define MED_MENU_POINTCONTURF  IDT_MAPEDIT+419 // Точка привязки (произвольная точка контура)
+ #define MED_MENU_POINTFREE     IDT_MAPEDIT+420 // Точка привязки (произвольная точка)
+ #define MED_MENU_PARAMSCALE    IDT_MAPEDIT+421 // Параметрическое масштабирование
+ #define MED_MENU_RADIUS        IDT_MAPEDIT+422 // Радиус
+ #define MED_MENU_OBJECTCODE    IDT_MAPEDIT+423 // Код объекта
+ #define MED_MENU_ROTATEANGLE   IDT_MAPEDIT+424 // Угол поворота
+ #define MED_MENU_ROTATEANGLECONST  IDT_MAPEDIT+425 // Угол наклона
+
+
+ // !!!!!!!!!!!!!!!!! =============================
+
+ // 329 - занят в способе создания
+ // 338 - занят в способах создания !!!
+ // !!!!!!!!!!!!!!!!! =============================
+
+ // ===============================================
+ //  ДИАЛОГИ   из mapedit
+ // ===============================================
+
+// НАЧАЛО ДИАЛОГОВ С 430  Попробуем сдвинуть (не хватает идентификаторов)
+
+ // Диалог размножения объекта в заданном направлении  
+ #define MED_MULTIOBJECTDLG         IDT_MAPEDIT+430
+ #define MED_MULTI_DIRECT2RADIO     IDT_MAPEDIT+450
+ #define MED_MULTI_DIRECT1RADIO     IDT_MAPEDIT+451
+ #define MED_MULTI_COUNTRADIO       IDT_MAPEDIT+452
+ #define MED_MULTI_KOORDRADIO       IDT_MAPEDIT+453
+ #define MED_MULTI_BEGINX           IDT_MAPEDIT+454
+ #define MED_MULTI_BEGINY           IDT_MAPEDIT+455
+ #define MED_MULTI_OFFSETX          IDT_MAPEDIT+456
+ #define MED_MULTI_OFFSETY          IDT_MAPEDIT+457
+ #define MED_MULTI_FRAMEX           IDT_MAPEDIT+458
+ #define MED_MULTI_FRAMEY           IDT_MAPEDIT+459
+ #define MED_MULTI_ENDCOUNTX   	    IDT_MAPEDIT+460
+ #define MED_MULTI_ENDCOUNTY        IDT_MAPEDIT+461	
+ #define MED_MULTI_ENDX             IDT_MAPEDIT+462	
+ #define MED_MULTI_ENDY             IDT_MAPEDIT+463
+ #define MED_MULTI_STEPX            IDT_MAPEDIT+464
+ #define MED_MULTI_STEPY            IDT_MAPEDIT+465
+ #define MED_MULTI_ANGLEGRAD        IDT_MAPEDIT+466
+ #define MED_MULTI_ANGLEMIN         IDT_MAPEDIT+467
+ #define MED_MULTI_ANGLESEC         IDT_MAPEDIT+468
+ #define MED_MULTI_DISTANCE         IDT_MAPEDIT+469
+ #define MED_MULTI_COUNTDIRECT1     IDT_MAPEDIT+470
+ #define MED_MULTI_CHECK           	IDT_MAPEDIT+471
+
+ #define MED_CUT_INDELETE           IDT_MAPEDIT+451
+ #define MED_CUT_INCHANGE           IDT_MAPEDIT+452
+ #define MED_CUT_INCODE             IDT_MAPEDIT+453
+ #define MED_CUT_INCODE_B           IDT_MAPEDIT+454
+
+
+
+ // Диалог настройки горячих клавиш
+ #define MED_SETHOTKEYDLG           IDT_MAPEDIT+431
+ #define MED_STATHOTKEY             IDT_MAPEDIT+451
+ #define MED_DEFAULTHOTKEY	         IDT_MAPEDIT+452
+ #define MED_EDITHOTKEY   	         IDT_MAPEDIT+453
+
+ // Диалог выравнивания текста подписи
+ #define MED_ALGDIALOG              IDT_MAPEDIT+432
+ #define MED_ALOK                   IDT_MAPEDIT+451
+ #define MED_CANCEL	               IDT_MAPEDIT+452
+ #define MED_PANAL                  IDT_MAPEDIT+453
+
+ // НАЧАЛО ДИАЛОГОВ С 450
+ 
+ // Радиус окружности
+ #define MED_RADIUS          IDT_MAPEDIT+450 //
+ #define MED_RAD_COMBOBOX    IDT_MAPEDIT+450
+ #define MED_RAD_VALUE       IDT_MAPEDIT+451
+
+ // Диалог выбора текущей карты
+ #define MED_CHANGEMAP       IDT_MAPEDIT+451 //
+ #define MED_MAP             IDT_MAPEDIT+452
+ #define MED_MAPS             IDT_MAPEDIT+453         
+
+ // Модель
+ #define IDD_MODELEX         IDT_MAPEDIT+452 //
+ #define IDD_MODELEXM        IDT_MAPEDIT+453 //
+ #define IDD_MODELEXL        IDT_MAPEDIT+454 //
+ #define IDC_MODELEX_TABCNT  IDT_MAPEDIT+453
+ #define IDC_MODELEX_NOTETAB IDT_MAPEDIT+454
+ #define IDC_MODELEX_STATIC1 IDT_MAPEDIT+455
+ #define IDC_MODELEX_STATIC2 IDT_MAPEDIT+456
+
+ #define MED_MIXCREATE       IDT_MAPEDIT+455   //
+ #define MED_MIXTYPEBOX      IDT_MAPEDIT+450
+ #define MED_MIXTYPELABEL    IDT_MAPEDIT+451
+
+ #define MED_REZIMEDIALOG  IDT_MAPEDIT+456   //
+
+ #define MED_ACTABOLITION  IDT_MAPEDIT+457   //
+ #define MED_ABOLITIONLIST IDT_MAPEDIT+450
+
+ #define MED_ANGLEDIALOG   IDT_MAPEDIT+458   //
+ #define MED_ANGLEVALUE    IDT_MAPEDIT+450
+
+
+ // ===============================================
+ //  Диалоги из SeekRsc
+ // ===============================================
+
+ // Диалог запроса режима работы при объединении наборов
+ #define MED_MESSAGE_DIALOG         IDT_MAPEDIT+459  
+ #define MED_MESSAGE_STATIC         IDT_MAPEDIT+450
+ #define MED_MESSAGE_HIERARCHY      IDT_MAPEDIT+451
+ #define MED_MESSAGE_ONE            IDT_MAPEDIT+452
+ #define MED_MESSAGE_GROUP          IDT_MAPEDIT+453
+
+ // Обработка
+ #define MED_SEEK	           IDT_MAPEDIT+460  //
+ #define MED_SEEK_OK         IDT_MAPEDIT+450
+ #define MED_SEEK_NEXT	      IDT_MAPEDIT+451
+ #define MED_SEEK_ALL	       IDT_MAPEDIT+452
+ #define MED_SEEK_CANCEL     IDT_MAPEDIT+453
+ #define MED_SEEK_HELP	      IDT_MAPEDIT+454
+ #define IDEXAMPLE           IDT_MAPEDIT+455
+ #define IDCODT	             IDT_MAPEDIT+456
+ #define MED_SEEKMAP         IDT_MAPEDIT+457
+ #define MED_SEEK_PROCESS    IDT_MAPEDIT+458
+ #define IDNUMBT	            IDT_MAPEDIT+459
+ #define IDNAMET	            IDT_MAPEDIT+460
+ #define IDTYPET	            IDT_MAPEDIT+461
+ #define IDLAYT	             IDT_MAPEDIT+462
+ #define IDISLOG             IDT_MAPEDIT+463
+ #define SEEK_TIME           IDT_MAPEDIT+464
+
+ // Выбор вида объекта
+ #define CHOICE_RSC_CODE	    IDT_MAPEDIT+461 //
+ #define GETOBJECTCODE       IDT_MAPEDIT+462 //  MED_MENU_REGIME   // ??? 
+ #define CODE_EDIT	          IDT_MAPEDIT+450
+ #define IDC_LISTBOX_LOCAL	  IDT_MAPEDIT+451
+ #define FRAME_OBJECT	       IDT_MAPEDIT+452
+ #define NAME_EDIT           IDT_MAPEDIT+453
+ #define IDC_LISTBOX_SLOI	   IDT_MAPEDIT+454
+ #define IDC_LISTBOX_NAME	   IDT_MAPEDIT+455
+ #define MED_TOOLSPANEL      IDT_MAPEDIT+456
+ #define MED_SEMREPEAT       IDT_MAPEDIT+457
+ #define MED_COMBOMAP        IDT_MAPEDIT+458
+
+ // Подпись
+ #define MED_MULTITITLE	     IDT_MAPEDIT+463  //
+ #define MED_MONOTITLE       IDT_MAPEDIT+464  //
+ #define ID_TITLEEDIT	       IDT_MAPEDIT+450
+
+ // Перенос на другую карту
+ #define MED_COPYDIALOG      IDT_MAPEDIT+465  //
+ #define MED_OBJECTFRAME     IDT_MAPEDIT+450
+ #define MED_PANELFRAME      IDT_MAPEDIT+451
+ #define MED_UNIFORM         IDT_MAPEDIT+452
+ #define MED_CUTSELECT       IDT_MAPEDIT+453
+ #define MED_NEWMAP          IDT_MAPEDIT+454
+
+ // Диалог вставки точки
+ #define MED_INSERTDIALOG	 IDT_MAPEDIT+466    //
+ #define MED_INSERTY	      IDT_MAPEDIT+450
+ #define MED_INSERTX	      IDT_MAPEDIT+451
+ #define MED_INSERTDX      IDT_MAPEDIT+452
+ #define MED_INSERTDY      IDT_MAPEDIT+453
+ #define MED_INSERTDIST    IDT_MAPEDIT+454
+ #define MED_INSGRAD	      IDT_MAPEDIT+455
+ #define MED_INSMIN	       IDT_MAPEDIT+456
+ #define MED_INSSEC	       IDT_MAPEDIT+457
+ #define MED_INSERTOK      IDT_MAPEDIT+458
+ #define MED_INSANGLELIST  IDT_MAPEDIT+459
+
+ // Диалоги создания пользовательских объектов
+ #define IDD_VIEWSETOBJECTKEY IDT_MAPEDIT+467  //
+
+ // Диалог редактирования вида линейного объекта
+ #define IDD_VIEWPANEL        IDT_MAPEDIT+468  //
+ #define IDD_VIEWOBJECT       IDT_MAPEDIT+469
+ #define IDC_VIEWLINECONT     IDT_MAPEDIT+450
+ #define IDC_VIEWLINEPANL     IDT_MAPEDIT+451
+ #define IDC_VIEWSQUAREPANL   IDT_MAPEDIT+452
+ #define IDC_VIEWLINEPANLGR	  IDT_MAPEDIT+453
+ #define IDC_VIEWSQUAREPANLGR IDT_MAPEDIT+454
+ #define IDC_VIEWSQUAREPOINT  IDT_MAPEDIT+455
+
+ // Диалог редактирования линии
+ #define IDD_VIEWLINEOBJ1     IDT_MAPEDIT+470  //
+ #define IDC_VIEWLINEPANL1	   IDT_MAPEDIT+456
+ #define IDC_VIEWGROUPBOX1	   IDT_MAPEDIT+457
+ #define IDC_VIEWRADIOBUTTON1 IDT_MAPEDIT+458
+ #define IDC_VIEWRADIOBUTTON2 IDT_MAPEDIT+459
+
+ // Дочерний диалог "линия"
+ #define IDD_VIEWLINEPARAM	    IDT_MAPEDIT+471 //
+ #define IDC_VIEWLINEGRBOX	    IDT_MAPEDIT+460
+ #define IDC_VIEWLINETHICK	    IDT_MAPEDIT+461 // толщина
+ #define IDC_VIEWLINECOLOR	    IDT_MAPEDIT+462
+ #define IDC_VIEWLINETHICKEDIT IDT_MAPEDIT+463
+ #define IDC_VIEWLINEBLANKEDIT	IDT_MAPEDIT+464
+
+ // Дочерний диалог "пунктир"
+ #define IDD_VIEWDOTPARAM	    IDT_MAPEDIT+472  //
+ #define IDC_VIEWDOTDASH      IDT_MAPEDIT+465
+ #define IDC_VIEWDOTDASHEDIT  IDT_MAPEDIT+466
+ #define IDC_VIEWDOTBLANK     IDT_MAPEDIT+467
+ #define IDC_VIEWDOTBLANKEDIT IDT_MAPEDIT+468
+ #define IDC_VIEWDOTSHIFTEDIT IDT_MAPEDIT+469
+ #define IDC_VIEWDOTSHIFT     IDT_MAPEDIT+470
+
+ // Дочерний диалог "параметры"
+ #define IDD_VIEWPARAMDLG     IDT_MAPEDIT+473  //
+ #define IDD_VIEWSETOBJECT    IDT_MAPEDIT+474  //
+
+ #define IDC_MEDSITECBOX      IDT_MAPEDIT+472
+ #define IDC_MEDLAYERCBOX     IDT_MAPEDIT+473
+ #define IDC_MEDSITESTAT      IDT_MAPEDIT+474
+ #define IDC_MEDSITECLEAR	    IDT_MAPEDIT+475
+
+ // Дочерний диалог "цвет"
+ #define IDD_VIEWCOLORPARAM   IDT_MAPEDIT+475  //
+
+ // Дочерний диалог "штриховка"
+ #define IDD_VIEWCROSSPARAM	  IDT_MAPEDIT+476  //
+
+ // Дочерний диалог "пунктир"
+ #define IDD_VIEWDOTSHIFTPARAM	IDT_MAPEDIT+477 //
+
+ // Переменный набор параметров
+ #define IDD_VIEWVARI         IDT_MAPEDIT+478  //
+ #define IDC_VIEWVARILINE1    IDT_MAPEDIT+476
+ #define IDC_VIEWVARILINE2    IDT_MAPEDIT+477
+ // Тип штриховки
+ #define IDC_VIEWVARIKIND	    IDT_MAPEDIT+478  //
+ #define IDC_VIEWVARIKINDSTAT IDT_MAPEDIT+479
+ #define IDC_VIEWDOTSHIFTSTAT IDT_MAPEDIT+480
+ #define ISC_VIEWPANEL        IDT_MAPEDIT+481  // скроллер
+
+ // Создание точечного
+ #define IDD_VIEWSETPOINTOBJECT  IDT_MAPEDIT+479 //
+ #define IDC_MEDSITENEW       IDT_MAPEDIT+450
+ #define IDC_MEDSCALEBOX      IDT_MAPEDIT+451
+
+// Добавление / обновление/ удаление семантики объекта
+ #define IDD_MEDSEMANTADD     IDT_MAPEDIT+480    //
+ #define IDD_MEDSEMANTDEL     IDT_MAPEDIT+481    //
+ #define IDD_MEDSEMANTUPD     IDT_MAPEDIT+482    //
+ #define IDD_MEDSEMANCHANGE   IDT_MAPEDIT+483    //
+
+ #define IDC_MEDSEMANTADD_NAME   IDT_MAPEDIT+450
+ #define IDC_MEDSEMANTADD_VALUE  IDT_MAPEDIT+451
+ #define IDC_MEDSEMANTADD_COUNT1 IDT_MAPEDIT+452
+ #define IDC_MEDSEMANTADD_COUNT2 IDT_MAPEDIT+453
+ #define IDC_MEDSEMANTADD_PROC   IDT_MAPEDIT+454
+ #define IDC_MEDSEMANTADD_RAD1   IDT_MAPEDIT+455
+ #define IDC_MEDSEMANTADD_RAD2   IDT_MAPEDIT+456
+ #define IDC_MEDSEMANTDEL_SEM    IDT_MAPEDIT+457
+ #define IDC_MEDSEMANTDEL_ERR    IDT_MAPEDIT+458
+ #define IDC_MEDSEMANTUPD_NEWVALUE  IDT_MAPEDIT+459
+ #define IDC_MEDSEMANTADD_GROUP  IDT_MAPEDIT+460
+ #define IDC_MEDSEMANTMAP        IDT_MAPEDIT+461
+ #define IDC_MEDSEMGROUPBOX	     IDT_MAPEDIT+462
+ #define IDC_MEDSEMRADIO1	       IDT_MAPEDIT+463
+ #define IDC_MEDSEMRADIO2	       IDT_MAPEDIT+464
+ #define IDC_MEDSEMRESETALL      IDT_MAPEDIT+465
+ #define IDC_MEDSEMRESETDEL      IDT_MAPEDIT+466
+ #define IDC_MEDSEMTRANZAK       IDT_MAPEDIT+467
+ #define IDC_MEDSEMANTUPD_NEWNAME IDT_MAPEDIT+468
+ #define IDC_MEDSEMANTUPD_CODE   IDT_MAPEDIT+469
+
+
+ // Параметры
+ #define MED_PROPERTY        IDT_MAPEDIT+484    //
+ #define MED_ISFRAMEEDIT     IDT_MAPEDIT+450
+ #define MED_ISSEMANTIC      IDT_MAPEDIT+451
+ #define MED_ISCUT           IDT_MAPEDIT+452
+ #define MED_ISDEVIDE        IDT_MAPEDIT+453
+ #define MED_ISCLEARSELECT   IDT_MAPEDIT+454
+ #define MED_IS3DDATA        IDT_MAPEDIT+455
+ #define MED_ISCURSOR        IDT_MAPEDIT+456
+ #define MED_METERBOX        IDT_MAPEDIT+457
+ #define MED_FILTERVALUE     IDT_MAPEDIT+458
+ #define MED_SPLINEVALUE     IDT_MAPEDIT+459
+ #define MED_ADJUSTVALUE     IDT_MAPEDIT+460
+ #define MED_ZONEWIDE        IDT_MAPEDIT+461
+ #define MED_ISOPTIONNEXT    IDT_MAPEDIT+463
+ #define MED_ISOPTIONSEEK    IDT_MAPEDIT+464
+ #define MED_ISOPTIONGROUP   IDT_MAPEDIT+466
+ #define MED_FINDSECTOR      IDT_MAPEDIT+467
+ #define MED_FINDRADIUS      IDT_MAPEDIT+468
+ #define MED_AUTOCODE        IDT_MAPEDIT+469
+ #define MED_VECTORSPY       IDT_MAPEDIT+470
+ #define MED_VECTORSPEED     IDT_MAPEDIT+471
+ #define MED_ISSTATISTIC     IDT_MAPEDIT+472
+ #define MED_ISCROSS         IDT_MAPEDIT+473
+ #define MED_POINTINSPLINE   IDT_MAPEDIT+474
+ #define MED_ISOPTIONTRASS   IDT_MAPEDIT+475
+ #define MED_SETHOTKEY       IDT_MAPEDIT+476
+ #define MED_ISOPTIONRESET   IDT_MAPEDIT+477
+ #define MED_MAPSPLINESTAT   IDT_MAPEDIT+478
+ #define MED_MAPSPLINEDYN    IDT_MAPEDIT+479
+ #define MED_SITSPLINESTAT   IDT_MAPEDIT+480
+ #define MED_SITSPLINEDYN    IDT_MAPEDIT+481
+ #define MED_ISAUTOCOD	      IDT_MAPEDIT+482   
+
+ // Подпись обстановки
+ #define MED_SITTEXT	        IDT_MAPEDIT+485   //
+ #define MED_STLAYER	        IDT_MAPEDIT+450
+ #define MED_STBG            IDT_MAPEDIT+451
+ #define MED_STLEFT          IDT_MAPEDIT+452
+ #define MED_STHOR           IDT_MAPEDIT+453
+ #define MED_STSCALE         IDT_MAPEDIT+454
+ #define MED_STTEXT          IDT_MAPEDIT+455
+ #define MED_STTEXTCOLOR     IDT_MAPEDIT+456
+ #define MED_STHIG           IDT_MAPEDIT+457
+ #define MED_STBOLD          IDT_MAPEDIT+458
+ #define MED_STLENG          IDT_MAPEDIT+459
+ #define MED_STFONT          IDT_MAPEDIT+460
+ #define MED_STMAP           IDT_MAPEDIT+461
+ #define MED_STIMAGE         IDT_MAPEDIT+462
+ #define MED_STBGCOLOR       IDT_MAPEDIT+463
+ #define MED_STSHAD          IDT_MAPEDIT+464
+ #define MED_STSHADCOLOR     IDT_MAPEDIT+465
+
+// #define MED_VERTICAL        IDT_MAPEDIT+
+
+ // Диалог Границ Видимости
+ #define MED_BOTTOP          IDT_MAPEDIT+486   //
+ #define MED_BOTBOX          IDT_MAPEDIT+450
+ #define MED_TOPBOX          IDT_MAPEDIT+451
+ #define MED_CHEKRSC         IDT_MAPEDIT+452
+ #define MED_BOTALL          IDT_MAPEDIT+453
+
+ // 1 Диалог фильтра ошибок по результатам контроля
+ #define MED_ERRORDIALOG     IDT_MAPEDIT+487   //
+ #define MED_ERRORLIST       IDT_MAPEDIT+450
+ #define MED_ERRFIRST        IDT_MAPEDIT+451
+ #define MED_ERRLAST         IDT_MAPEDIT+452
+ #define MED_ERRPREV         IDT_MAPEDIT+453
+ #define MED_ERRNEXT         IDT_MAPEDIT+454
+ #define MED_ERRMARK         IDT_MAPEDIT+455
+ #define MED_ERRFILTER       IDT_MAPEDIT+456
+ #define MED_ERRORSTEXTALL   IDT_MAPEDIT+457
+ #define MED_ERRORSCOUNTALL  IDT_MAPEDIT+458
+ #define MED_ERRORSTEXTSET   IDT_MAPEDIT+459
+ #define MED_ERRORSCOUNTSET  IDT_MAPEDIT+460
+ #define MED_ERRSELECT       IDT_MAPEDIT+461
+ #define MED_ERRDELETECHECK  IDT_MAPEDIT+462
+
+ // 2 Диалог фильтра ошибок по результатам контроля
+ #define IDD_ERRORFILTER    IDT_MAPEDIT+488   //
+ #define IDC_ERRORLIST      IDT_MAPEDIT+450
+ #define IDC_ERRORSTATIC    IDT_MAPEDIT+451
+ #define IDC_LISTLIST       IDT_MAPEDIT+452
+ #define IDC_LISTSTATIC     IDT_MAPEDIT+453
+ #define IDC_TYPELIST       IDT_MAPEDIT+454
+ #define IDC_TYPESTATIC     IDT_MAPEDIT+455
+ #define IDC_LAYERLIST      IDT_MAPEDIT+456
+ #define IDC_LAYERSTATIC    IDT_MAPEDIT+457
+ #define IDC_OBJECTLIST     IDT_MAPEDIT+458
+ #define IDC_OBJECTSTATIC   IDT_MAPEDIT+459
+ #define IDC_ERRORRESET     IDT_MAPEDIT+460
+ #define IDC_LISTRESET      IDT_MAPEDIT+461
+ #define IDC_TYPERESET      IDT_MAPEDIT+462
+ #define IDC_LAYERRESET     IDT_MAPEDIT+463
+ #define IDC_OBJECTRESET    IDT_MAPEDIT+464
+ #define IDC_MARKCHECK      IDT_MAPEDIT+465
+ #define IDC_COUNTERRORS1   IDT_MAPEDIT+466
+ #define IDC_COUNTERRORS2   IDT_MAPEDIT+467
+
+ // 1 Потоковое редактирование семантики
+ #define IDD_EDITSEMANT_MAIN  IDT_MAPEDIT+489   //
+ #define IDC_EDITSEMANT_CANCEL  IDT_MAPEDIT+450
+ #define IDC_EDITSEMANT_OK      IDT_MAPEDIT+451
+ #define IDC_EDITSEMANT_EX      IDT_MAPEDIT+452
+ #define IDC_EDITSEMANT_HELP    IDT_MAPEDIT+453
+ #define IDC_EDITSEMANT_MAP     IDT_MAPEDIT+454
+ #define IDC_EDITSEMANT_LIST1   IDT_MAPEDIT+455
+ #define IDC_EDITSEMANT_LIST2   IDT_MAPEDIT+456
+ #define IDC_EDITSEMANT_THERE   IDT_MAPEDIT+457
+ #define IDC_EDITSEMANT_THRALL  IDT_MAPEDIT+458
+ #define IDC_EDITSEMANT_THRSEL  IDT_MAPEDIT+459
+ #define IDC_EDITSEMANT_OUT     IDT_MAPEDIT+460
+
+ // 2 Потоковое редактирование семантики
+ #define IDD_EDITSEMANT_EDIT    IDT_MAPEDIT+490  //
+ #define IDC_EDIT_FRAME         IDT_MAPEDIT+450
+ #define IDC_EDIT_NEXT          IDT_MAPEDIT+451
+ #define IDC_EDIT_BACK          IDT_MAPEDIT+452
+ #define IDC_EDIT_SCAN          IDT_MAPEDIT+453
+ #define IDC_EDIT_PICT          IDT_MAPEDIT+454
+ #define IDC_EDIT_NUMB          IDT_MAPEDIT+455
+ #define IDC_EDIT_CODE          IDT_MAPEDIT+456
+ #define IDC_EDIT_NAME          IDT_MAPEDIT+457
+ #define IDC_EDIT_LAYER         IDT_MAPEDIT+458
+ #define IDC_EDIT_SAVE          IDT_MAPEDIT+459
+ #define IDC_EDIT_CANC          IDT_MAPEDIT+460
+
+ // Размер бара
+ #define MED_BARSIZE         IDT_MAPEDIT+491     //
+ #define MED_BARHIGHT        IDT_MAPEDIT+450
+ #define MED_BARWIDE         IDT_MAPEDIT+451
+
+ // Редактирование шаблонов
+ #define MED_MIXEDITDIALOG   IDT_MAPEDIT+492     //
+ #define MED_MIXEDLIST       IDT_MAPEDIT+450
+ #define MED_MIXEDEDIT       IDT_MAPEDIT+451
+
+ // Параметры перемещения объекта(для режима вращения)
+ #define IDD_MED_RELOCATEROTATE	IDT_MAPEDIT+493  //
+ #define IDC_MED_RELOCARADIO1	  IDT_PSPEDIT+450
+ #define IDC_MED_RELOCARADIO2	  IDT_PSPEDIT+451
+ #define IDC_MED_RELOCARADIO3	  IDT_PSPEDIT+452
+ #define IDC_MED_RELOCAEDIT1	   IDT_PSPEDIT+453
+ #define IDC_MED_RELOCAEDIT2	   IDT_PSPEDIT+454
+ #define IDC_MED_RELOCAEDIT3	   IDT_PSPEDIT+455
+ #define IDC_MED_RELOCAEDIT4	   IDT_PSPEDIT+456
+ #define IDC_MED_RELOCAEDIT5	   IDT_PSPEDIT+457
+ #define IDC_MED_RELOCAEDIT6	   IDT_PSPEDIT+458
+ #define IDC_MED_RELOCAEDIT7	   IDT_PSPEDIT+459
+ #define IDC_MED_RELOCAEDIT8	   IDT_PSPEDIT+460
+ #define IDC_MED_RELOCAEDIT9	   IDT_PSPEDIT+461
+ #define IDC_MED_RELOCAEDIT10	  IDT_PSPEDIT+462
+ #define IDC_MED_RELOCAGROUP1   IDT_PSPEDIT+463
+ #define IDC_MED_RELOCAGROUP2   IDT_PSPEDIT+464
+ #define IDC_MED_RELOCAGROUP3   IDT_PSPEDIT+465
+ #define IDC_MED_RELOCAGROUP4   IDT_PSPEDIT+466
+ #define IDC_MED_RELOCASTATIC1  IDT_PSPEDIT+467
+ #define IDC_MED_RELOCASTATIC2  IDT_PSPEDIT+468
+ #define IDC_MED_RELOCASTATIC3  IDT_PSPEDIT+469
+ #define IDC_MED_RELOCASTATIC4  IDT_PSPEDIT+470
+ #define IDC_MED_RELOCASTATIC5  IDT_PSPEDIT+471
+ #define IDC_MED_RELOCASTATIC6  IDT_PSPEDIT+472
+ #define IDC_MED_RELOCAOK       IDT_PSPEDIT+473
+ #define IDC_MED_RELOCACANCEL   IDT_PSPEDIT+474
+ #define IDC_MED_RELOCAEDIT41   IDT_PSPEDIT+475   
+ #define IDC_MED_RELOCAEDIT51	  IDT_PSPEDIT+476
+ #define IDC_MED_RELOCAEDIT61	  IDT_PSPEDIT+477
+
+ // Смена макетов
+ #define MED_GROUP_DIALOG    IDT_MAPEDIT+494
+ #define MED_GROUP_DELETE    IDT_MAPEDIT+450
+ #define MED_GROUP_LIST      IDT_MAPEDIT+451
+// #define MED_MAP             IDT_MAPEDIT+452
+ #define MED_GROUP_NAME      IDT_MAPEDIT+453
+ #define MED_GROUP_PANEL     IDT_MAPEDIT+454
+ #define MED_GROUP_ADD       IDT_MAPEDIT+455
+
+ // Изменить вид графического объекта
+ #define MED_DRAWUPDATE_DIALOG      IDT_MAPEDIT+495
+ #define MED_DRAWUPDATE_DRAWLINE    IDT_MAPEDIT+450
+ #define MED_DRAWUPDATE_DRAWSQUARE  IDT_MAPEDIT+451
+ #define MED_DRAWUPDATE_DRAWPOINT   IDT_MAPEDIT+452
+ #define MED_DRAWUPDATE_DRAWTITLE   IDT_MAPEDIT+453
+ #define MED_DRAWUPDATE_RSCLINE     IDT_MAPEDIT+454
+ #define MED_DRAWUPDATE_RSCSQUARE   IDT_MAPEDIT+455
+ #define MED_DRAWUPDATE_RSCPOINT    IDT_MAPEDIT+456
+ #define MED_DRAWUPDATE_RSCTITLE    IDT_MAPEDIT+457
+ #define MED_DRAWUPDATE_STATLINE    IDT_MAPEDIT+458
+ #define MED_DRAWUPDATE_STATSQUARE  IDT_MAPEDIT+459
+ #define MED_DRAWUPDATE_STATPOINT   IDT_MAPEDIT+460
+ #define MED_DRAWUPDATE_STATTITLE   IDT_MAPEDIT+461
+
+ #define MED_SEEKCUTDIALOG          IDT_MAPEDIT+496
+ #define MED_CUT_INSAVE             IDT_MAPEDIT+450
+ #define MED_CUT_INDELETE           IDT_MAPEDIT+451
+ #define MED_CUT_INCHANGE           IDT_MAPEDIT+452
+ #define MED_CUT_INCODE             IDT_MAPEDIT+453
+ #define MED_CUT_INCODE_B           IDT_MAPEDIT+454
+
+ #define MED_EDITDIALOG             IDT_MAPEDIT+497
+ #define MED_CHANGEIN               IDT_MAPEDIT+450
+ #define MED_CHANGEOUT              IDT_MAPEDIT+451
+ #define MED_CANCEL                 IDT_MAPEDIT+452
+ #define MED_PANAL                  IDT_MAPEDIT+453
+ #define MED_OK                     IDT_MAPEDIT+454
+ #define MED_CURRENT                IDT_MAPEDIT+455
+ #define MED_PASS                   IDT_MAPEDIT+456
+ #define MED_OUT                    IDT_MAPEDIT+457
+ #define MED_ALL                    IDT_MAPEDIT+458
+ #define MED_REGISTER               IDT_MAPEDIT+459
+
+ #define MED_EMBDIALOG              IDT_MAPEDIT+498 // Насыпь, выемка
+ #define MED_EMBLENGTH              IDT_MAPEDIT+450
+ #define MED_EMBSTEP                IDT_MAPEDIT+451
+
+ // Диалог объединения выделенных объектов
+ #define MED_UNIONDIALOG            IDT_MAPEDIT+499  
+ #define MED_UNION_OK               IDT_MAPEDIT+450
+ #define MED_UNION_CANCEL           IDT_MAPEDIT+451
+ #define MED_UNION_HELP             IDT_MAPEDIT+452
+ #define MED_UNION_CHECKDELETE      IDT_MAPEDIT+453
+ #define MED_UNION_CHECKSEMAN       IDT_MAPEDIT+454
+ #define MED_UNION_CHECKLOG         IDT_MAPEDIT+455
+ #define MED_UNION_CHOOSE           IDT_MAPEDIT+456
+ #define MED_UNION_EDIT             IDT_MAPEDIT+457
+ #define MED_UNION_CONTROLSEMAN     IDT_MAPEDIT+458  
+
+
+ // ===============================================
+ //  StringTable
+ // ===============================================
+ #define IDC_EDIT_COLCOUNT          3
+ #define IDS_EDIT_CODE          IDT_MAPEDIT+450
+ #define IDS_EDIT_NAME          IDT_MAPEDIT+451
+ #define IDS_EDIT_SUBST         IDT_MAPEDIT+452
+
+ #define IDS_EDITSEMANT_TITLE   IDT_MAPEDIT+453
+ #define IDS_EDIT_NN            IDT_MAPEDIT+454
+ #define IDS_EDIT_NN1           IDT_MAPEDIT+455
+ #define IDS_EDITSEMANT_MESS    IDT_MAPEDIT+456
+ #define IDS_EDIT_RESET         IDT_MAPEDIT+457
+ #define IDS_EDIT_SELECT        IDT_MAPEDIT+458
+
+ #define STR_VIEWLINEDOWN       IDT_MAPEDIT+459
+ #define STR_VIEWLINEUP         IDT_MAPEDIT+460
+ #define STR_VIEWDOTDOWN        IDT_MAPEDIT+461
+ #define STR_VIEWDOTUP          IDT_MAPEDIT+462
+ #define STR_VIEWDOT            IDT_MAPEDIT+463
+ #define STR_VIEWLINECONTUR     IDT_MAPEDIT+464
+ #define STR_VIEWSQUAREFILL     IDT_MAPEDIT+465
+ #define STR_MEDTITLELINE       IDT_MAPEDIT+466
+ #define STR_MEDTITLESQUARE     IDT_MAPEDIT+467
+ #define STR_VIEWSQUAREPOINT    IDT_MAPEDIT+468
+
+ #define STR_VIEWSQUAREKIND1    IDT_MAPEDIT+469
+ #define STR_VIEWSQUAREKIND2    IDT_MAPEDIT+470
+ #define STR_VIEWSQUAREKIND3    IDT_MAPEDIT+471
+
+ #define STR_MEDSEMANTPROC_CANCEL IDT_MAPEDIT+472
+ #define STR_MEDSEMANTPROC      IDT_MAPEDIT+473
+ #define STR_MEDGRAFICOBJECT    IDT_MAPEDIT+474
+
+ #define STR_ERRORSTATIC        IDT_MAPEDIT+475
+ #define STR_ERRORSTATIC1       IDT_MAPEDIT+476
+ #define STR_LISTSTATIC         IDT_MAPEDIT+477
+ #define STR_TYPESTATIC         IDT_MAPEDIT+478
+ #define STR_LAYERSTATIC        IDT_MAPEDIT+479
+ #define STR_OBJECTSTATIC       IDT_MAPEDIT+480
+
+
+#endif

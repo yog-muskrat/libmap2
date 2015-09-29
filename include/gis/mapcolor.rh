@@ -1,0 +1,84 @@
+#ifndef MAPCOLOR_RH        
+#define MAPCOLOR_RH
+
+#include "mmapmenu.rh"
+
+// reserve 25 unit   !!!!!!!!!!!
+
+#define IDD_MAIN_CLRS        MAP_COLOR
+                                                 
+#define IDD_COLRS            IDD_MAIN_CLRS + 1
+#define IDD_PALL             IDD_MAIN_CLRS + 2
+#define IDD_MPALL            IDD_MAIN_CLRS + 3
+#define IDD_RPALL            IDD_MAIN_CLRS + 4
+
+#define IDC_UNIT             101                  
+#define IDC_CLR_CONTROL      IDC_UNIT + 1
+#define IDC_COMCOL_BUTTON1   IDC_UNIT + 3
+#define IDC_COMCOL_BUTTON2   IDC_UNIT + 4
+#define IDC_COMCOL_BUTTON3   IDC_UNIT + 5
+#define IDC_COMCOL_BUTTON4   IDC_UNIT + 6         // 04//05//00
+
+#define IDC_COLOR_TRACK1     IDC_UNIT + 7
+#define IDC_COLOR_TRACK2     IDC_UNIT + 8
+#define IDC_COLOR_BOX        IDC_UNIT + 9
+#define IDC_PALETTE_MAP      IDC_UNIT + 10
+#define IDC_MAPPAL_APPLY     IDC_UNIT + 11
+#define IDC_MAPPAL_COMBOBOX  IDC_UNIT + 23
+
+#define IDC_COLOR_TRM1       IDC_UNIT + 12
+#define IDC_COLOR_TRM2       IDC_UNIT + 13
+#define IDC_COLOR_BUTT2	     IDC_UNIT + 14
+#define IDC_COLOR_BUTT1	     IDC_UNIT + 15
+#define IDC_PALETTE_MTR      IDC_UNIT + 16
+#define IDC_COLOR_MTRSHADOW  IDC_UNIT + 17
+//#define IDC_COLOR_MTRSHADOWTYPE IDC_UNIT + 18
+//#define IDC_MPALETTE_APPLY   IDC_UNIT + 17
+
+#define IDAPPLY              IDC_UNIT + 19
+#define IDRESET              IDC_UNIT + 20
+
+#define IDC_RST_BOX          IDC_UNIT + 21
+#define IDC_COLOR_RST1       IDC_UNIT + 22
+#define IDC_COLOR_RST2       IDC_UNIT + 23
+#define IDC_PALETTE_RST      IDC_UNIT + 24
+#define IDC_COLOR_RST3       IDC_UNIT + 25
+#define IDC_COLORRST_1	      IDC_UNIT + 26
+#define IDC_COLORRST_2	      IDC_UNIT + 27
+#define IDC_COLORRST_0	      IDC_UNIT + 28
+#define IDC_COLOR_RST_PALETTETYPE	IDC_UNIT + 29
+#define IDC_COLORRST_WRITE   IDC_UNIT + 30
+
+//#define IDC_RPALL_APPLY      IDC_UNIT + 23
+
+#define IDC_COMCOL_THICK     IDC_UNIT + 31
+
+#define IDS_COLOR_SERV       IDC_UNIT + 32
+#define IDS_COLOR_MAP        IDC_UNIT + 33
+#define IDS_COLOR_MATR       IDC_UNIT + 34
+#define IDS_COLOR_RST        IDC_UNIT + 35
+#define IDS_COLOR_MTL        IDC_UNIT + 36
+#define IDS_COLOR_TIN        IDC_UNIT + 37
+
+#define IDC_COLOR_MTRCOLORCOUNT    IDC_UNIT + 37
+#define IDC_COLOR_MTRPALETTETYPE   IDC_UNIT + 38
+#define IDC_COLOR_MTRSHADOWTYPE    IDC_UNIT + 39
+#define IDC_COLOR_MTRMINIMUM       IDC_UNIT + 40
+#define IDC_COLOR_MTRMEDIUM	       IDC_UNIT + 41
+#define IDC_COLOR_MTRMAXIMUM	     IDC_UNIT + 42
+#define IDC_COLOR_MTRMINIMUMCOLOR	 IDC_UNIT + 43
+#define IDC_COLOR_MTRMEDIUMCOLOR	 IDC_UNIT + 44
+#define IDC_COLOR_MTRMAXIMUMCOLOR	 IDC_UNIT + 45
+#define IDC_COLOR_MTRTRACKBARPALETTE	 IDC_UNIT + 46
+#define IDC_COLOR_MTRFIXEDDIAPASON    IDC_UNIT + 47
+#define IDC_COLOR_MTRDIAPASON	         IDC_UNIT + 48
+#define IDC_COLOR_MTRTRACKBARBRIGHT	   IDC_UNIT + 49
+#define IDC_COLOR_MTRTRACKBARCONTRAST  IDC_UNIT + 50
+#define IDC_COLOR_MTRSHADOWDEPTH       IDC_UNIT + 51
+#define IDC_COLOR_MTRSHADOWINTENSITY   IDC_UNIT + 52
+#define IDC_COLOR_MTRPALETTEFROMMPT    IDC_UNIT + 53  
+
+#define IDSET  IDC_UNIT + 53  
+
+#endif // MAPCOLOR_RH
+
