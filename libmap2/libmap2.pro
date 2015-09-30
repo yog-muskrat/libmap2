@@ -21,11 +21,16 @@ HEADERS += mapcanvas.h \
 	../include/map2/mapvectorobject.h \
 	../include/map2/mapview.h \
 	../include/map2/structs.h \
-	../include/map2/mapobject.h
+	../include/map2/mapobject.h \
+    ../include/map2/rscselectdialog.h
 SOURCES += layersmodel.cpp \
 		   mapcanvas.cpp \
 		   maplayer.cpp \
 		   mapnavigation.cpp \
 		   mapobject.cpp \
 		   mapvectorobject.cpp \
-		   mapview.cpp
+		   mapview.cpp \
+    rscselectdialog.cpp
+
+FORMS += \
+    rscselectdialog.ui

@@ -4,6 +4,7 @@
 #include "ui_mainwindow.h"
 #include "map2/layersmodel.h"
 #include "map2/mapvectorobject.h"
+#include "map2/rscselectdialog.h"
 
 #include <QDesktopWidget>
 #include <QDockWidget>
@@ -60,9 +61,19 @@ void MainWindow::onCoordChanged(Coord coord)
 
 void MainWindow::on_pbAddLayer_clicked()
 {
-	MapLayer *l =pView->createLayer("mgk.rsc", "Новый слой");
+	RscSelectDialog dlg;
+	if(!dlg.exec())
+	{
+		return;
+	}
 
+	QString rsc = dlg.selectedRsc();
+	if(rsc.isEmpty())
+	{
+		return;
+	}
 
+	MapLayer *l =pView->createLayer(rsc, "Новый слой");
 }
 
 void MainWindow::on_pbRemoveLayer_clicked()
