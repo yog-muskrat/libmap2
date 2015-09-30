@@ -20,26 +20,33 @@ class MapView : public QWidget
 	Q_OBJECT
 public:
 	/*!
-	 * \brief Конструктор.
-	 * \param parent - Родительский виджет.
+	 * \brief Конструктор класса.
+	 * \param sitDir Каталог для sit-файлов создаваемых для слоев карты.
+	 * \param rscDir Каталог классификаторов.
+	 * \param parent Родительский виджет.
 	 */
 	MapView(QString sitDir, QString rscDir, QWidget *parent = 0);
 	~MapView();
 
 	/*!
 	 * \brief Загружает указанную карту.
-	 * \param mapFullPath - Полный путь к файлу карты.
+	 * \param mapFullPath Полный путь к файлу карты.
 	 */
 	void openMap(QString mapFullPath);
 
 	/*!
-	 * \brief Создает новый картографический слой, использующий заданных классификатор знаков.
+	 * \brief Создает новый картографический слой, использующий заданный классификатор знаков.
+	 * Если классификатор не задан, будет вызван диалог выбора классификатора.
 	 * Слой автоматически добавляется к карте и попадает в список ее слоев.
 	 * \param rscName Классификатор знаков.
 	 * \return Указатель на созданный слой.
 	 */
-	MapLayer *createLayer(QString rscName, QString name = "newLayer");
+	MapLayer *createLayer(QString rscName = "", QString name = "");
 
+	/*!
+	 * \brief Возвращает идентификатор открытой карты.
+	 * \return Идентификатор карты.
+	 */
 	HMAP mapHandle() const {return mMapHandle;}
 
 	LayersModel * layersModel() {return mLayersModel; }

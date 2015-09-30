@@ -1,16 +1,17 @@
 #include "mapview.h"
 #include "maplayer.h"
-#include "layersmodel.h"
 #include "mapcanvas.h"
+#include "layersmodel.h"
 #include "mapnavigation.h"
+#include "rscselectdialog.h"
 
+#include <QDir>
 #include <QLabel>
 #include <QDebug>
 #include <QKeyEvent>
 #include <QScrollBar>
 #include <QGridLayout>
 #include <QApplication>
-#include <QDir>
 
 MapView::MapView(QString sitDir, QString rscDir, QWidget *parent)
 	: QWidget(parent), pNavigation(0), mIsDragged(false), mLastLayerId(0), mRscDir(rscDir), mSitDir(sitDir)
@@ -70,8 +71,24 @@ void MapView::openMap(QString mapFullPath)
 
 MapLayer *MapView::createLayer(QString rscName, QString name)
 {
+	if(rscName.isEmpty())
+	{
+		RscSelectDialog dlg;
+		if(!dlg.exec() || dlg.selectedRsc().isEmpty())
+		{
+			qDebug()<<"*** СОЗДАНИЕ СЛОЯ: Не выбран классификатор.";
+			return 0;
+		}
+
+		rscName = dlg.selectedRsc();
+	}
+
 	mLastLayerId++;
 	MapLayer *ml = new MapLayer(mLastLayerId, rscName, this);
+	if(name.isEmpty())
+	{
+		name = QString("Layer %0").arg(mLastLayerId);
+	}
 	ml->setLayerName(name);
 	mLayersModel->addLayer( ml );
 	return ml;

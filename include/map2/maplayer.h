@@ -35,6 +35,8 @@ public:
 	QString layerName() const {return mLayerName;}
 	void setLayerName(const QString &value);
 
+	QString rscName() const;
+
 	void addObject(MapObject *object, MapObject *parent = 0);
 	void removeObject(MapObject *object);
 

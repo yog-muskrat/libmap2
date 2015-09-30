@@ -65,5 +65,7 @@ void RscSelectDialog::fillModel()
 		}
 
 		pModel->appendRow(new QStandardItem(fi.fileName()));
+
+		mapCloseRsc(rscHnd);
 	}
 }

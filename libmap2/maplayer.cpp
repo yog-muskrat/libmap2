@@ -84,6 +84,20 @@ void MapLayer::setLayerName(const QString &value)
 	}
 }
 
+QString MapLayer::rscName() const
+{
+	Q_ASSERT(pMapView);
+
+	HRSC rsc = mapGetRscIdent(pMapView->mapHandle(), mSiteHandle);
+
+	if(rsc <= 0)
+	{
+		return 0;
+	}
+
+	return QString::fromLocal8Bit( mapGetRscName(rsc) );
+}
+
 void MapLayer::addObject(MapObject *object, MapObject *parent)
 {
 
