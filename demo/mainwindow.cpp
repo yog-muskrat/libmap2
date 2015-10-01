@@ -102,10 +102,15 @@ void MainWindow::on_pbAddObject_clicked()
 		return;
 	}
 
-	RscViewer *v = new RscViewer;
-	v->setRsc( l->rscName() );
-	v->setAttribute( Qt::WA_DeleteOnClose);
-	v->show();
+	long code = RscViewer::selectExCode( l->rscName() );
+
+	if(code <= 0)
+	{
+		return;
+	}
+
+	MapVectorObject *obj = new MapVectorObject(code, l);
+	obj->setCoordinates( Coord(0, 0) );
 }
 
 void MainWindow::on_pbRemoveObject_clicked()

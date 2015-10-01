@@ -7,8 +7,11 @@
 #include "gis/maptype.h"
 
 #include <QDebug>
+#include <QLayout>
 #include <QTextCodec>
 #include <QStandardItemModel>
+#include <QDialog>
+#include <QPushButton>
 
 RscViewer::RscViewer(QWidget *parent) :
 	QWidget(parent),
@@ -26,6 +29,8 @@ RscViewer::RscViewer(QWidget *parent) :
 	pRscObjectsModel->setColumnCount(1);
 	pRscObjectsModel->setHeaderData(0, Qt::Horizontal, "Объекты слоя");
 	ui->objectsList->setModel(pRscObjectsModel);
+
+	connect(ui->objectsList, SIGNAL(doubleClicked(QModelIndex)), this, SIGNAL(signSelected()));
 }
 
 RscViewer::~RscViewer()
@@ -49,6 +54,8 @@ void RscViewer::setRsc(QString rscName)
 
 	mRscName = rscName;
 
+	ui->lblTitle->setText(mRscName);
+
 	QString path = QTextCodec::codecForName("koi8r")->toUnicode( mapGetCommonRscPath() ) + "/" + mRscName;
 	mTmpSiteHandle = mapCreateTempSite(path.toLocal8Bit().data() );
 
@@ -65,12 +72,55 @@ void RscViewer::setRsc(QString rscName)
 
 long RscViewer::selectedSignCode() const
 {
-	return 0;
+	QModelIndex idx = ui->objectsList->currentIndex();
+	if(!idx.isValid())
+	{
+		return 0;
+	}
+
+	return idx.data(ExCodeRole).toInt();
 }
 
 QString RscViewer::selectedSignKey() const
 {
-	return "";
+	QModelIndex idx = ui->objectsList->currentIndex();
+	if(!idx.isValid())
+	{
+		return 0;
+	}
+
+	return idx.data(KeyRole).toString();
+}
+
+long RscViewer::selectExCode(QString rscName)
+{
+	QDialog d;
+
+	QPushButton pbOk("Готово");
+	QPushButton pbCancel("Отмена");
+
+	RscViewer view;
+	view.setRsc(rscName);
+
+	connect(&pbOk, SIGNAL(clicked()), &d, SLOT(accept()));
+	connect(&view, SIGNAL(signSelected()), &d, SLOT(accept()));
+	connect(&pbCancel, SIGNAL(clicked()), &d, SLOT(reject()));
+
+	QVBoxLayout *main = new QVBoxLayout(&d);
+
+	main->addWidget( &view );
+
+	QHBoxLayout *btnlay = new QHBoxLayout();
+	btnlay->addStretch();
+	btnlay->addWidget( &pbOk );
+	btnlay->addWidget( &pbCancel );
+
+	if(!d.exec())
+	{
+		return 0;
+	}
+
+	return view.selectedSignCode();
 }
 
 void RscViewer::showObjectsForRscLayer(const QModelIndex &index)
@@ -115,8 +165,13 @@ void RscViewer::showObjectsForRscLayer(const QModelIndex &index)
 		long function = mapGetRscObjectFunction(mRscHandle, incode);
 		char* params = const_cast<char*>(mapGetRscObjectParameters(mRscHandle,incode ));
 		long local = mapGetRscObjectLocalInLayer(mRscHandle, segmentNumber, i);
+		int colors = mapGetSiteColorsCount(mTmpSiteHandle, mTmpSiteHandle);
+		COLORREF *colorimage = new COLORREF[colors];
+		mapGetSitePalette(mTmpSiteHandle, mTmpSiteHandle, colorimage, colors);
 
-		mapPaintExampleObjectByFuncToXImage(mTmpSiteHandle, &ximage, &rect, function, params, 0, 0, 0, local);
+		mapPaintExampleObjectByFuncToXImage(mTmpSiteHandle, &ximage, &rect, function, params, colors, colorimage, QByteArray(name).data(), local);
+
+		delete colorimage;
 
 		QString keyString = codec->toUnicode( key );
 		QString nameString = codec->toUnicode( name );

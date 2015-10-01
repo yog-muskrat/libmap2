@@ -43,6 +43,11 @@ public:
 	 */
 	QString selectedSignKey() const;
 
+	static long selectExCode(QString rscName);
+
+signals:
+	void signSelected();
+
 private slots:
 	/*!
 	 * \brief Показывает объекты слоя классификаторе.
