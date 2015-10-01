@@ -4,8 +4,10 @@
 #include "gis/maptype.h"
 #include "gis/rscapi.h"
 
+#include <QDir>
 #include <QFile>
 #include <QDebug>
+#include <QTextCodec>
 #include <QApplication>
 
 MapLayer::MapLayer(quint16 id, QString rscName, MapView *parent) : QAbstractItemModel(parent),
@@ -28,7 +30,8 @@ MapLayer::MapLayer(quint16 id, QString rscName, MapView *parent) : QAbstractItem
 	cs.SecondMainParallel = mapreg.SecondMainParallel;
 	cs.MainPointParallel = mapreg.MainPointParallel;
 
-	QString sitname = QString("%0/layer_%1.sit").arg(pMapView->sitDir()).arg(id);
+	mFileName = QString("layer_%0").arg(id);
+	QString sitname = QString("%0/%1.sit").arg(pMapView->sitDir()).arg(mFileName);
 	QString rscname = QString("%0/%1").arg(pMapView->rscDir(), rscName);
 	if(!QFile::exists(rscname))
 	{
@@ -84,6 +87,23 @@ void MapLayer::setLayerName(const QString &value)
 	}
 }
 
+void MapLayer::deleteFiles()
+{
+	long number = mapGetSiteNumber( mapView()->mapHandle(), mSiteHandle);
+
+	if(number <= 0)
+	{
+		qDebug()<<"*** СЛОЙ КАРТЫ: Не определен номер слоя.";
+		return;
+	}
+
+	if(! mapDeleteSite(mapView()->mapHandle(), number))
+	{
+		qDebug()<<"*** СЛОЙ КАРТЫ: Ошибка удаления файлов.";
+		return;
+	}
+}
+
 QString MapLayer::rscName() const
 {
 	Q_ASSERT(pMapView);
@@ -95,7 +115,7 @@ QString MapLayer::rscName() const
 		return 0;
 	}
 
-	return QString::fromLocal8Bit( mapGetRscName(rsc) );
+	return QTextCodec::codecForName("koi8r")->toUnicode( mapGetRscName(rsc) );
 }
 
 void MapLayer::addObject(MapObject *object, MapObject *parent)

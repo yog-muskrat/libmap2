@@ -35,7 +35,21 @@ public:
 	QString layerName() const {return mLayerName;}
 	void setLayerName(const QString &value);
 
+	/*!
+	 * \brief Удаляет файлы слоя.
+	 * \return Признак успешности.
+	 */
+	void deleteFiles();
+
+	/*!
+	 * \brief Возвращает название используемого классификатора.
+	 */
 	QString rscName() const;
+
+	/*!
+	 * \brief Возвращает указатель на используемую карту.
+	 */
+	MapView *mapView() { return pMapView; }
 
 	void addObject(MapObject *object, MapObject *parent = 0);
 	void removeObject(MapObject *object);
@@ -65,6 +79,7 @@ private:
 	HSITE mSiteHandle;
 	QString mRscName;
 	QString mLayerName;
+	QString mFileName;
 
 	quint16 mLastInternalId;
 	bool mVisible;

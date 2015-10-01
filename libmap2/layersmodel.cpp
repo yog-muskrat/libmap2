@@ -39,6 +39,7 @@ void LayersModel::removeLayer(int row)
 
 	beginRemoveRows(QModelIndex(), row, row);
 	MapLayer *l = mLayers.takeAt(row);
+	l->deleteFiles();
 	l->deleteLater();
 	endRemoveRows();
 }

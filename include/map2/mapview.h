@@ -73,7 +73,16 @@ public slots:
 	void setNavigationVisible(bool visible = true);
 
 signals:
+	/*!
+	 * \brief Сигнал об изменении масштаба карты.
+	 * \param scale Новое значение масштаба
+	 */
 	void scaleChanged(double scale);
+
+	/*!
+	 * \brief Сигнал о перемещении курсора мыши.
+	 * \param coord Географические координаты точки под курсором.
+	 */
 	void coordChanged(Coord coord);
 
 private slots:

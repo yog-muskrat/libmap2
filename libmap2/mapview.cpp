@@ -152,10 +152,10 @@ bool MapView::checkDirs()
 		mRscDir = d.absolutePath();
 	}
 
-	if(QDir(mSitDir).isRelative())
+	if( QDir(mSitDir).isRelative() )
 	{
-		QDir d = QDir::current();
-		d.cd(mSitDir);
+		QDir d( QDir::currentPath() + "/" + mSitDir );
+
 		if(!d.exists())
 		{
 			d.mkpath( d.absolutePath() );
@@ -352,15 +352,18 @@ void MapView::processMouseMoveEvent(QEvent *e)
 
 	if(mIsDragged)
 	{
-		int dx = mDragStartPoint.x() - mouseEvent->x();
-		int dy = mDragStartPoint.y() - mouseEvent->y();
+		if(QLineF(mDragStartPoint, mouseEvent->pos()).length() > 20 )
+		{
+			int dx = mDragStartPoint.x() - mouseEvent->x();
+			int dy = mDragStartPoint.y() - mouseEvent->y();
 
-		scrollMapTopLeft(dx, dy);
+			scrollMapTopLeft(dx, dy);
 
-		mDragStartPoint = mouseEvent->pos();
+			mDragStartPoint = mouseEvent->pos();
 
-		adjustScrollValues();
-		pNavigation->moveFrame(pCanvas->mapTopLeft());
+			adjustScrollValues();
+			pNavigation->moveFrame(pCanvas->mapTopLeft());
+		}
 	}
 
 	double x = pCanvas->mapTopLeft().x() + mouseEvent->x();

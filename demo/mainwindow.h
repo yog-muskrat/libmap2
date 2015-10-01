@@ -29,6 +29,10 @@ private slots:
 
 	void on_layersTable_clicked(const QModelIndex &index);
 
+	void on_pbAddObject_clicked();
+
+	void on_pbRemoveObject_clicked();
+
 private:
 	Ui::MainWindow *ui;
 	QLabel *pScaleLabel;

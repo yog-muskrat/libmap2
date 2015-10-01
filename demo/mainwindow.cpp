@@ -4,6 +4,7 @@
 #include "ui_mainwindow.h"
 #include "map2/layersmodel.h"
 #include "map2/mapvectorobject.h"
+#include "map2/rscviewer.h"
 
 #include <QDesktopWidget>
 #include <QDockWidget>
@@ -85,4 +86,29 @@ void MainWindow::on_layersTable_clicked(const QModelIndex &index)
 	ui->objectsTable->setModel(l);
 	ui->lblLayerName->setText( l->layerName() );
 	ui->lblRscName->setText( l->rscName() );
+}
+
+void MainWindow::on_pbAddObject_clicked()
+{
+	QModelIndex idx = ui->layersTable->currentIndex();
+	if(!idx.isValid())
+	{
+		return;
+	}
+
+	MapLayer *l = pView->layersModel()->layerAt(idx.row() );
+	if(!l)
+	{
+		return;
+	}
+
+	RscViewer *v = new RscViewer;
+	v->setRsc( l->rscName() );
+	v->setAttribute( Qt::WA_DeleteOnClose);
+	v->show();
+}
+
+void MainWindow::on_pbRemoveObject_clicked()
+{
+
 }

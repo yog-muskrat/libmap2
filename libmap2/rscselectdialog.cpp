@@ -7,6 +7,7 @@
 
 #include <QDir>
 #include <QDebug>
+#include <QTextCodec>
 #include <QStandardItemModel>
 
 RscSelectDialog::RscSelectDialog(QWidget *parent) :
@@ -43,7 +44,7 @@ void RscSelectDialog::fillModel()
 {
 	pModel->setRowCount(0);
 
-	QString path = QString::fromLocal8Bit( mapGetCommonRscPath() );
+	QString path = QTextCodec::codecForName("koi8r")->toUnicode( mapGetCommonRscPath() );
 
 	QDir rscDir(path);
 	if(!rscDir.exists())

@@ -10,7 +10,11 @@ RCC_DIR = obj
 UI_DIR = obj
 MOC_DIR = obj
 
-QT += gui widgets
+QT += gui
+greaterThan(QT_MAJOR_VERSION, 4)
+{
+  QT += widgets
+}
 
 LIBS += -L../lib/gis -l mapacces
 
@@ -22,7 +26,8 @@ HEADERS += mapcanvas.h \
 	../include/map2/mapview.h \
 	../include/map2/structs.h \
 	../include/map2/mapobject.h \
-    ../include/map2/rscselectdialog.h
+	../include/map2/rscselectdialog.h \
+	../include/map2/rscviewer.h
 SOURCES += layersmodel.cpp \
 		   mapcanvas.cpp \
 		   maplayer.cpp \
@@ -30,7 +35,9 @@ SOURCES += layersmodel.cpp \
 		   mapobject.cpp \
 		   mapvectorobject.cpp \
 		   mapview.cpp \
-    rscselectdialog.cpp
+	rscselectdialog.cpp \
+	rscviewer.cpp
 
 FORMS += \
-    rscselectdialog.ui
+	rscselectdialog.ui \
+	rscviewer.ui

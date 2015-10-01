@@ -2,7 +2,12 @@ TEMPLATE = app
 TARGET = demo
 DESTDIR = ../bin
 
-QT += gui widgets
+QT += gui
+
+greaterThan(QT_MAJOR_VERSION, 4)
+{
+  QT += widgets x11extras
+}
 
 OBJECTS_DIR = obj
 RCC_DIR = obj
@@ -19,4 +24,4 @@ FORMS += mainwindow.ui
 SOURCES += main.cpp mainwindow.cpp
 
 RESOURCES += \
-    ../res.qrc
+	../res.qrc
