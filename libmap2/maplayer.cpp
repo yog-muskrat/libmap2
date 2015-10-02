@@ -1,8 +1,6 @@
 #include "maplayer.h"
 #include "mapview.h"
-
-#include "gis/maptype.h"
-#include "gis/rscapi.h"
+#include "mapobject.h"
 
 #include <QDir>
 #include <QFile>
@@ -42,6 +40,56 @@ MapLayer::MapLayer(quint16 id, QString rscName, MapView *parent) : QAbstractItem
 	mSiteHandle = mapCreateAndAppendSite(pMapView->mapHandle(), qPrintable(sitname), qPrintable(rscname), &cs);
 
 	mValid = mSiteHandle > 0;
+}
+
+QVariant MapLayer::displayRole(const QModelIndex &idx) const
+{
+	MapObject *obj = mObjects.at(idx.row());
+
+	if(!obj)
+	{
+		return QVariant();
+	}
+
+	if(idx.column() == COL_Name)
+	{
+		return obj->name();
+	}
+	else if(idx.column() == COL_Coord)
+	{
+		return obj->coordinate().toString();
+	}
+	else if(idx.column() == COL_Type)
+	{
+		return obj->typeName();
+	}
+
+	return QVariant();
+}
+
+QVariant MapLayer::editRole(const QModelIndex &idx) const
+{
+	MapObject *obj = mObjects.at(idx.row());
+
+	if(!obj)
+	{
+		return QVariant();
+	}
+
+	if(idx.column() == COL_Coord)
+	{
+		return QVariant::fromValue( obj->coordinate() );
+	}
+	else if(idx.column() == COL_Name)
+	{
+		return obj->name();
+	}
+	else if(idx.column() == COL_Type)
+	{
+		return QVariant::fromValue( obj->type() );
+	}
+
+	return QVariant();
 }
 
 MapLayer::~MapLayer()
@@ -120,17 +168,52 @@ QString MapLayer::rscName() const
 
 void MapLayer::addObject(MapObject *object, MapObject *parent)
 {
+	int row = mObjects.count();
 
+	if(mObjects.contains(object) )
+	{
+			return;
+	}
+
+	beginInsertRows(QModelIndex(), row, row);
+	mObjects << object;
+	endInsertRows();
 }
 
 void MapLayer::removeObject(MapObject *object)
 {
 
+	int row = mObjects.indexOf(object);
+
+	if(row < 0)
+	{
+		return;
+	}
+
+	beginRemoveRows(QModelIndex(), row, row);
+
+	MapObject *obj = mObjects.takeAt(row);
+	obj->remove();
+	delete obj;
+
+	endRemoveRows();
+}
+
+MapObject *MapLayer::objectAtIndex(const QModelIndex &index)
+{
+	if(!index.isValid() || index.row() >= rowCount())
+	{
+		return 0;
+	}
+
+	return mObjects.at( index.row());
 }
 
 QModelIndex MapLayer::index(int row, int column, const QModelIndex &parent) const
 {
-	return QModelIndex();
+	MapObject *obj = mObjects.at(row);
+
+	return createIndex(row, column, obj);
 }
 
 QModelIndex MapLayer::parent(const QModelIndex &child) const
@@ -140,7 +223,7 @@ QModelIndex MapLayer::parent(const QModelIndex &child) const
 
 int MapLayer::rowCount(const QModelIndex &parent) const
 {
-	return 0;
+	return mObjects.count();
 }
 
 int MapLayer::columnCount(const QModelIndex &parent) const
@@ -150,6 +233,20 @@ int MapLayer::columnCount(const QModelIndex &parent) const
 
 QVariant MapLayer::data(const QModelIndex &index, int role) const
 {
+	if(!index.isValid() || index.column() >= columnCount())
+	{
+		return QVariant();
+	}
+
+	if(role == Qt::DisplayRole)
+	{
+		return displayRole(index);
+	}
+	else if(role == Qt::EditRole)
+	{
+		return editRole(index);
+	}
+
 	return QVariant();
 }
 

@@ -3,6 +3,10 @@
 
 #include <QVariant>
 
+#include "gis.h"
+
+struct CoordPlane;
+
 /*!
  * \brief Координата в формате "градусы+десятая часть"
  */
@@ -15,7 +19,10 @@ struct Coord
 	Coord(double lat, double lng) : lat(lat), lng(lng) {}
 	Coord(const Coord &other) : lat(other.lat), lng(other.lng) {}
 
-	QString toString() { return QString("Ш:%0 Д:%1").arg(lat, 0, 'f').arg(lng, 0, 'f'); }
+	QString toString() const { return QString("Ш:%0 Д:%1").arg(lat, 0, 'f').arg(lng, 0, 'f'); }
+	bool operator ==(const Coord &other) const { return other.lat == lat && other.lng == lng;}
+
+	CoordPlane toPlane(HMAP mapHnd) const;
 };
 
 /*!
@@ -30,7 +37,10 @@ struct CoordPlane
 	CoordPlane(double x, double y) : x(x), y(y) {}
 	CoordPlane(const CoordPlane &other) : x(other.x), y(other.y) {}
 
-	QString toString() { return QString("X:%0 Y:%1").arg(x, 0, 'f').arg(y, 0, 'f'); }
+	QString toString() const { return QString("X:%0 Y:%1").arg(x, 0, 'f').arg(y, 0, 'f'); }
+	bool operator ==(const CoordPlane &other) const { return other.x == x && other.y == y;}
+
+	Coord toGeo(HMAP mapHnd) const;
 };
 
 Q_DECLARE_METATYPE(Coord)

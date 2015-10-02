@@ -1,10 +1,7 @@
 #include "rscviewer.h"
 #include "ui_rscviewer.h"
 
-#include "gis/mapapi.h"
-#include "gis/sitapi.h"
-#include "gis/rscapi.h"
-#include "gis/maptype.h"
+#include "gis.h"
 
 #include <QDebug>
 #include <QLayout>

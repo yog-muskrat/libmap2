@@ -5,8 +5,6 @@
 
 #include "structs.h"
 
-#include "gis/mapapi.h"
-
 class QGraphicsScene;
 class QGraphicsRectItem;
 class QGraphicsPixmapItem;

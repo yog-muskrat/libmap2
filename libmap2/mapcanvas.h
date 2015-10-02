@@ -2,7 +2,8 @@
 #define MAPCANVAS_H
 
 #include <QWidget>
-#include "gis/mapapi.h"
+
+#include "gis.h"
 
 class MapCanvas : public QWidget
 {

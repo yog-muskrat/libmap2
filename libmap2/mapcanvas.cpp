@@ -1,8 +1,5 @@
 #include "mapcanvas.h"
 
-#include "gis/maptype.h"
-#include "gis/mapsyst.h"
-
 #include <QRect>
 #include <QDebug>
 #include <QPainter>

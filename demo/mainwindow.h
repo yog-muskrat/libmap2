@@ -4,6 +4,8 @@
 #include <QMainWindow>
 #include "map2/structs.h"
 
+#include <QModelIndex>
+
 namespace Ui {
 class MainWindow;
 }
@@ -32,6 +34,8 @@ private slots:
 	void on_pbAddObject_clicked();
 
 	void on_pbRemoveObject_clicked();
+
+	void on_objectsTable_doubleClicked(const QModelIndex &index);
 
 private:
 	Ui::MainWindow *ui;

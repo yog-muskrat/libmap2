@@ -1,18 +1,17 @@
 #include "mapvectorobject.h"
 #include "maplayer.h"
+#include "maptools.h"
 
 #include "qmath.h"
 #include <QDebug>
 
-MapVectorObject::MapVectorObject(long rscCode, MapLayer *layer) : MapObject(MO_Vector, layer)
+MapVectorObject::MapVectorObject(long rscCode, MapLayer *layer)
+	: MapObject(MO_Vector, layer), mRotation(0), mCoords( CoordPlane() )
 {
-	mObjHandle = mapCreateSiteObject(mapLayer()->mapHandle(), mapLayer()->siteHandle(), 1, IDFLOAT2 );
-
 	mapRegisterObject(mObjHandle, rscCode, LOCAL_VECTOR);
 	mapAppendPointPlane(mObjHandle, 0, 0);
-	mapAppendPointPlane(mObjHandle, 0, 100);
+	mapAppendPointPlane(mObjHandle, 0, 0);
 	mapCommitObject(mObjHandle );
-//	mapFreeObject(mObjHandle);
 }
 
 
@@ -23,8 +22,8 @@ void MapVectorObject::setCoordinates(Coord coord)
 		return;
 	}
 
-	double b = coord.lat * M_PI / 180.;
-	double l = coord.lng * M_PI / 180.;
+	double b =  MapTools::degreeToRad( coord.lat );
+	double l = MapTools::degreeToRad( coord.lng );
 
 	mapUpdatePointGeo(mObjHandle, b, l, 1);
 	mapUpdatePointGeo(mObjHandle, b, l, 2);
@@ -33,6 +32,20 @@ void MapVectorObject::setCoordinates(Coord coord)
 
 void MapVectorObject::setCoordinates(CoordPlane coord)
 {
+	if(mCoords == coord)
+	{
+		return;
+	}
+
+	DOUBLEPOINT delta;
+
+	delta.x = mCoords.x - coord.x;
+	delta.y = mCoords.y - coord.y;
+
+	mCoords = coord;
+
+	mapRelocateObjectPlane(mObjHandle, &delta);
+	mapCommitObject(mObjHandle);
 }
 
 Coord MapVectorObject::coordinatesGeo()
@@ -42,35 +55,55 @@ Coord MapVectorObject::coordinatesGeo()
 
 CoordPlane MapVectorObject::coordinatesPlane()
 {
-	return CoordPlane();
+	mCoords;
 }
 
 double MapVectorObject::planeX()
 {
-	return -1.;
+	mCoords.x;
 }
 
 double MapVectorObject::planeY()
 {
-	return -1.;
+	mCoords.y;
 }
 
 double MapVectorObject::lat()
 {
-	return -1.;
+	Q_ASSERT(mapLayer());
+
+	double x = mCoords.x;
+	double y = mCoords.y;
+
+	mapPlaneToGeo(mapLayer()->mapHandle(), &x, &y);
+
+	return MapTools::radToDegree( x );
 }
 
 double MapVectorObject::lng()
 {
-	return -1.;
-}
+	Q_ASSERT(mapLayer());
 
-double MapVectorObject::rotation() const
-{
+	double x = mCoords.x;
+	double y = mCoords.y;
 
+	mapPlaneToGeo(mapLayer()->mapHandle(), &x, &y);
+
+	return MapTools::radToDegree( y );
 }
 
 void MapVectorObject::setRotation(double degree)
 {
+	if(degree == mRotation)
+	{
+		return;
+	}
 
+	DOUBLEPOINT point;
+	point.x = mapXPlane(mObjHandle);
+	point.y = mapYPlane(mObjHandle);
+
+	double delta = MapTools::degreeToRad( degree - mRotation );
+
+	mapRotateObject(mObjHandle, &point , &delta);
 }

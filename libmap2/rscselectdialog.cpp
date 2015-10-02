@@ -1,9 +1,7 @@
 #include "rscselectdialog.h"
 #include "ui_rscselectdialog.h"
 
-#include "gis/mapapi.h"
-#include "gis/rscapi.h"
-#include "gis/maptype.h"
+#include "gis.h"
 
 #include <QDir>
 #include <QDebug>

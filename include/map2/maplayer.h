@@ -1,8 +1,7 @@
 #ifndef MAPLAYER_H
 #define MAPLAYER_H
 
-#include "gis/mapapi.h"
-#include "gis/maptype.h"
+#include "gis.h"
 
 #include <QAbstractItemModel>
 
@@ -54,13 +53,15 @@ public:
 	void addObject(MapObject *object, MapObject *parent = 0);
 	void removeObject(MapObject *object);
 
+	MapObject * objectAtIndex(const QModelIndex &index);
+
 	// QAbstractItemModel interface
-	virtual QModelIndex index(int row, int column, const QModelIndex &parent) const;
+	virtual QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
 	virtual QModelIndex parent(const QModelIndex &child) const;
-	virtual int rowCount(const QModelIndex &parent) const;
-	virtual int columnCount(const QModelIndex &parent) const;
-	virtual QVariant data(const QModelIndex &index, int role) const;
-	virtual QVariant headerData(int section, Qt::Orientation orientation, int role) const;
+	virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
+	virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
+	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
+	virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
 
 	friend class MapView;
 
@@ -70,6 +71,8 @@ signals:
 
 private:
 	explicit MapLayer(quint16 id, QString rscName, MapView *parent);
+	QVariant displayRole(const QModelIndex &idx) const;
+	QVariant editRole(const QModelIndex &idx) const;
 
 	MapView *pMapView;
 

@@ -4,8 +4,7 @@
 #include "mapobject.h"
 #include "structs.h"
 
-#include "gis/mapapi.h"
-#include "gis/maptype.h"
+#include "gis.h"
 
 #include <QString>
 
@@ -23,8 +22,12 @@ public:
 	double lat();
 	double lng();
 
-	double rotation() const;
+	double rotation() const { return mRotation; }
 	void setRotation(double degree);
+
+private:
+	bool mRotation;
+	CoordPlane mCoords;
 };
 
 #endif // MAPVECTOROBJECT_H

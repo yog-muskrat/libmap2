@@ -1,5 +1,6 @@
 #include "mapview.h"
 #include "maplayer.h"
+#include "maptools.h"
 #include "mapcanvas.h"
 #include "layersmodel.h"
 #include "mapnavigation.h"
@@ -193,6 +194,26 @@ void MapView::setNavigationVisible(bool visible)
 	pNavigation->setVisible(visible);
 }
 
+void MapView::setCenter(QPoint pictureCoord)
+{
+	QPoint p = pictureCoord - pCanvas->rect().center();
+
+	moveMapTopLeft(p);
+	pNavigation->moveFrame(p);
+}
+
+void MapView::setCenter(Coord geoCoord)
+{
+	QPoint p = MapTools::geoToPicture(mapHandle(), geoCoord);
+	setCenter(p);
+}
+
+void MapView::setCenter(CoordPlane planeCoord)
+{
+	QPoint p = MapTools::planeToPicture(mapHandle(), planeCoord);
+	setCenter(p);
+}
+
 void MapView::onScrollMap()
 {
 	QPoint p(pHorizontalScroll->value(), pVerticalScroll->value());
@@ -372,8 +393,8 @@ void MapView::processMouseMoveEvent(QEvent *e)
 	mapPictureToPlane(mapHandle(), &x, &y);
 	mapPlaneToGeo(mapHandle(), &x, &y);
 
-	double lat = x * 180. / M_PI;
-	double lng = y * 180. / M_PI;
+	double lat = MapTools::radToDegree(x);
+	double lng = MapTools::radToDegree(y);
 
 	emit coordChanged( Coord(lat, lng));
 }
@@ -398,10 +419,7 @@ void MapView::processMouseDoubleClickEvent(QEvent *e)
 		return;
 	}
 
-	QPoint p = pCanvas->mapTopLeft() + mouseEvent->pos() - pCanvas->rect().center();
-
-	moveMapTopLeft(p);
-	pNavigation->moveFrame(p);
+	setCenter(pCanvas->mapTopLeft() + mouseEvent->pos());
 }
 
 QSize MapView::mapSizePx() const

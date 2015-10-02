@@ -2,7 +2,9 @@
 #define RSCVIEWER_H
 
 #include <QWidget>
-#include "gis/maptype.h"
+#include <QModelIndex>
+
+#include "gis.h"
 
 namespace Ui {
 class RscViewer;

@@ -2,8 +2,9 @@
 #define MAPVIEW_H
 
 #include <QWidget>
-#include "gis/mapapi.h"
+
 #include "structs.h"
+#include "gis.h"
 
 class MapCanvas;
 class LayersModel;
@@ -19,6 +20,20 @@ class MapView : public QWidget
 {
 	Q_OBJECT
 public:
+	/*!
+	 * \brief Картографические инструменты
+	 */
+	enum Tools
+	{
+		None,
+		MoveObject,
+		DeleteObject,
+		AddVectorObject,
+		AddZoneObject,
+		AddLineObject,
+		Ruler
+	};
+
 	/*!
 	 * \brief Конструктор класса.
 	 * \param sitDir Каталог для sit-файлов создаваемых для слоев карты.
@@ -72,6 +87,10 @@ public slots:
 
 	void setNavigationVisible(bool visible = true);
 
+	void setCenter(QPoint pictureCoord);
+	void setCenter(Coord geoCoord);
+	void setCenter(CoordPlane planeCoord);
+
 signals:
 	/*!
 	 * \brief Сигнал об изменении масштаба карты.
@@ -84,6 +103,10 @@ signals:
 	 * \param coord Географические координаты точки под курсором.
 	 */
 	void coordChanged(Coord coord);
+protected:
+	bool eventFilter(QObject *obj, QEvent *e);
+	void keyPressEvent(QKeyEvent *keyEvent);
+	void resizeEvent(QResizeEvent *e);
 
 private slots:
 	/*!
@@ -103,15 +126,9 @@ private slots:
 
 	void adjustNavigation();
 
-protected:
-	bool eventFilter(QObject *obj, QEvent *e);
-	void keyPressEvent(QKeyEvent *keyEvent);
-	void resizeEvent(QResizeEvent *e);
-
-private slots:
 	/*!
 	 * \brief Перемещает верхний левый угол отображаемого участка карты.
-	 * \param pos - Новое положение верхнего левого угла отображаемого участка карты.
+	 * \param pos - Новое положение верхнего левого угла отображаемого участка карты в пикселах.
 	 */
 	void moveMapTopLeft(QPoint pos);
 

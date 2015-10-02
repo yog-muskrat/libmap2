@@ -30,6 +30,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	MapVectorObject *obj = new MapVectorObject(10403010, l);
 	obj->setCoordinates( Coord(60., 30.) );
+	obj->setName("Самолетик");
 
 	QSize size = QDesktopWidget().availableGeometry().size();
 
@@ -111,9 +112,34 @@ void MainWindow::on_pbAddObject_clicked()
 
 	MapVectorObject *obj = new MapVectorObject(code, l);
 	obj->setCoordinates( Coord(0, 0) );
+	obj->center();
 }
 
 void MainWindow::on_pbRemoveObject_clicked()
 {
 
+}
+
+void MainWindow::on_objectsTable_doubleClicked(const QModelIndex &index)
+{
+	QModelIndex idx = ui->layersTable->currentIndex();
+	if(!idx.isValid())
+	{
+		return;
+	}
+
+	MapLayer *l = pView->layersModel()->layerAt(idx.row() );
+	if(!l)
+	{
+		return;
+	}
+
+	MapObject *o =l->objectAtIndex( index );
+
+	if(!o)
+	{
+		return;
+	}
+
+	o->center();
 }
