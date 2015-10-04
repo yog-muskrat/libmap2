@@ -15,7 +15,8 @@
 #include <QApplication>
 
 MapView::MapView(QString sitDir, QString rscDir, QWidget *parent)
-	: QWidget(parent), pNavigation(0), mIsDragged(false), mLastLayerId(0), mRscDir(rscDir), mSitDir(sitDir)
+	: QWidget(parent), pNavigation(0), mMapHandle(0), mSelect(0), mIsDragged(false), mLastLayerId(0), mRscDir(rscDir), mSitDir(sitDir),
+	  mTool(None)
 {
 	setFocusPolicy(Qt::TabFocus);
 
@@ -28,7 +29,7 @@ MapView::MapView(QString sitDir, QString rscDir, QWidget *parent)
 	pCanvas->setMouseTracking(true);
 
 	mLayersModel = new LayersModel(this);
-	connect(mLayersModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)), pCanvas, SLOT(repaint()));
+	connect(mLayersModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)), pCanvas, SLOT(queueRepaint()));
 
 	QGridLayout *lay = new QGridLayout(this);
 	lay->addWidget(pVerticalScroll, 0, 0);
@@ -52,6 +53,11 @@ MapView::~MapView()
 {
 	mLayersModel->deleteLater();
 
+	if(mSelect > 0)
+	{
+		mapDeleteSelectContext(mSelect);
+	}
+
 	if(mMapHandle > 0)
 	{
 		mapCloseData( mMapHandle );
@@ -60,9 +66,25 @@ MapView::~MapView()
 
 void MapView::openMap(QString mapFullPath)
 {
+	if(mSelect > 0)
+	{
+		mapDeleteSelectContext(mSelect);
+		mSelect = 0;
+	}
+
+	if(mMapHandle > 0)
+	{
+		mapCloseData(mMapHandle);
+		mMapHandle = 0;
+	}
+
 	mMapHandle = mapOpenData(qPrintable(mapFullPath), 0);
 	mapSetBackColor(mMapHandle, QColor(255,255,255).rgb());
-	pCanvas->setMapHandle(mMapHandle);
+
+	mSelect = mapCreateMapSelectContext(mMapHandle);
+	mapSelectObject(mSelect, -1, 0);
+
+	pCanvas->setMapHandle(mMapHandle, mSelect);
 
 	adjustScrollSize();
 	adjustScrollValues();
@@ -97,7 +119,7 @@ MapLayer *MapView::createLayer(QString rscName, QString name)
 
 double MapView::scale()
 {
-	return mapGetShowScale(mapHandle());
+	return pCanvas->scale();
 }
 
 QWidget *MapView::detachNavigation()
@@ -119,6 +141,30 @@ void MapView::attachNavigation()
 	}
 
 	pNavigation->setParent(this);
+}
+
+QList<MapObject *> MapView::objectsAtPoint(QPoint point, double radiusPx)
+{
+	mapSelectObject(mSelect, -1, 0);
+
+	HOBJ hobj = mapCreateObject(mMapHandle);
+
+	point += pCanvas->mapTopLeft();
+	MAPDFRAME frame;
+	frame.X1 = point.x() - radiusPx;
+	frame.Y1 = point.y() - radiusPx;
+	frame.X2 = point.x() + radiusPx;
+	frame.Y2 = point.y() + radiusPx;
+
+	hobj = mapWhatObject(mMapHandle, hobj, &frame, WO_LAST, PP_PICTURE);
+
+	while(hobj)
+	{
+		qDebug()<<"Found an object!"<<mMapHandle<<mapGetObjectSiteIdent(mMapHandle, hobj);
+		hobj = mapWhatObject(mMapHandle, hobj, &frame, WO_BACK, PP_PICTURE);
+	}
+
+	return QList<MapObject*>();
 }
 
 void MapView::createNavigation()
@@ -170,17 +216,7 @@ bool MapView::checkDirs()
 
 void MapView::setScale(double scale)
 {
-	QPoint point = pCanvas->mapTopLeft();
-
-	long x = point.x() + pCanvas->width() / 2;
-	long y = point.y() + pCanvas->height() / 2;
-
-	mapSetViewScale(mMapHandle, &x, &y, scale);
-
-	x -= pCanvas->width() / 2;
-	y -= pCanvas->height() / 2;
-
-	pCanvas->setMapTopLeft(QPoint(x, y));
+	pCanvas->setScale(scale);
 
 	adjustScrollSize();
 	adjustScrollValues();
@@ -420,6 +456,8 @@ void MapView::processMouseDoubleClickEvent(QEvent *e)
 	}
 
 	setCenter(pCanvas->mapTopLeft() + mouseEvent->pos());
+
+	objectsAtPoint(mouseEvent->pos());
 }
 
 QSize MapView::mapSizePx() const

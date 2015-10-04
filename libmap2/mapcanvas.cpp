@@ -4,19 +4,33 @@
 #include <QDebug>
 #include <QPainter>
 #include <QWheelEvent>
+#include <QElapsedTimer>
 
 MapCanvas::MapCanvas(QWidget *parent) :
 	QWidget(parent),
 	mMapHandle(-1),
 	mMapBitDepth(mapGetMapScreenDepth()),
-	mMapTopLeft(QPoint(0,0))
+	mMapTopLeft(QPoint(0,0)),
+	mRepaint(false),
+	mSelect(0)
 {
+	connect(&mRepaintTi, SIGNAL(timeout()), this, SLOT(onRepaintTimer()));
+	mRepaintTi.start(150);
+
+	setSelectionColor(QColor(Qt::red));
 }
 
-void MapCanvas::setMapHandle(const HMAP &hnd)
+MapCanvas::~MapCanvas()
+{
+
+}
+
+void MapCanvas::setMapHandle(const HMAP &hnd, const HSELECT &select)
 {
 	mMapHandle = hnd;
-	repaint();
+	mSelect = select;
+
+	mRepaint = true;
 }
 
 QPixmap MapCanvas::mapPreview(int width)
@@ -70,20 +84,53 @@ QPixmap MapCanvas::mapPreview(int width)
 void MapCanvas::setMapTopLeft(const QPoint &point)
 {
 	mMapTopLeft = point;
-	repaint();
+	mRepaint = true;
+}
+
+void MapCanvas::setScale(double scale)
+{
+	QPoint point = mapTopLeft() + rect().center();
+
+	long x = point.x();
+	long y = point.y();
+
+	mapSetViewScale(mMapHandle, &x, &y, scale);
+
+	x -= rect().center().x();
+	y -= rect().center().y();
+
+	setMapTopLeft(QPoint(x, y));
+}
+
+double MapCanvas::scale() const
+{
+	return mapGetShowScale( mapHandle() );
+}
+
+void MapCanvas::setSelectionColor(const QColor &color)
+{
+	mSelectColor = color.red() + color.green() * 256 * color.blue() * 256 * 256;
+}
+
+void MapCanvas::queueRepaint()
+{
+	mRepaint = true;
 }
 
 void MapCanvas::paintEvent(QPaintEvent *e)
 {
-	if(mMapHandle < 0)
+	if(mMapHandle <= 0 || mSelect <= 0)
 	{
 		QWidget::paintEvent(e);
 		return;
 	}
 
+	QElapsedTimer ti;
+	ti.start();
+
 	QRect drawRect;
-	drawRect.setTop( mMapTopLeft.y() );
-	drawRect.setLeft( mMapTopLeft.x() );
+	drawRect.setTop( mapTopLeft().y() );
+	drawRect.setLeft( mapTopLeft().x() );
 	drawRect.setHeight( height() );
 	drawRect.setWidth( width() );
 
@@ -107,7 +154,7 @@ void MapCanvas::paintEvent(QPaintEvent *e)
 	rect.bottom = static_cast<long>(drawRect.bottom());
 	rect.right = static_cast<long>(drawRect.right());
 
-	mapPaintToXImage(mMapHandle, &ximage, 0, 0, &rect);
+	mapPaintAndSelectToXImage(mMapHandle, &ximage, 0, 0, &rect, mSelect, mSelectColor);
 
 	QImage img((uchar *) dataBytes, drawRect.width(), drawRect.height(), QImage::Format_RGB32);
 
@@ -115,4 +162,16 @@ void MapCanvas::paintEvent(QPaintEvent *e)
 	p.drawImage(0, 0, img);
 
 	FreeTheMemory(dataBytes);
+
+	mRepaint = false;
+
+	qDebug()<<"Repaint in"<<ti.elapsed()<<"ms";
+}
+
+void MapCanvas::onRepaintTimer()
+{
+	if(mRepaint)
+	{
+		repaint();
+	}
 }

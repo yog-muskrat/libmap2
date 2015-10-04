@@ -2,11 +2,15 @@
 #define MAPLAYER_H
 
 #include "gis.h"
+#include "structs.h"
 
 #include <QAbstractItemModel>
 
 class MapView;
 class MapObject;
+class MapVectorObject;
+class MapLineObject;
+class MapZoneObject;
 
 class MapLayer : public QAbstractItemModel
 {
@@ -34,6 +38,9 @@ public:
 	QString layerName() const {return mLayerName;}
 	void setLayerName(const QString &value);
 
+	MapObject *takeObjectAt(QModelIndex index);
+	MapObject *takeObject(MapObject *obj);
+
 	/*!
 	 * \brief Удаляет файлы слоя.
 	 * \return Признак успешности.
@@ -51,6 +58,10 @@ public:
 	MapView *mapView() { return pMapView; }
 
 	void addObject(MapObject *object, MapObject *parent = 0);
+	MapVectorObject* addVectorObject(long rscCode, Coord coords = Coord());
+	MapLineObject* addLineObject(long rscCode, QList<Coord> coords = QList<Coord>());
+	MapZoneObject* addZoneObject(long rscCode, QList<Coord> coords = QList<Coord>());
+
 	void removeObject(MapObject *object);
 
 	MapObject * objectAtIndex(const QModelIndex &index);
@@ -64,6 +75,7 @@ public:
 	virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
 
 	friend class MapView;
+	friend class MapObject;
 
 signals:
 	void layerNameChanged(QString newName);
@@ -73,6 +85,8 @@ private:
 	explicit MapLayer(quint16 id, QString rscName, MapView *parent);
 	QVariant displayRole(const QModelIndex &idx) const;
 	QVariant editRole(const QModelIndex &idx) const;
+
+	void objectChangedNotify(MapObject *obj);
 
 	MapView *pMapView;
 

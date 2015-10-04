@@ -92,6 +92,7 @@ QString RscViewer::selectedSignKey() const
 long RscViewer::selectExCode(QString rscName)
 {
 	QDialog d;
+	d.setWindowTitle("Выбор знака");
 
 	QPushButton pbOk("Готово");
 	QPushButton pbCancel("Отмена");
@@ -111,6 +112,8 @@ long RscViewer::selectExCode(QString rscName)
 	btnlay->addStretch();
 	btnlay->addWidget( &pbOk );
 	btnlay->addWidget( &pbCancel );
+
+	main->addLayout(btnlay);
 
 	if(!d.exec())
 	{

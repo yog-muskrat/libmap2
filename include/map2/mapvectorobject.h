@@ -27,7 +27,7 @@ public:
 
 private:
 	bool mRotation;
-	CoordPlane mCoords;
+	CoordPlane mCoord;
 };
 
 #endif // MAPVECTOROBJECT_H

@@ -19,7 +19,7 @@ public:
 	};
 
 	MapObject(Type t, MapLayer *layer = 0);
-	~MapObject();
+	virtual ~MapObject();
 
 	/*!
 	 * \brief Удаляет объект со слоя.
@@ -34,6 +34,11 @@ public:
 	virtual void center();
 
 	/*!
+	 * \brief Устанавливает признак выделения объекта.
+	 */
+	virtual void setSelected(bool b = true);
+
+	/*!
 	 * \brief Возвращает координаты объекта.
 	 * В базовой реализации возвращаются координаты первой точки метрики.
 	 * В классах-наследниках эта функция может быть переописана для более правильного поведения.
@@ -44,17 +49,44 @@ public:
 	QString typeName()const;
 	HOBJ handle() const {return mObjHandle;}
 
-	void setMapLayer(MapLayer *layer);
 	MapLayer* mapLayer() {return pLayer;}
 
 	QString name() const {return mName;}
 	void setName(QString name);
 
+	void bindMetric(int metricNumber, MapObject *targetObject, int targetMetricNumber);
+	void unbindMetric(int metricNumber);
+	void unbindMetrics();
+
+	void updateMetric(int metricNumber, CoordPlane coord);
+
+	friend class MapLayer;
+
+private:
+	struct MetricBinding
+	{
+		MapObject *object;
+		int metricNumber;
+
+		MetricBinding(MapObject *mo = 0, int metric = 0) : object(mo), metricNumber(metric) {}
+		bool operator == (const MetricBinding &other) const { return object == other.object && metricNumber == other.metricNumber;}
+	};
+
+	void setMapLayer(MapLayer *layer);
+
+	void addMetricBinding(MetricBinding binding, int targetMetric);
+	void removeMetricBinding(MetricBinding binding, int targetMetric);
+
 protected:
+	void commit();
+
 	Type mType;
 	HOBJ mObjHandle;
 	MapLayer *pLayer;
 	QString mName;
+
+	QMap<int, MetricBinding> mMetricsBindings; //!< Метрики текущего объекта, привязанные к другим объектам.
+	QMultiMap<int, MetricBinding> mObjectsBindings; //!< Метрики других объектов, привязанные к текущему.
 };
 
 Q_DECLARE_METATYPE(MapObject::Type)

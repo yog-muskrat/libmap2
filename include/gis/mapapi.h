@@ -65,8 +65,8 @@
 
 #ifndef TINAPI_H
   #include "tinapi.h"      // Описание методов доступа к тин моделям
-#endif 
-  
+#endif
+
 #ifndef RSCAPI_H
   #include "rscapi.h"      // Описание методов доступа к классификатору
 #endif
@@ -95,7 +95,7 @@ extern "C"
   // При ошибке возвращает ноль
 
 _MAPIMP HMAP _MAPAPI mapOpenData(const char * name,
-                                 long int mode = 0);
+								 long int mode = 0);
 
   // Открыть данные с автоматическим определением их типа
   // (векторные,растровые,матричные...)
@@ -106,7 +106,7 @@ _MAPIMP HMAP _MAPAPI mapOpenData(const char * name,
   // При ошибке возвращает ноль
 
 _MAPIMP HMAP _MAPAPI mapOpenDataUn(const WCHAR * name,
-                                   long int mode = 0);
+								   long int mode = 0);
 
   // Открыть векторные данные (аналогично mapOpenData)
   // Возвращает идентификатор открытой векторной карты (TMapAccess*)
@@ -117,7 +117,7 @@ _MAPIMP HMAP _MAPAPI mapOpenDataUn(const WCHAR * name,
   // При ошибке возвращает ноль
 
 _MAPIMP HMAP _MAPAPI mapOpenMap(const char * mapname,
-                                long int mode = 0);
+								long int mode = 0);
 
   // Запрос/установка разрешения выполнять структурный контроль карты
   // после сбоев программы
@@ -138,7 +138,7 @@ _MAPIMP HMAP _MAPAPI mapOpenMap(const char * mapname,
   // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapAppendData(HMAP hMap, const char * name,
-                                       long int mode = 0);
+									   long int mode = 0);
 
   // Добавить данные к открытой карте (карту, растр, матрицу)
   // name - имя открываемого файла (SIT, MTW, MTQ, RSW, MPT) в кодировке UNICODE
@@ -146,7 +146,7 @@ _MAPIMP long int _MAPAPI mapAppendData(HMAP hMap, const char * name,
   // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapAppendDataUn(HMAP hMap, const WCHAR * name,
-                                         long int mode);
+										 long int mode);
 
   // Запросить размер данных по имени файла
   // При ошибке возвращает ноль
@@ -167,7 +167,7 @@ _MAPIMP const char * _MAPAPI mapGetMainName(HMAP hMap);
   // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapGetMainNameUn(HMAP hMap, WCHAR * name,
-                                          long int size);
+										  long int size);
 
   // Проверка корректности паспортных данных и, если надо, то заполнение
   // координат по признаку приоритета 0 - расчет прямоугольных координат
@@ -176,10 +176,10 @@ _MAPIMP long int _MAPAPI mapGetMainNameUn(HMAP hMap, WCHAR * name,
   // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapCheckAndUpdate(MAPREGISTEREX * mapreg, LISTREGISTER * listreg,
-                                           long int priority);
+										   long int priority);
 
 _MAPIMP long int _MAPAPI CheckAndUpdate(MAPREGISTER * mapreg,LISTREGISTER * listreg,
-                                        long int priority);
+										long int priority);
 
 
   // Заполнение справочных данных в зависимости от типа карты           // 22/12/05
@@ -224,7 +224,7 @@ _MAPIMP long int _MAPAPI mapGetMapTotalBorderByEPSG(HMAP hMap, DFRAME * framepla
   // для плоских прямоугольных возвращает 1,
   // при ошибке возвращает ноль.
 
-_MAPIMP long int _MAPAPI mapSetListBorderFromEPSG(HMAP hMap, int list, LISTREGISTER * listreg,  long int epsgcode);  
+_MAPIMP long int _MAPAPI mapSetListBorderFromEPSG(HMAP hMap, int list, LISTREGISTER * listreg,  long int epsgcode);
 
 
   // Создать новый район (новую векторную карту)
@@ -235,14 +235,14 @@ _MAPIMP long int _MAPAPI mapSetListBorderFromEPSG(HMAP hMap, int list, LISTREGIS
   // При ошибке возвращает ноль
 
 _MAPIMP HMAP _MAPAPI mapCreateMap(const char * mapname,
-                                  const char * rscname,
-                                  MAPREGISTER * map,
-                                  LISTREGISTER * sheet);
+								  const char * rscname,
+								  MAPREGISTER * map,
+								  LISTREGISTER * sheet);
 
 _MAPIMP HMAP _MAPAPI mapCreateMapEx(const char * mapname,
-                                    const char * rscname,
-                                    MAPREGISTEREX * mapreg,
-                                    LISTREGISTER * listreg);
+									const char * rscname,
+									MAPREGISTEREX * mapreg,
+									LISTREGISTER * listreg);
 
   // Создать план
   // (карта в местной системе координат)
@@ -254,8 +254,8 @@ _MAPIMP HMAP _MAPAPI mapCreateMapEx(const char * mapname,
   // При ошибке возвращает ноль
 
 _MAPIMP HMAP _MAPAPI mapCreatePlane(const char * mapname,
-                                    const char * rscname,
-                                    CREATEPLANE * createplane);
+									const char * rscname,
+									CREATEPLANE * createplane);
 
   // Создать пользовательскую карту
   // mapname - полное имя файла карты
@@ -265,12 +265,12 @@ _MAPIMP HMAP _MAPAPI mapCreatePlane(const char * mapname,
   // При ошибке возвращает ноль
 
 _MAPIMP HMAP _MAPAPI mapCreateSite(const char * mapname,
-                                   const char * rscname,
-                                   CREATESITE * createsite);
+								   const char * rscname,
+								   CREATESITE * createsite);
 
 _MAPIMP HMAP _MAPAPI mapCreateSiteEx(const char * mapname,   // 11/05/07
-                                     const char * rscname,
-                                     CREATESITEEX * createsite);
+									 const char * rscname,
+									 CREATESITEEX * createsite);
 
   // Создать пользовательскую карту
   // mapname - полное имя файла карты в кодировке UNICODE
@@ -280,8 +280,8 @@ _MAPIMP HMAP _MAPAPI mapCreateSiteEx(const char * mapname,   // 11/05/07
   // При ошибке возвращает ноль
 
 _MAPIMP HMAP _MAPAPI mapCreateSiteUn(const WCHAR * mapname,  // 11/05/07
-                                     const WCHAR * rscname,
-                                     CREATESITEUN * createsite);
+									 const WCHAR * rscname,
+									 CREATESITEUN * createsite);
 
   // Создать пользовательскую карту по открытой карте
   // hmap -  идентификатор открытых данных
@@ -292,9 +292,9 @@ _MAPIMP HMAP _MAPAPI mapCreateSiteUn(const WCHAR * mapname,  // 11/05/07
   // При ошибке возвращает ноль
 
 _MAPIMP HSITE _MAPAPI mapCreateAndAppendSite(HMAP hmap,
-                                             const char * mapname,
-                                             const char * rscname,
-                                             CREATESITE * createsite);
+											 const char * mapname,
+											 const char * rscname,
+											 CREATESITE * createsite);
 
   // Создать пользовательскую карту по открытой карте
   // hmap -  идентификатор открытых данных
@@ -305,9 +305,9 @@ _MAPIMP HSITE _MAPAPI mapCreateAndAppendSite(HMAP hmap,
   // При ошибке возвращает ноль
 
 _MAPIMP HSITE _MAPAPI mapCreateAndAppendSiteUn(HMAP hmap,               // 11/05/07
-                                               const WCHAR *  mapname,
-                                               const WCHAR * rscname,
-                                               CREATESITEUN * createsite);
+											   const WCHAR *  mapname,
+											   const WCHAR * rscname,
+											   CREATESITEUN * createsite);
 
   // Создать временную пользовательскую карту
   // rscname - полное имя файла ресурсов
@@ -468,7 +468,7 @@ _MAPIMP long int _MAPAPI mapFlushData(HMAP hMap, HSITE hSite);
   // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapCreateList(HMAP hMap,
-                                       LISTREGISTER * sheet);
+									   LISTREGISTER * sheet);
 
   // Удалить указанный лист карты
   // list - номер листа (с 1)
@@ -484,8 +484,8 @@ _MAPIMP long int _MAPAPI mapDeleteList(HMAP hmap, long int list);
   // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapAppendMapToMap(HMAP hMap,
-                                           const char * mapname,
-                                           HWND handle);
+										   const char * mapname,
+										   HWND handle);
 
   // Cоздать пустой объект векторной карты
   // (создание подобъекта - см. редактирование метрики)
@@ -502,8 +502,8 @@ _MAPIMP long int _MAPAPI mapAppendMapToMap(HMAP hMap,
 
 #ifndef HIDEFORMAT
 _MAPIMP HOBJ _MAPAPI mapCreateObject(HMAP hMap,long int sheetnumber = 1,
-                                     long int kind = IDFLOAT2,
-                                     long int text = 0);
+									 long int kind = IDFLOAT2,
+									 long int text = 0);
 #endif
 
   // Очистить содержимое объекта
@@ -514,8 +514,8 @@ _MAPIMP HOBJ _MAPAPI mapCreateObject(HMAP hMap,long int sheetnumber = 1,
   // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapClearObject(HOBJ info,
-                                  long int sheetnumber = 1,
-                                  long int kind = IDFLOAT2);
+								  long int sheetnumber = 1,
+								  long int kind = IDFLOAT2);
 
 
   // Cоздать копию объекта векторной карты
@@ -599,7 +599,7 @@ _MAPIMP long int _MAPAPI mapGetAccessError();
  // в переменную height - высота (dy)
 
 _MAPIMP void _MAPAPI mapGetPictureSize(HMAP hmap, long int * width,
-                                       long int * height);
+									   long int * height);
 
 _MAPIMP long int _MAPAPI mapGetPictureHeight(HMAP hMap);
 _MAPIMP long int _MAPAPI mapGetPictureWidth(HMAP hMap);
@@ -650,7 +650,7 @@ _MAPIMP long int _MAPAPI mapGetColorCount(HMAP hmap);
  // текущих размеров экрана! Иначе - см. PaintToDib,PaintToImage...
 
 _MAPIMP void _MAPAPI mapPaint(HMAP hmap, HDC hdc, long int erase,
-                              RECT * rect);
+							  RECT * rect);
 
  // Отобразить фрагмент карты на заданном устройстве
  // в текущих масштабе и составе объектов
@@ -670,7 +670,7 @@ _MAPIMP void _MAPAPI mapPaint(HMAP hmap, HDC hdc, long int erase,
  // текущих размеров экрана! Иначе - см. PaintToDib,PaintToImage...
 
 _MAPIMP void _MAPAPI mapPaint95(HMAP hmap, HDC hdc,
-                                long int erase, RECT * rect);
+								long int erase, RECT * rect);
 
  // Отобразить фрагмент карты на заданном устройстве
  // в текущих масштабе и составе объектов и
@@ -691,8 +691,8 @@ _MAPIMP void _MAPAPI mapPaint95(HMAP hmap, HDC hdc,
  // где dx,dy - положение отображаемого фрагмента в клиентной области !
 
 _MAPIMP void _MAPAPI mapPaint95AndSelect(HMAP hMap, HDC hDC, long int erase,
-                                         RECT * rect,
-                                         HSELECT select, COLORREF color); // 03/11/06
+										 RECT * rect,
+										 HSELECT select, COLORREF color); // 03/11/06
 
 #ifdef WIN32API
  // Установить толщину линии для отрисовки выделенных на карте
@@ -717,7 +717,7 @@ _MAPIMP long int _MAPAPI mapSetSelectLineThick(HMAP hmap, long int thick);
  // текущих размеров экрана! Иначе - см. PaintToDib,PaintToImage...
 
 _MAPIMP long int _MAPAPI mapPaintObject(HMAP hmap, HDC hdc, RECT * rect,
-                                        HOBJ info);
+										HOBJ info);
 
  // Отобразить отдельный объект карты в пределах фрагмента
  // в условных знаках карты
@@ -737,10 +737,10 @@ _MAPIMP long int _MAPAPI mapPaintObject(HMAP hmap, HDC hdc, RECT * rect,
  // текущих размеров экрана! Иначе - см. PaintToDib,PaintToImage...
 
 _MAPIMP long int _MAPAPI mapPaintObjectEx(HMAP hmap, HDC hdc, RECT * rect,
-                                          HOBJ info,
-                                          long int erase, long int dontclip);
+										  HOBJ info,
+										  long int erase, long int dontclip);
 
-                                    // Отобразить отдельный объект карты в пределах фрагмента
+									// Отобразить отдельный объект карты в пределах фрагмента
  // в условных знаках карты
  // Может использоваться для вывода шаблонов объектов
  // hmap - идентификатор открытых данных
@@ -753,7 +753,7 @@ _MAPIMP long int _MAPAPI mapPaintObjectEx(HMAP hmap, HDC hdc, RECT * rect,
  // текущих размеров экрана! Иначе - см. PaintToDib,PaintToImage...
 
 _MAPIMP long int _MAPAPI mapPaintObject95(HMAP hmap, HDC hdc, RECT * rect,
-                                          HOBJ info);
+										  HOBJ info);
 
  // Отобразить произвольный объект в пределах фрагмента окна (карты)
  // в условных знаках пользователя
@@ -769,9 +769,9 @@ _MAPIMP long int _MAPAPI mapPaintObject95(HMAP hmap, HDC hdc, RECT * rect,
  // текущих размеров экрана! Иначе - см. PaintToDib,PaintToImage...
 
 _MAPIMP long int _MAPAPI mapPaintMapObject95(HMAP hmap, HDC hdc,
-                                             RECT * rect,
-                                             PAINTPARM * image,
-                                             HOBJ info);
+											 RECT * rect,
+											 PAINTPARM * image,
+											 HOBJ info);
 
  // Отобразить произвольный объект в пределах фрагмента
  // в условных знаках пользователя
@@ -786,11 +786,11 @@ _MAPIMP long int _MAPAPI mapPaintMapObject95(HMAP hmap, HDC hdc,
  // При ошибке в параметрах возвращает ноль
 
 _MAPIMP long int _MAPAPI mapPaintOffsetMapObject95(HMAP hmap, HDC hdc,
-                                                   RECT * rect,
-                                                   PAINTPARM * image,
-                                                   HOBJ info,
-                                                   DOUBLEPOINT * offset,
-                                                   long int place = PP_MAP);
+												   RECT * rect,
+												   PAINTPARM * image,
+												   HOBJ info,
+												   DOUBLEPOINT * offset,
+												   long int place = PP_MAP);
 
 
  // Отобразить образец вида объекта по номеру записи       // 18/09/02
@@ -804,8 +804,8 @@ _MAPIMP long int _MAPAPI mapPaintOffsetMapObject95(HMAP hmap, HDC hdc,
  // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapPaintExampleRscObject(HMAP hmap, HRSC hrsc,
-                                                  HDC hdc, RECT* rect,
-                                                  long int incode);
+												  HDC hdc, RECT* rect,
+												  long int incode);
 
 // Отобразить образец вида объекта
 // При ошибке возвращает ноль
@@ -833,7 +833,7 @@ _MAPIMP long int _MAPAPI mapPaintExample(HMAP hMap, PAINTEXAMPLE* parm);
  // При ошибке в параметрах возвращает ноль
 
 _MAPIMP long int _MAPAPI mapPaintToDib(HMAP hmap, BITMAPINFOHEADER * dibinfo,
-                                       char * lpDibBits, RECT * rect);
+									   char * lpDibBits, RECT * rect);
 
 #ifndef WINCE
  // Вывести изображение карты в Image (массив)
@@ -853,9 +853,9 @@ _MAPIMP long int _MAPAPI mapPaintToDib(HMAP hmap, BITMAPINFOHEADER * dibinfo,
  // При ошибке в параметрах возвращает ноль
 
 _MAPIMP long int _MAPAPI mapPaintToImage(HMAP hmap, RGBQUAD * palette,
-                                         char * lpImage,
-                                         long int width,long int height,
-                                         RECT * rect);
+										 char * lpImage,
+										 long int width,long int height,
+										 RECT * rect);
 #endif  // !WINCE
 #endif  // WIN32API
 
@@ -873,8 +873,8 @@ _MAPIMP long int _MAPAPI mapPaintToImage(HMAP hmap, RGBQUAD * palette,
  // При ошибке в параметрах возвращает ноль
 
 _MAPIMP long int _MAPAPI mapPaintMapObjectToDib(HMAP hmap, char * lpImage,
-                                                int width, int heigth, RECT * rect,
-                                                PAINTPARM * image, HOBJ object);
+												int width, int heigth, RECT * rect,
+												PAINTPARM * image, HOBJ object);
 #ifdef LINUXAPI
  // Вывести изображение карты в XImage (массив)
  // Данная функция реализована для XWindow !
@@ -887,13 +887,13 @@ _MAPIMP long int _MAPAPI mapPaintMapObjectToDib(HMAP hmap, char * lpImage,
  // backTranslucency - прозрачность фона карты (0-100)
  // mapTranslucency - прозрачность объектов карты (0-100)
  // Если backTranslucency или mapTranslucency > 0 - выходной формат изображения - ARGB32
- // Если backTranslucency < 0 и mapTranslucency < 0 - выходной формат изображения - RGB32   
+ // Если backTranslucency < 0 и mapTranslucency < 0 - выходной формат изображения - RGB32
  // При ошибке в параметрах возвращает ноль
 
   long int _MAPAPI  mapPaintToXImage(HMAP hmap,
-                                     XIMAGEDESC * imagedesc,
-                                     long int x, long int y,
-                                     RECT * rect, int backTranslucency = -1, int mapTranslucency = -1);
+									 XIMAGEDESC * imagedesc,
+									 long int x, long int y,
+									 RECT * rect, int backTranslucency = -1, int mapTranslucency = -1);
 
   // Вывести изображение карты в XImage (массив) и выделить
   // на карте отобранные объекты                                   // 05/11/06
@@ -908,10 +908,10 @@ _MAPIMP long int _MAPAPI mapPaintMapObjectToDib(HMAP hmap, char * lpImage,
   // При ошибке в параметрах возвращает ноль
 
   long int _MAPAPI  mapPaintAndSelectToXImage(HMAP hMap,
-                                              XIMAGEDESC * imagedesc,
-                                              long int x, long int y,
-                                              RECT * rect,
-                                              HSELECT select, COLORREF color);
+											  XIMAGEDESC * imagedesc,
+											  long int x, long int y,
+											  RECT * rect,
+											  HSELECT select, COLORREF color);
 
   // Вывести изображение карты и объекта в XImage (массив)         // 05/06/08
   // Данная функция реализована для XWindow !
@@ -921,9 +921,9 @@ _MAPIMP long int _MAPAPI mapPaintMapObjectToDib(HMAP hmap, char * lpImage,
   // rect - выводимый фрагмент карты
   // При ошибке в параметрах возвращает ноль
   long int _MAPAPI  mapPaintMapAndObjectToXImage(HMAP hMap, HOBJ hObj,
-                                                 XIMAGEDESC * imagedesc,
-                                                 long int x, long int y,
-                                                 RECT * rect);
+												 XIMAGEDESC * imagedesc,
+												 long int x, long int y,
+												 RECT * rect);
 
  // Вывести изображение карты в XImage (массив)                // 07/02/03
  // Данная функция реализована для XWindow !
@@ -938,8 +938,8 @@ _MAPIMP long int _MAPAPI mapPaintMapObjectToDib(HMAP hmap, char * lpImage,
  // palette - палитра
  // При ошибке в параметрах возвращает ноль
  long int _MAPAPI  mapPaintExampleObjectByFuncDataToXImage(HMAP hMap,
-                                     XIMAGEDESC * imagedesc,long int x, long int y,RECT * rect,
-                                     int func, char* parm, POLYDATAEX* data,int colors, COLORREF* palette); // 03/08/05
+									 XIMAGEDESC * imagedesc,long int x, long int y,RECT * rect,
+									 int func, char* parm, POLYDATAEX* data,int colors, COLORREF* palette); // 03/08/05
 
   // Вывести изображение карты в XImage (массив)                // 18/02/03
   // Данная функция реализована для XWindow !
@@ -953,9 +953,9 @@ _MAPIMP long int _MAPAPI mapPaintMapObjectToDib(HMAP hmap, char * lpImage,
   // local - локализация
   // При ошибке в параметрах возвращает ноль
   long int _MAPAPI  mapPaintExampleObjectByFuncToXImage(HMAP hMap,
-                                     XIMAGEDESC * imagedesc,RECT * rect,
-                                     int func, char* parm,int colors, COLORREF* palette,
-                                     char* text,int local);
+									 XIMAGEDESC * imagedesc,RECT * rect,
+									 int func, char* parm,int colors, COLORREF* palette,
+									 char* text,int local);
 #endif // LINUXAPI
 
 #ifdef WIN32API
@@ -976,17 +976,17 @@ _MAPIMP long int _MAPAPI mapPaintMapObjectToDib(HMAP hmap, char * lpImage,
  // При ошибке в параметрах возвращает ноль
 
 _MAPIMP long int _MAPAPI mapPaintObjectToImage(HMAP hmap,
-                   char *lpImage,long int ImageAreaWidth,long int ImageAreaHeight,
-                   RECT * rect, HOBJ info);
+				   char *lpImage,long int ImageAreaWidth,long int ImageAreaHeight,
+				   RECT * rect, HOBJ info);
 
  // Вывести изображение карты в метафайл
  // Данные функции реализованы только для платформы Windows !
  // При ошибке в параметрах возвращает ноль
 
 _MAPIMP long int _MAPAPI mapPaintToEmf(HMAP hMap, const char * name,
-                                       METAFILEBUILDPARM * parm);
+									   METAFILEBUILDPARM * parm);
 _MAPIMP long int _MAPAPI mapPaintToEmfEx(HMAP hMap, const char * name,
-                                         METAFILEBUILDPARMEX * parm);
+										 METAFILEBUILDPARMEX * parm);
 #endif  // !WINCE
 #endif  // WIN32API
 
@@ -1004,8 +1004,8 @@ _MAPIMP long int _MAPAPI mapPaintToEmfEx(HMAP hMap, const char * name,
  // При ошибке в параметрах возвращает ноль
 
 _MAPIMP long int _MAPAPI mapPaintUserObject(HMAP hmap,HDC hdc, RECT * rect,
-                                            PAINTPARM * image, PLACEDATA * data,
-                                            long int place/* = PP_MAP*/);
+											PAINTPARM * image, PLACEDATA * data,
+											long int place/* = PP_MAP*/);
 
  // Отобразить произвольный объект в пределах фрагмента
  // hmap - идентификатор открытых данных
@@ -1020,11 +1020,11 @@ _MAPIMP long int _MAPAPI mapPaintUserObject(HMAP hmap,HDC hdc, RECT * rect,
  // При ошибке в параметрах возвращает ноль
 
 _MAPIMP  long int _MAPAPI mapPaintOffsetUserObject95(HMAP hmap,HDC hdc,
-                                                     RECT * rect,
-                                                     PAINTPARM * image,
-                                                     PLACEDATA * data,
-                                                     DOUBLEPOINT * offset,
-                                                     long int place/* = PP_MAP*/);
+													 RECT * rect,
+													 PAINTPARM * image,
+													 PLACEDATA * data,
+													 DOUBLEPOINT * offset,
+													 long int place/* = PP_MAP*/);
 
  // Отобразить произвольный объект в пределах фрагмента
  // hmap - идентификатор открытых данных
@@ -1038,10 +1038,10 @@ _MAPIMP  long int _MAPAPI mapPaintOffsetUserObject95(HMAP hmap,HDC hdc,
  // При ошибке в параметрах возвращает ноль
 
 _MAPIMP long int _MAPAPI mapPaintUserObject95(HMAP hmap, HDC hdc,
-                                              RECT * rect,
-                                              PAINTPARM * image,
-                                              PLACEDATA * data,
-                                              long int place/* = PP_MAP*/);
+											  RECT * rect,
+											  PAINTPARM * image,
+											  PLACEDATA * data,
+											  long int place/* = PP_MAP*/);
 
  // Отобразить образец вида объекта по номеру записи
  // в классификаторе объектов (incode)
@@ -1053,8 +1053,8 @@ _MAPIMP long int _MAPAPI mapPaintUserObject95(HMAP hmap, HDC hdc,
  // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapPaintExampleObject(HMAP hmap, HDC hdc,
-                                               RECT * rect,
-                                               long int incode);
+											   RECT * rect,
+											   long int incode);
 
  // Отобразить образец вида объекта c учетом типа визуализации по
  // номеру записи в классификаторе объектов (incode)
@@ -1067,7 +1067,7 @@ _MAPIMP long int _MAPAPI mapPaintExampleObject(HMAP hmap, HDC hdc,
  // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapPaintExampleObjectEx(HMAP hmap, HDC hdc,RECT* rect, //06/12/01
-                                                 long int incode,long int visualtype);
+												 long int incode,long int visualtype);
 
  // Отобразить образец вида объекта по номеру функции
  // hmap       - идентификатор открытых данных
@@ -1087,9 +1087,9 @@ _MAPIMP long int _MAPAPI mapPaintExampleObjectEx(HMAP hmap, HDC hdc,RECT* rect, 
  // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapPaintExampleObjectFunc(HMAP hmap, HDC hdc, RECT rect, // 27/04/01
-                                        long int func, char* parm,
-                                        long int colors, COLORREF* palette,
-                                        long int visualtype, char* text);
+										long int func, char* parm,
+										long int colors, COLORREF* palette,
+										long int visualtype, char* text);
 
  // Отобразить образец вида объекта по заданной метрике
  // в реальных цветах (с интенсивностью заливки - 100%)
@@ -1107,9 +1107,9 @@ _MAPIMP long int _MAPAPI mapPaintExampleObjectFunc(HMAP hmap, HDC hdc, RECT rect
  // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapPaintExampleObjectRealByFuncData(HMAP hmap, HDC hdc, RECT* rect,
-                                        long int func, char* parm, POLYDATA* data,
-                                        long int colors, COLORREF* palette,
-                                        long int visualtype, char* text);
+										long int func, char* parm, POLYDATA* data,
+										long int colors, COLORREF* palette,
+										long int visualtype, char* text);
 
 
  // Выделить на карте объекты, удовлетворющие заданным условим
@@ -1120,7 +1120,7 @@ _MAPIMP long int _MAPAPI mapPaintExampleObjectRealByFuncData(HMAP hmap, HDC hdc,
  // color  - цвет, которым будут выделяться объекты на карте
 
 _MAPIMP void _MAPAPI mapPaintSelect95(HMAP hmap, HDC hdc, RECT* rect,
-                                      HSELECT select, COLORREF color);
+									  HSELECT select, COLORREF color);
 
  // Установить/Запросить способ выделения площадных и линейных
  // объектов на карте
@@ -1139,7 +1139,7 @@ _MAPIMP long int _MAPAPI mapGetSelectType();
  // parm - параметры печати, указатель на PRINTPARM (см. prnapi.h)
 
 _MAPIMP void _MAPAPI mapPrint(HMAP hmap, HDC hDC, RECT * rect,
-                              const char * parm);  // 15/12/05
+							  const char * parm);  // 15/12/05
 #endif
 
  // Установить пошаговый вывод DIB в окно             // 06/02/06
@@ -1184,10 +1184,10 @@ _MAPIMP long int _MAPAPI mapSetTextQuality(int flag);
  // color  - цвет, которым будут выделяться объекты на карте
 
 _MAPIMP void _MAPAPI mapViewSelect(HMAP hmap, HWND hwnd,  // 03/12/01
-                                   DOUBLEPOINT * point,
-                                   HSELECT select,
-                                   COLORREF color,
-                                   long int place = PP_MAP);      //09/09/04
+								   DOUBLEPOINT * point,
+								   HSELECT select,
+								   COLORREF color,
+								   long int place = PP_MAP);      //09/09/04
 
 
 #ifdef WIN32API
@@ -1199,8 +1199,8 @@ _MAPIMP void _MAPAPI mapViewSelect(HMAP hmap, HWND hwnd,  // 03/12/01
  // в соответсвующей параметру place системе координат
 
 _MAPIMP void _MAPAPI mapView(HMAP hmap, HWND hwnd, long int erase,
-                             DOUBLEPOINT * point,
-                             long int place = PP_MAP);
+							 DOUBLEPOINT * point,
+							 long int place = PP_MAP);
 
  // Отобразить фрагмент карты в клиентной области окна        // 26/12/07
  // в текущих масштабе и составе объектов
@@ -1213,7 +1213,7 @@ _MAPIMP void _MAPAPI mapView(HMAP hmap, HWND hwnd, long int erase,
  // point - смещение фрагмента в отображаемом окне
 
 _MAPIMP void _MAPAPI mapViewEx(HMAP hmap, HWND hwnd, long int erase,
-                               RECT * rect, POINT * point);
+							   RECT * rect, POINT * point);
 
 
  // Отобразить произвольный объект в пределах
@@ -1226,9 +1226,9 @@ _MAPIMP void _MAPAPI mapViewEx(HMAP hmap, HWND hwnd, long int erase,
  // При ошибке в параметрах возвращает ноль
 
 _MAPIMP long int _MAPAPI mapViewObject(HMAP hmap, HWND hwnd,
-                                       DOUBLEPOINT * point,
-                                       HOBJ info,
-                                       long int place = PP_MAP);
+									   DOUBLEPOINT * point,
+									   HOBJ info,
+									   long int place = PP_MAP);
 
 #endif  // WIN32API
 
@@ -1245,9 +1245,9 @@ _MAPIMP long int _MAPAPI mapViewObject(HMAP hmap, HWND hwnd,
  // При ошибке в параметрах возвращает ноль
 
 _MAPIMP long int _MAPAPI mapViewMapObject(HMAP hmap,HWND hwnd,DOUBLEPOINT * point,
-                                          PAINTPARM * image,
-                                          HOBJ info,
-                                          long int place = PP_MAP);
+										  PAINTPARM * image,
+										  HOBJ info,
+										  long int place = PP_MAP);
 
  // Отобразить произвольный объект в пределах фрагмента окна (карты)
  // в условных знаках пользователя
@@ -1260,10 +1260,10 @@ _MAPIMP long int _MAPAPI mapViewMapObject(HMAP hmap,HWND hwnd,DOUBLEPOINT * poin
  // При ошибке в параметрах возвращает ноль
 
 _MAPIMP long int _MAPAPI mapViewOffsetMapObject(HMAP hmap,HWND hwnd,DOUBLEPOINT * point,
-                                     PAINTPARM * image,
-                                     HOBJ info,
-                                     DOUBLEPOINT * offset,
-                                     long int place = PP_MAP);
+									 PAINTPARM * image,
+									 HOBJ info,
+									 DOUBLEPOINT * offset,
+									 long int place = PP_MAP);
 
   // Отобразить произвольный объект в пределах фрагмента окна (карты)
   // hmap   - идентификатор открытых данных
@@ -1276,11 +1276,11 @@ _MAPIMP long int _MAPAPI mapViewOffsetMapObject(HMAP hmap,HWND hwnd,DOUBLEPOINT 
   // Координаты объекта заданы в соответствии с параметром place
 
 _MAPIMP long int _MAPAPI mapViewOffsetUserObject(HMAP hmap,HWND hwnd,
-                                     DOUBLEPOINT * point,
-                                     PAINTPARM * image,
-                                     PLACEDATA * data,
-                                     DOUBLEPOINT * offset,
-                                     long int place = PP_MAP);
+									 DOUBLEPOINT * point,
+									 PAINTPARM * image,
+									 PLACEDATA * data,
+									 DOUBLEPOINT * offset,
+									 long int place = PP_MAP);
 
 
  // Отобразить произвольный объект в пределах фрагмента окна (карты)
@@ -1293,11 +1293,11 @@ _MAPIMP long int _MAPAPI mapViewOffsetUserObject(HMAP hmap,HWND hwnd,
  // Координаты объекта заданы в соответствии с параметром place
 
 _MAPIMP long int _MAPAPI mapViewUserObject(HMAP hmap,HWND hwnd,
-                                     DOUBLEPOINT * point,
-                                     PAINTPARM * image,
-                                     PLACEDATA * data,
-                                     long int place = PP_MAP);
-                                     
+									 DOUBLEPOINT * point,
+									 PAINTPARM * image,
+									 PLACEDATA * data,
+									 long int place = PP_MAP);
+
   /*********************************************************
   *                                                        *
   *        ФУНКЦИИ УПРАВЛЕНИЯ ПРОЦЕССОМ ОТОБРАЖЕНИЯ        *
@@ -1323,7 +1323,7 @@ _MAPIMP long int _MAPAPI mapViewUserObject(HMAP hmap,HWND hwnd,
   // прерывается).
 
 _MAPIMP void _MAPAPI mapSetBreakCallAndParm(HMAP hmap, BREAKCALL call,
-                                            long int parm);
+											long int parm);
 
   // Установить адрес функции, которая будет вызываться
   // перед формированием изображения карты в области
@@ -1337,7 +1337,7 @@ _MAPIMP void _MAPAPI mapSetBreakCallAndParm(HMAP hmap, BREAKCALL call,
   // типа PaintUserObject.
 
 _MAPIMP void _MAPAPI mapSetBeforePaintCallAndParm(HMAP hmap, BEFOREPAINT call,
-                                                  long int parm);
+												  long int parm);
 
   /*********************************************************
   *                                                        *
@@ -1357,7 +1357,7 @@ _MAPIMP void _MAPAPI mapSetBeforePaintCallAndParm(HMAP hmap, BEFOREPAINT call,
  // При ошибке возвращает 0
 
 _MAPIMP double _MAPAPI mapSetupTurn(HMAP hmap, double angle,
-                                    double fixation);
+									double fixation);
 
  // Активен ли поворот ?
  // hmap - идентификатор открытых данных
@@ -1392,8 +1392,8 @@ _MAPIMP double _MAPAPI mapGetTurnAngle(HMAP hmap);
   //                 в новом масштабе отображения
 
 _MAPIMP long int _MAPAPI mapSetViewScale(HMAP hmap,long int * x,
-                                         long int * y,
-                                         float scale);
+										 long int * y,
+										 float scale);
 
   // Изменить масштаб отображения относительно текущего
   //  Параметры:
@@ -1409,7 +1409,7 @@ _MAPIMP long int _MAPAPI mapSetViewScale(HMAP hmap,long int * x,
   //                 в новом масштабе отображения
 
 _MAPIMP long int _MAPAPI mapChangeViewScale(HMAP hmap,long int * x,
-                                            long int * y,float change);
+											long int * y,float change);
 
   // Запросить округленный масштаб отображения карты
   // hmap - идентификатор открытых данных
@@ -1438,7 +1438,7 @@ _MAPIMP double _MAPAPI mapGetDrawScale(HMAP hmap);
 
 _MAPIMP long int _MAPAPI mapScaleToRoundScale(double scale);
 
-// Запросить количество "стандартных" масштабов        // 24/03/08    
+// Запросить количество "стандартных" масштабов        // 24/03/08
 
 _MAPIMP long int _MAPAPI mapScaleTableCount();
 
@@ -1532,7 +1532,7 @@ _MAPIMP long int _MAPAPI mapSetIntensity(HMAP hmap, long int intensity);
   // При ошибке возвращает -1
 _MAPIMP long int _MAPAPI mapGetMapTranslucency(HMAP hmap);
 
-  // Установить полупрозрачность для векторной карты 
+  // Установить полупрозрачность для векторной карты
   // hmap - идентификатор открытых данных
   // translucency - значение полупрозрачности (от 0 до 100)
   // При ошибке возвращает -1
@@ -1604,15 +1604,15 @@ _MAPIMP long int _MAPAPI mapViewImageEx(HIMAGE image, HWND hwnd, RECT * rect);
   // himage - идентификатор буфера окна
   // erase  - признак очистки окна, если равен 0 - содержимое сохраняется
   // width  - новая ширина буфера
-  // height - новая высота буфера 
+  // height - новая высота буфера
   // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapChangeImageSizeEx(HIMAGE image, long int erase,
-                                              long int width, long int height);
+											  long int width, long int height);
 
   // Обновить размеры буфера окна
   // himage - идентификатор буфера окна
-  // Срабатывает правильно только, если буфер создан через mapCreateImage(HWND hwnd);
+  // Срабатывает правильно только, если буфер создан через imImage(HWND hwnd);
   // Содержимое буфера теряется !
   // При ошибке возвращает ноль
 
@@ -1635,38 +1635,38 @@ _MAPIMP long int _MAPAPI mapScrollImage(HIMAGE himage, long dx, long dy);
   // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapDrawImageMap(HIMAGE image, HMAP hMap, RECT * rect,
-                                         POINT * position);
+										 POINT * position);
 
   // Отобразить объект поверх карты местности в образе экрана
   // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapDrawImageMapObject(HIMAGE image, HMAP hMap,
-                                               PAINTPARM * parm, HOBJ object);
- 
+											   PAINTPARM * parm, HOBJ object);
+
   // Отобразить объект поверх карты местности в образе экрана c учетом
   // заданного сдвига метрики
   // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapDrawImageOffsetMapObject(HIMAGE image, HMAP hMap,
-                                                     DOUBLEPOINT * offset,
-                                                     PAINTPARM * parm, HOBJ object);
+													 DOUBLEPOINT * offset,
+													 PAINTPARM * parm, HOBJ object);
 
   // Отобразить объект поверх карты местности в образе экрана
   // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapDrawImageUserObject(HIMAGE image, HMAP hMap,
-                                                PAINTPARM * parm,
-                                                PLACEDATA * data,
-                                                long int place);
+												PAINTPARM * parm,
+												PLACEDATA * data,
+												long int place);
   // Отобразить объект поверх карты местности в образе экрана c учетом
   // заданного сдвига метрики
   // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapDrawImageOffsetUserObject(HIMAGE image, HMAP hMap,
-                                                      DOUBLEPOINT * offset,
-                                                      PAINTPARM * parm,
-                                                      PLACEDATA * data,
-                                                      long int place);
+													  DOUBLEPOINT * offset,
+													  PAINTPARM * parm,
+													  PLACEDATA * data,
+													  long int place);
 
   // Отобразить графические данные                    // 11/07/08
   // hScreen  - идентификатор образа экрана,
@@ -1676,8 +1676,8 @@ _MAPIMP long int _MAPAPI mapDrawImageOffsetUserObject(HIMAGE image, HMAP hMap,
   // parm     - параметры графического примитива
 
 _MAPIMP long int _MAPAPI mapDrawImageGraphics(HIMAGE image, HMAP hMap,
-                                              DRAWPOINT * points, long int count,
-                                              long int type, const char * parm);
+											  DRAWPOINT * points, long int count,
+											  long int type, const char * parm);
 
   // Стереть изображение объектов на заданном фрагменте образа
   // экрана (используется копия фона карты в отдельном буфере)
@@ -1696,7 +1696,7 @@ _MAPIMP void _MAPAPI mapClearImageObjects(HIMAGE image, RECT * rect);
   // При ошибке возвращает ноль
 
 _MAPIMP HBITMAP _MAPAPI mapCreateBitmap(HDC hdc, long int width, long int height,
-                                        void ** memory);
+										void ** memory);
 
 _MAPIMP HBITMAP _MAPAPI mapCreateBitmapEx(long int width, long int height);
 
@@ -1716,7 +1716,7 @@ _MAPIMP void _MAPAPI mapCloseBitmap(HBITMAP hbitmap);
   // При ошибке в параметрах возвращает 0
 
  long int _MAPAPI mapPaintToBitmap(HMAP hmap, HBITMAP hbitmap, int erase,
-                                   RECT * rect);                       // 15/10/07
+								   RECT * rect);                       // 15/10/07
 
 #endif
 
@@ -1790,11 +1790,11 @@ _MAPIMP double _MAPAPI mapGetMapY2(HMAP hmap);
   // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapGetMapInfo(HMAP hmap,long int sheetnumber,
-                                 MAPREGISTER * map,
-                                 LISTREGISTER * sheet);
+								 MAPREGISTER * map,
+								 LISTREGISTER * sheet);
 _MAPIMP long int _MAPAPI mapGetMapInfoEx(HMAP hmap,long int sheetnumber,   //15/09/03
-                                 MAPREGISTEREX * map,
-                                 LISTREGISTER * sheet);
+								 MAPREGISTEREX * map,
+								 LISTREGISTER * sheet);
 
   // Запросить паспортные данные векторной карты
   // по имени файла - паспорта карты (MAP,SIT) (name)
@@ -1804,15 +1804,15 @@ _MAPIMP long int _MAPAPI mapGetMapInfoEx(HMAP hmap,long int sheetnumber,   //15/
   // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapGetMapInfoByName(const char * name,
-                                       long int sheetnumber,
-                                       MAPREGISTER * map,
-                                       LISTREGISTER * sheet);
+									   long int sheetnumber,
+									   MAPREGISTER * map,
+									   LISTREGISTER * sheet);
 
 #ifdef WIN32API
 _MAPIMP long int _MAPAPI mapGetMapInfoByNameEx(const char * name,
-                                       long int sheetnumber,
-                                       MAPREGISTEREX * map,
-                                       LISTREGISTER * sheet);
+									   long int sheetnumber,
+									   MAPREGISTEREX * map,
+									   LISTREGISTER * sheet);
 #endif
   // Запросить имя классификатор карты по имени карты   21/02/06
   // name    - имя файла паспорта карты (MAP,SIT)
@@ -1821,7 +1821,7 @@ _MAPIMP long int _MAPAPI mapGetMapInfoByNameEx(const char * name,
   // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapGetRscByName(const char * name,
-                                         char * rscname, long int size);
+										 char * rscname, long int size);
 
   // Контроль номенклатуры карты
   // nomenclature - строка с номенклатурой
@@ -1831,8 +1831,8 @@ _MAPIMP long int _MAPAPI mapGetRscByName(const char * name,
   //                   соответствующий типу карты)
 
 _MAPIMP long int _MAPAPI mapCheckNomenclature(const char *nomenclature,
-                                        long int length,
-                                        long int type, long int scale);
+										long int length,
+										long int type, long int scale);
 
   // Формирование имени файла по номенклатуре (удаляет точки, пробелы, -)
   // filename - место под имя файла
@@ -1841,7 +1841,7 @@ _MAPIMP long int _MAPAPI mapCheckNomenclature(const char *nomenclature,
   // при ошибке возвращает 0
   // 04/09/02
 _MAPIMP long int _MAPAPI mapSetFileNameFromNomenclature(char *filename, int filelength,
-                                                  char *nomenclature);
+												  char *nomenclature);
 
   // Расчет данных на лист топографической карты
   // Равноугольная проекция Гаусса-Крюгера
@@ -1865,8 +1865,8 @@ _MAPIMP long int _MAPAPI mapSetFileNameFromNomenclature(char *filename, int file
   //  - hmap != 0
 
 _MAPIMP long int _MAPAPI mapCalcTopographicSheet(HMAP hmap,
-                                           MAPREGISTER *mapreg,
-                                           LISTREGISTER *sheet);
+										   MAPREGISTER *mapreg,
+										   LISTREGISTER *sheet);
 
   // Установить признак повышенной точности хранения координат
   // Вызывается после создания карты (Map) или плана (Plane)
@@ -1919,7 +1919,7 @@ _MAPIMP long int _MAPAPI mapGetLayerCount(HMAP hmap);
 
 _MAPIMP const char * _MAPAPI mapGetLayerName(HMAP hmap,long int number);
 _MAPIMP long int _MAPAPI mapGetLayerNameEx(HMAP hmap,long int number,
-                                           char * name,long int size);
+										   char * name,long int size);
 
  // Запросить название слоя в кодировке UNICODE по его номеру (number)
  // hmap - идентификатор открытых данных
@@ -1929,7 +1929,7 @@ _MAPIMP long int _MAPAPI mapGetLayerNameEx(HMAP hmap,long int number,
  // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapGetLayerNameUn(HMAP hmap,long int number,
-                                           WCHAR * name,long int size);
+										   WCHAR * name,long int size);
 
 
   /*********************************************************
@@ -1948,7 +1948,7 @@ _MAPIMP long int _MAPAPI mapGetLayerNameUn(HMAP hmap,long int number,
  // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapWhatListNumber(HMAP hmap,double x,double y,
-                                           long int number,long int place/* = PP_MAP*/);
+										   long int number,long int place/* = PP_MAP*/);
 
  // Запросить имя листа по заданным координатам (x,y).
  // hmap - идентификатор открытых данных
@@ -1958,11 +1958,11 @@ _MAPIMP long int _MAPAPI mapWhatListNumber(HMAP hmap,double x,double y,
  // Если лист не найден - возвращает ноль
 
 _MAPIMP const char * _MAPAPI mapWhatListName(HMAP hmap,double x, double y,
-                                   long int number,long int place/* = PP_MAP*/);
+								   long int number,long int place/* = PP_MAP*/);
 
 _MAPIMP long int _MAPAPI mapWhatListNameEx(HMAP hmap,double x, double y,
-                                    long int number,long int place,
-                                    char * name,long int size);
+									long int number,long int place,
+									char * name,long int size);
 
  // Запросить имя листа (ANSI) по его номеру (number)
  // hmap - идентификатор открытых данных
@@ -1972,7 +1972,7 @@ _MAPIMP long int _MAPAPI mapWhatListNameEx(HMAP hmap,double x, double y,
 
 _MAPIMP const char * _MAPAPI mapGetListName(HMAP hmap,long int number);
 _MAPIMP long int _MAPAPI mapGetListNameEx(HMAP hmap,long int number,
-                                          char * name,long int size);
+										  char * name,long int size);
 
  // Запросить имя листа в кодировке UNICODE по его номеру (number)
  // hmap - идентификатор открытых данных
@@ -1981,7 +1981,7 @@ _MAPIMP long int _MAPAPI mapGetListNameEx(HMAP hmap,long int number,
  // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapGetListNameUn(HMAP hmap, long int number,
-                                          WCHAR * name, long int size);
+										  WCHAR * name, long int size);
 
  // Запросить общее число листов в районе
  // hmap - идентификатор открытых данных
@@ -2013,7 +2013,7 @@ _MAPIMP long int _MAPAPI mapWhatListLayoutIs(HMAP hmap, char* listname);
  // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapGetListFrameObject(HMAP hmap,long int list,
-                                               HOBJ info);
+											   HOBJ info);
 
  // Запросить габариты объекта "Рамка листа" (если рамки нет -
  // заполняются по габаритам из паспорта)
@@ -2036,7 +2036,7 @@ _MAPIMP long int _MAPAPI mapGetListFrame(HMAP hmap, int list, DFRAME * frame);
  // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapCreateListFrameObject(HMAP hmap, long int list,
-                                                  HOBJ info);
+												  HOBJ info);
 
   /*********************************************************
   *                                                        *
@@ -2065,8 +2065,8 @@ _MAPIMP long int _MAPAPI mapRscObjectCountInLayer(HMAP hmap,long int layer);
  // При ошибке возвращает ноль или пустую строку
 
 _MAPIMP const char * _MAPAPI mapRscObjectNameInLayer(HMAP hmap,
-                                                     long int layer,
-                                                     long int number);
+													 long int layer,
+													 long int number);
 
  // Запросить название объекта по порядковому номеру
  // в заданном слое
@@ -2075,9 +2075,9 @@ _MAPIMP const char * _MAPAPI mapRscObjectNameInLayer(HMAP hmap,
  // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapRscObjectNameInLayerEx(HMAP hMap,          // 08/05/07
-                                                   long int layer,
-                                                   long int number,
-                                                   char * name, long int size);
+												   long int layer,
+												   long int number,
+												   char * name, long int size);
 
  // Запросить классификационный код объекта
  // по порядковому номеру в заданном слое (number)
@@ -2086,8 +2086,8 @@ _MAPIMP long int _MAPAPI mapRscObjectNameInLayerEx(HMAP hMap,          // 08/05/
  // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapRscObjectExcodeInLayer(HMAP hmap,
-                                            long int layer,
-                                            long int number);
+											long int layer,
+											long int number);
 
  // Запросить код локализации объекта
  // по порядковому номеру в заданном слое (number)
@@ -2096,8 +2096,8 @@ _MAPIMP long int _MAPAPI mapRscObjectExcodeInLayer(HMAP hmap,
  // При ошибке возвращает ноль (ноль допустим)
 
 _MAPIMP long int  _MAPAPI mapRscObjectLocalInLayer(HMAP hmap,
-                                                   long int layer,
-                                                   long int number);
+												   long int layer,
+												   long int number);
 
  // Запросить внутренний код (индекс) объекта
  // по порядковому номеру в заданном слое (number)
@@ -2106,8 +2106,8 @@ _MAPIMP long int  _MAPAPI mapRscObjectLocalInLayer(HMAP hmap,
  // При ошибке возвращает ноль
 
 _MAPIMP long int  _MAPAPI mapRscObjectCodeInLayer(HMAP hmap,
-                                          long int layer,
-                                          long int number);
+										  long int layer,
+										  long int number);
 
  // Запросить внутренний код (индекс) объекта
  // по внешнему коду (excode) и локализации (local)
@@ -2115,8 +2115,8 @@ _MAPIMP long int  _MAPAPI mapRscObjectCodeInLayer(HMAP hmap,
  // При ошибке возвращает ноль
 
 _MAPIMP long int  _MAPAPI mapRscObjectCode(HMAP hMap,
-                                    long int excode,
-                                    long int local);
+									long int excode,
+									long int local);
 
 
  // Запросить число семантических характеристик в классификаторе
@@ -2166,7 +2166,7 @@ _MAPIMP long int _MAPAPI mapRscSemanticType(HMAP hMap,long int code);
  // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapGetTotalBorder(HMAP hmap, DFRAME * dframe,
-                                           long int place);
+										   long int place);
 
  // Преобразование из дискретов на карте (районе работ)
  // в пикселы на изображении
@@ -2250,7 +2250,7 @@ _MAPIMP long int _MAPAPI mapGeoToPlane(HMAP hmap,double *Bx, double *Ly);
  // При ошибке возвращает 0
 
 _MAPIMP long int _MAPAPI mapPlaneToPlaneByZone(long int source, long int target,
-                                         double * x, double * y);
+										 double * x, double * y);
 
 
  // Преобразование координат в метрах на местности из заданной зоны
@@ -2299,7 +2299,7 @@ _MAPIMP long int _MAPAPI mapIsGeoSupported(HMAP hmap);
 
 _MAPIMP long int _MAPAPI mapPlaneToGeoWGS84(HMAP hmap,double *Bx, double *Ly);
 _MAPIMP long int _MAPAPI mapPlaneToGeoWGS843D(HMAP hmap,double *Bx, double *Ly,
-                                              double *H);
+											  double *H);
 
  // Преобразование из метров на местности (проекция карты)
  // в геодезические координаты в радианах (эллипсоид Красовского, СК-42)
@@ -2312,7 +2312,7 @@ _MAPIMP long int _MAPAPI mapPlaneToGeoWGS843D(HMAP hmap,double *Bx, double *Ly,
 
 _MAPIMP long int _MAPAPI mapPlaneToGeo42(HMAP hmap,double *Bx, double *Ly);
 _MAPIMP long int _MAPAPI mapPlaneToGeo423D(HMAP hmap,double *Bx, double *Ly,
-                                           double *H);
+										   double *H);
 
  //  Преобразование из геодезических координат в радианах
  // (общеземной эллипсоид WGS84)
@@ -2341,7 +2341,7 @@ _MAPIMP long int _MAPAPI mapGeoWGS84ToPlane42(HMAP hmap,double *Bx, double *Ly);
  // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapGeoWGS84ToPlane3D(HMAP hmap, double *Bx, double *Ly,
-                                              double * H);
+											  double * H);
 
  //  Преобразование из геодезических координат в радианах
  // (общеземной эллипсоид ПЗ-90)
@@ -2381,7 +2381,7 @@ _MAPIMP long int _MAPAPI mapGeoWGS84ToPlane3D(HMAP hmap, double *Bx, double *Ly,
 _MAPIMP void _MAPAPI mapGeo42ToGeoWGS84Ex(double *Bx, double *Ly, double *H);
 _MAPIMP long int _MAPAPI mapGeo42ToGeoWGS84(HMAP hmap,double *Bx, double *Ly);
 _MAPIMP long int _MAPAPI mapGeo42ToGeoWGS843D(HMAP hmap,double *Bx, double *Ly,
-                                              double *H);
+											  double *H);
 
  // Преобразование геодезических координат в радианах из системы NAHRWAN
  // (эллипсоид Кларка 1880г) в геодезические координаты в радианах
@@ -2405,7 +2405,7 @@ _MAPIMP long int _MAPAPI mapGeoNahrwanToGeoWGS843D(double *B, double *L, double 
 _MAPIMP long int _MAPAPI mapGeoWGS84ToGeo42Ex(double *Bx, double *Ly, double *H);     // 03/05/05
 _MAPIMP long int _MAPAPI mapGeoWGS84ToGeo42(HMAP hmap,double *Bx, double *Ly);
 _MAPIMP long int _MAPAPI mapGeoWGS84ToGeo423D(HMAP hmap,double *Bx, double *Ly,
-                                              double *H);
+											  double *H);
 
  // Преобразование геодезических координат в радианах из системы ПЗ-90
  // (общеземной эллипсоид ПЗ-90) в геодезические координаты в радианах
@@ -2415,7 +2415,7 @@ _MAPIMP long int _MAPAPI mapGeoWGS84ToGeo423D(HMAP hmap,double *Bx, double *Ly,
 _MAPIMP void _MAPAPI mapGeoEP90ToGeo42Ex(double *Bx, double *Ly, double *H);      // 03/05/05
 _MAPIMP long int _MAPAPI mapGeoEP90ToGeo42(HMAP hmap, double *Bx, double *Ly);
 _MAPIMP long int _MAPAPI mapGeoEP90ToGeo423D(HMAP hmap, double *Bx, double *Ly,
-                                             double *H);
+											 double *H);
 
  // Преобразование геодезических координат в радианах из системы ПЗ-90
  // (общеземной эллипсоид ПЗ-90) в геодезические координаты в радианах
@@ -2437,7 +2437,7 @@ _MAPIMP void _MAPAPI mapGeo95ToGeoEP90Ex(double *Bx, double *Ly, double *H);    
 _MAPIMP void     _MAPAPI mapGeo42ToGeoEP90Ex(double *Bx, double *Ly, double *H);       // 03/05/05
 _MAPIMP long int _MAPAPI mapGeo42ToGeoEP90(HMAP hmap, double *Bx, double *Ly);
 _MAPIMP long int _MAPAPI mapGeo42ToGeoEP903D(HMAP hmap, double *Bx, double *Ly,
-                                             double *H);
+											 double *H);
 
  // Преобразование прямоугольных координат в метрах из системы координат карты
  // в геодезические координаты в радианах системы ПЗ-90(общеземной эллипсоид ПЗ-90)
@@ -2454,7 +2454,7 @@ _MAPIMP long int _MAPAPI mapPlaneToGeoEP903D(HMAP hmap, double *Bx, double *Ly, 
 _MAPIMP void     _MAPAPI mapGeo42ToGeoGSK2011Ex(double *Bx, double *Ly, double *H);       // 03/05/05
 _MAPIMP long int _MAPAPI mapGeo42ToGeoGSK2011(HMAP hmap, double *Bx, double *Ly);
 _MAPIMP long int _MAPAPI mapGeo42ToGeoGSK20113D(HMAP hmap, double *Bx, double *Ly,
-                                             double *H);
+											 double *H);
 
 
  // Преобразование геодезических координат в радианах из системы ГСК-2011
@@ -2465,8 +2465,8 @@ _MAPIMP long int _MAPAPI mapGeo42ToGeoGSK20113D(HMAP hmap, double *Bx, double *L
 _MAPIMP void _MAPAPI mapGeoGSK2011ToGeo42Ex(double *Bx, double *Ly, double *H);      // 03/05/05
 _MAPIMP long int _MAPAPI mapGeoGSK2011ToGeo42(HMAP hmap, double *Bx, double *Ly);
 _MAPIMP long int _MAPAPI mapGeoGSK2011ToGeo423D(HMAP hmap, double *Bx, double *Ly,
-                                             double *H);
-                                             
+											 double *H);
+
  // Преобразование геодезических координат в радианах из системы ПЗ-90
  // (общеземной эллипсоид ПЗ-90) в геодезические координаты в радианах
  // системы ГСК-2011 (эллипсоид ГСК-2011)
@@ -2493,7 +2493,7 @@ _MAPIMP long int _MAPAPI mapPlaneToGeoGSK20113D(HMAP hmap, double *Bx, double *L
 _MAPIMP void     _MAPAPI mapGeo42ToPlaneUTMEx(double *Bx, double *Ly, double H);       // 03/05/05
 _MAPIMP long int _MAPAPI mapGeo42ToPlaneUTM(HMAP hmap, double *Bx, double *Ly);
 _MAPIMP long int _MAPAPI mapGeo42ToPlaneUTM3D(HMAP hmap, double *Bx, double *Ly,
-                                              double *H);
+											  double *H);
 
 
  // Преобразование геодезических координат в радианах из системы 1942 г
@@ -2515,8 +2515,8 @@ _MAPIMP void _MAPAPI mapGeo42ToPlaneByOwnZone(double *Bx, double *Ly);
  // будет выполняться только,если IsGeoSupported() != 0.
 
 _MAPIMP void _MAPAPI mapTransformPoints(HMAP hmap,DOUBLEPOINT * src,long int source,
-                                        DOUBLEPOINT * tag,long int target,
-                                        long int count);
+										DOUBLEPOINT * tag,long int target,
+										long int count);
 
  // Преобразование координат из градусов в радианы
  // (для положительного значения)
@@ -2525,7 +2525,7 @@ _MAPIMP void _MAPAPI mapTransformPoints(HMAP hmap,DOUBLEPOINT * src,long int sou
  // radian - значение в радианах
 
 _MAPIMP void _MAPAPI mapDegreeToRadian(GEODEGREE * degree,
-                                       double * radian);
+									   double * radian);
 
  // Преобразование координат из радиан в градусы
  // (для положительного значения)
@@ -2534,7 +2534,7 @@ _MAPIMP void _MAPAPI mapDegreeToRadian(GEODEGREE * degree,
  // секундах. Описана в maptype.h
 
 _MAPIMP void _MAPAPI mapRadianToDegree(double * radian,
-                                       GEODEGREE * degree);
+									   GEODEGREE * degree);
 
  // Преобразование координат из градусов в радианы с учетом знака
  // degree - структура, содержащая координаты в градусах, минутах,
@@ -2542,7 +2542,7 @@ _MAPIMP void _MAPAPI mapRadianToDegree(double * radian,
  // radian - значение в радианах
 
 _MAPIMP void _MAPAPI mapSignDegreeToRadian(SIGNDEGREE * degree,
-                                           double * radian);
+										   double * radian);
 
  // Преобразование координат из радиан в градусы со знаком
  // radian - значение в радианах
@@ -2550,7 +2550,7 @@ _MAPIMP void _MAPAPI mapSignDegreeToRadian(SIGNDEGREE * degree,
  // секундах. Описана в maptype.h
 
 _MAPIMP void _MAPAPI mapRadianToSignDegree(double * radian,
-                                           SIGNDEGREE * degree);
+										   SIGNDEGREE * degree);
 
  // Вычисление осевого маридиана по номеру зоны для
  // топокарт системы 42 года
@@ -2668,7 +2668,7 @@ _MAPIMP long int _MAPAPI mapObjectDirect(HOBJ info);
  // (OD_RIGHT,OD_LEFT,... - см. MAPTYPE.H)
  // number - номер подобъекта (для объекта - равен нулю)
  // При ошибке возвращает ноль
-                                                                 // 24/01/06
+																 // 24/01/06
 _MAPIMP long int _MAPAPI mapSubjectDirect(HOBJ info, long int subject);
 
 
@@ -2762,7 +2762,7 @@ _MAPIMP long int _MAPAPI mapUnionGroupObject(HOBJ info, double limit);
  // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapRegisterObject(HOBJ info, long int excode,
-                                           long int local);
+										   long int local);
 
  // Сформировать описание нового объекта (!!!)
  // по короткому имени объекта (ключу)
@@ -2772,7 +2772,7 @@ _MAPIMP long int _MAPAPI mapRegisterObject(HOBJ info, long int excode,
  // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapRegisterObjectByKey(HOBJ info,
-                                                const char * name);
+												const char * name);
 
  // Сформировать описание нового объекта (!!!)
  // по внутреннему коду объекта (см. mapRscObjectCode() и т.п.)
@@ -2794,7 +2794,7 @@ _MAPIMP long int _MAPAPI mapDescribeObject(HOBJ info, long int code);
  // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapRegisterDrawObject(HOBJ info, long int layer,
-                                               long int local);
+											   long int local);
 
  // Установить номер листа для нового объекта
  // info - идентификатор объекта карты в памяти
@@ -2837,7 +2837,7 @@ _MAPIMP long int _MAPAPI mapSetObjectKind(HOBJ info, long int kind);
  // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapGetObjectRecord(HOBJ info,char * buffer,
-                                            long int size);
+											long int size);
 
  // Запросить длину описания объекта в виде записи
  // info - идентификатор объекта карты в памяти
@@ -2859,9 +2859,9 @@ _MAPIMP long int _MAPAPI mapGetObjectRecordLength(HOBJ info);
  // Если объект не нужен, нужно освободить ресурсы функцией mapFreeObject !
 
 _MAPIMP HOBJ _MAPAPI mapPutObjectRecord(HMAP hmap, HSITE hsite,
-                                        char * buffer,
-                                        long int size,
-                                        long int mode);
+										char * buffer,
+										long int size,
+										long int mode);
 
  // Запросить порядковый номер объекта в карте
  // info  - идентификатор объекта карты в памяти
@@ -2893,7 +2893,7 @@ _MAPIMP long int _MAPAPI mapGetObjectScale(HOBJ info);
  // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapSetObjectPress(HOBJ info, long int press);
-_MAPIMP long int _MAPAPI mapGetObjectPress(HOBJ info);  
+_MAPIMP long int _MAPAPI mapGetObjectPress(HOBJ info);
 
  // Установить/Запросить способ отображения метрики объекта в виде
  // динамического сплайна
@@ -2925,8 +2925,8 @@ _MAPIMP long int _MAPAPI mapSemanticAmount(HOBJ info);
  // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapSemanticValue(HOBJ info, long int number,
-                                          char * value,
-                                          long int size);
+										  char * value,
+										  long int size);
 
  // Запросить значение семантической характеристики объекта в UNICODE
  // Значение преобразуется в символьный вид без раскодирования
@@ -2937,8 +2937,8 @@ _MAPIMP long int _MAPAPI mapSemanticValue(HOBJ info, long int number,
  // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapSemanticValueUn(HOBJ info, long int number,
-                                            WCHAR * value,
-                                            long int size);
+											WCHAR * value,
+											long int size);
 
  // Запросить значение семантической характеристики объекта
  // в виде числа с плавающей точкой двойной точности
@@ -2960,7 +2960,7 @@ _MAPIMP double _MAPAPI mapSemanticDoubleValue(HOBJ info,long int number);
  // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapSemanticValueName(HOBJ info,long int number,
-                                              char * place,long int maxsize);
+											  char * place,long int maxsize);
 
  // Запросить значение семантической характеристики объекта
  // в символьном раскодированном виде с добавлением единицы
@@ -2976,9 +2976,9 @@ _MAPIMP long int _MAPAPI mapSemanticValueName(HOBJ info,long int number,
  // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapSemanticValueFullName(HOBJ info,long int number,
-                                                  char * place,long int maxsize);
+												  char * place,long int maxsize);
 _MAPIMP long int _MAPAPI mapSemanticValueFullNameUn(HOBJ info,long int number,
-                                                    WCHAR * place,long int maxsize);
+													WCHAR * place,long int maxsize);
 
  // Запросить значение семантической характеристики объекта
  // Значение преобразуется в символьный вид
@@ -2996,8 +2996,8 @@ _MAPIMP long int _MAPAPI mapSemanticValueFullNameUn(HOBJ info,long int number,
  // найденной характеристики
 
 _MAPIMP long int _MAPAPI mapSemanticCodeValue(HOBJ info,long int code,
-                                              char * place,
-                                              long int maxsize,long int number);
+											  char * place,
+											  long int maxsize,long int number);
 
  // Запросить значение семантической характеристики объекта
  // в виде числа с плавающей точкой двойной точности
@@ -3012,7 +3012,7 @@ _MAPIMP long int _MAPAPI mapSemanticCodeValue(HOBJ info,long int code,
  // к числовому виду или не найдено - возвращает ноль
 
 _MAPIMP double _MAPAPI mapSemanticCodeDoubleValue(HOBJ info,long int code,
-                                                  long int number);
+												  long int number);
 
  // Запросить значение семантической характеристики объекта
  // в символьном раскодированном виде
@@ -3030,8 +3030,8 @@ _MAPIMP double _MAPAPI mapSemanticCodeDoubleValue(HOBJ info,long int code,
  // найденной характеристики
 
 _MAPIMP long int _MAPAPI mapSemanticCodeValueName(HOBJ info,long int code,
-                                                  char * place,
-                                                  long int maxsize,long int number);
+												  char * place,
+												  long int maxsize,long int number);
 
  // Запросить название семантической характеристики объекта
  // info    - идентификатор объекта карты в памяти
@@ -3042,9 +3042,9 @@ _MAPIMP long int _MAPAPI mapSemanticCodeValueName(HOBJ info,long int code,
 
 _MAPIMP const char * _MAPAPI mapSemanticName(HOBJ info,long int number);
 _MAPIMP long int _MAPAPI mapSemanticNameEx(HOBJ info,long int number,
-                                           char * name,long int size);
+										   char * name,long int size);
 _MAPIMP long int _MAPAPI mapSemanticNameUn(HOBJ info,long int number,
-                                           WCHAR * name,long int size);
+										   WCHAR * name,long int size);
 
  // Запросить код семантической характеристики объекта
  // info    - идентификатор объекта карты в памяти
@@ -3092,7 +3092,7 @@ _MAPIMP long int _MAPAPI mapSemanticStringLength(HOBJ info,long int number);
  // При ошибке возвращает ноль, иначе - длину записанной строки
 
 _MAPIMP long int _MAPAPI mapSemanticString(HOBJ info,long int number, char * value,
-                                           long int length);
+										   long int length);
 
 
  // ************************************************************
@@ -3134,8 +3134,8 @@ _MAPIMP long int _MAPAPI mapAvailableSemanticCode(HOBJ info,int number);
  // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapAppendSemantic(HOBJ info,long int code,
-                                           const char * value,
-                                           long int size);
+										   const char * value,
+										   long int size);
 
  // Добавить новую характеристику в семантику объекта в виде UNICODE-строки
  // info    - идентификатор объекта карты в памяти
@@ -3151,8 +3151,8 @@ _MAPIMP long int _MAPAPI mapAppendSemantic(HOBJ info,long int code,
  // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapAppendSemanticUn(HOBJ info,long int code,
-                                             const WCHAR * value,
-                                             long int size);
+											 const WCHAR * value,
+											 long int size);
 
  // Добавить новую характеристику в семантику объекта,   // 12/02/06
  // info    - идентификатор объекта карты в памяти
@@ -3163,7 +3163,7 @@ _MAPIMP long int _MAPAPI mapAppendSemanticUn(HOBJ info,long int code,
  // созданной характеристики
 
 _MAPIMP long int _MAPAPI mapAppendSemanticDouble(HOBJ info, long int code,
-                                                 double value);
+												 double value);
 
  // Удалить семантическую характеристику объекта
  // info    - идентификатор объекта карты в памяти
@@ -3181,7 +3181,7 @@ _MAPIMP long int _MAPAPI mapDeleteSemantic(HOBJ info,long int number);
  // иначе - внутренний код семантики
 
 _MAPIMP long int _MAPAPI mapSetSemanticCode(HOBJ info, long int number,
-                                            long int code);
+											long int code);
 
  // Изменить значение семантической характеристики объекта
  // info    - идентификатор объекта карты в памяти
@@ -3194,7 +3194,7 @@ _MAPIMP long int _MAPAPI mapSetSemanticCode(HOBJ info, long int number,
  // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapSetSemanticValue(HOBJ info,long int number,
-                                             char * place,long int maxsize);
+											 char * place,long int maxsize);
 
  // Изменить описание объекта при изменении семантических
  // характеристик
@@ -3210,7 +3210,7 @@ _MAPIMP long int _MAPAPI mapRedefineObject(HOBJ info);
  // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapSemanticDescribeEx(HOBJ info, RSCSEMANTICEX * semtype,
-                                               long int code);
+											   long int code);
 
  // Запросить количество записей в классификаторе
  // семантики по коду семантики
@@ -3232,10 +3232,10 @@ _MAPIMP long int _MAPAPI mapSemanticClassificatorCount(HOBJ info, long int code)
  // при успешном выполнении - адрес строки
 
 _MAPIMP const char * _MAPAPI mapSemanticClassificatorName(HOBJ info,long int code,
-                                                          long int number);
+														  long int number);
 _MAPIMP long int _MAPAPI mapSemanticClassificatorNameEx(HOBJ info,long int code,
-                                                        long int number,
-                                                        char * name,long int size);
+														long int number,
+														char * name,long int size);
 
  // Запросить код значения характеристики из
  // классификатора семантики по коду и
@@ -3246,8 +3246,8 @@ _MAPIMP long int _MAPAPI mapSemanticClassificatorNameEx(HOBJ info,long int code,
  // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapSemanticClassificatorCode(HOBJ info,
-                                                      long int code,
-                                                      long int number);
+													  long int code,
+													  long int number);
 
 
  // ***********************************************************************
@@ -3283,7 +3283,7 @@ _MAPIMP long int _MAPAPI mapTakeStringToPieces(const char * value);
  // 19/01/07
 
 _MAPIMP long int _MAPAPI mapBuildFormulaString(HFORMULA formula, HOBJ info,
-                                        char * string,long int size);
+										char * string,long int size);
 
  // Освободить  идентификатор HFORMULA
 _MAPIMP void _MAPAPI mapFreeFormula(HFORMULA formula);
@@ -3316,7 +3316,7 @@ _MAPIMP long int _MAPAPI mapObjectFrame(HOBJ info,MAPDFRAME * dframe);
  // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapObjectViewFrameEx(HOBJ info, MAPDFRAME * dframe,
-                                              long int force);
+											  long int force);
 _MAPIMP long int _MAPAPI mapObjectViewFrame(HOBJ info, MAPDFRAME * dframe);
 
  // Запрос числа точек метрики объекта/подобъекта
@@ -3342,29 +3342,29 @@ _MAPIMP long int _MAPAPI mapPolyCount(HOBJ info);
 
 _MAPIMP double _MAPAPI mapXPlane(HOBJ info,
 #ifdef __cplusplus
-                                    long int number  = 1,
-                                    long int subject = 0);
+									long int number  = 1,
+									long int subject = 0);
 #else
-                                    long int number,
-                                    long int subject);
+									long int number,
+									long int subject);
 #endif
 
 _MAPIMP double _MAPAPI mapYPlane(HOBJ info,
 #ifdef __cplusplus
-                                 long int number  = 1,
-                                 long int subject = 0);
+								 long int number  = 1,
+								 long int subject = 0);
 #else
-                                 long int number,
-                                 long int subject);
+								 long int number,
+								 long int subject);
 #endif
 
 _MAPIMP double _MAPAPI mapHPlane(HOBJ info,
 #ifdef __cplusplus
-                                 long int number  = 1,
-                                 long int subject = 0);
+								 long int number  = 1,
+								 long int subject = 0);
 #else
-                                 long int number,
-                                 long int subject);
+								 long int number,
+								 long int subject);
 #endif
 
  // Запрос - имеет ли объект 3-ехмерную метрику
@@ -3376,7 +3376,7 @@ _MAPIMP long int _MAPAPI mapIsObject3D(HOBJ info);
   // Запросить тип высоты в третьей координате
   // Реально высота может быть и не задана
   // (0 - абсолютная, иначе - относительная)
-  
+
 _MAPIMP long int _MAPAPI mapGetHeightType(HOBJ info);   // 27/01/06
 
   // Установить тип высоты в третьей координате
@@ -3405,9 +3405,9 @@ _MAPIMP long int _MAPAPI mapSetHeightType(HOBJ info, long int type);    // 27/01
 
 _MAPIMP long int _MAPAPI mapAppendPointPlane(HOBJ info,double x,double y,
 #ifdef __cplusplus
-                                   long int subject = 0);
+								   long int subject = 0);
 #else
-                                   long int subject/* = 0*/);
+								   long int subject/* = 0*/);
 #endif
 
  // Удалить заданную точку метрики
@@ -3418,9 +3418,9 @@ _MAPIMP long int _MAPAPI mapAppendPointPlane(HOBJ info,double x,double y,
 
 _MAPIMP long int _MAPAPI mapDeletePointPlane(HOBJ info,long int number,
 #ifdef __cplusplus
-                                   long int subject = 0);
+								   long int subject = 0);
 #else
-                                   long int subject/* = 0*/);
+								   long int subject/* = 0*/);
 #endif
 
  // Вставить в метрику объекта точку
@@ -3435,9 +3435,9 @@ _MAPIMP long int _MAPAPI mapDeletePointPlane(HOBJ info,long int number,
 
 _MAPIMP long int _MAPAPI mapInsertPointPlane(HOBJ info,double x,double y,long int number,
 #ifdef __cplusplus
-                                             long int subject = 0);
+											 long int subject = 0);
 #else
-                                             long int subject/* = 0*/);
+											 long int subject/* = 0*/);
 #endif
 
  // Изменить координаты точки метрики
@@ -3450,9 +3450,9 @@ _MAPIMP long int _MAPAPI mapInsertPointPlane(HOBJ info,double x,double y,long in
 
 _MAPIMP long int _MAPAPI mapUpdatePointPlane(HOBJ info,double x,double y,long int number,
 #ifdef __cplusplus
-                                             long int subject = 0);
+											 long int subject = 0);
 #else
-                                             long int subject/* = 0*/);
+											 long int subject/* = 0*/);
 #endif
 
  // Добавить в конец метрики объекта точку                           // 11/05/07
@@ -3464,7 +3464,7 @@ _MAPIMP long int _MAPAPI mapUpdatePointPlane(HOBJ info,double x,double y,long in
  // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapAppendPointGeo(HOBJ info, double b, double l,
-                                           long int subject = 0);
+										   long int subject = 0);
 
  // Вставить в метрику объекта точку                                 // 11/05/07
  // info    - идентификатор объекта карты в памяти
@@ -3478,7 +3478,7 @@ _MAPIMP long int _MAPAPI mapAppendPointGeo(HOBJ info, double b, double l,
  // При ошибке возвращает ноль
 
  _MAPIMP long int _MAPAPI mapInsertPointGeo(HOBJ info, double b, double l,
-                                            long int number, long int subject = 0);
+											long int number, long int subject = 0);
 
  // Изменить координаты точки метрики                                // 11/05/07
  // info    - идентификатор объекта карты в памяти
@@ -3490,11 +3490,11 @@ _MAPIMP long int _MAPAPI mapAppendPointGeo(HOBJ info, double b, double l,
  // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapUpdatePointGeo(HOBJ info, double b, double l,
-                                           long int number, long int subject = 0);
+										   long int number, long int subject = 0);
 
 _MAPIMP long int _MAPAPI mapUpdatePointGeo3D(HOBJ info, double b, double l,
-                                             double h, long int number,
-                                             long int subject = 0);
+											 double h, long int number,
+											 long int subject = 0);
 
 #ifndef HIDEGDX     // 30/07/01
  // Изменить координаты общей точки метрики у данного объекта и
@@ -3509,20 +3509,20 @@ _MAPIMP long int _MAPAPI mapUpdatePointGeo3D(HOBJ info, double b, double l,
  // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapUpdatePointPlaneInMap(HOBJ info,double x,double y,
-                                                  long int number,
+												  long int number,
 #ifdef __cplusplus
-                                                  long int subject = 0);
+												  long int subject = 0);
 #else
-                                                  long int subject/* = 0*/);
+												  long int subject/* = 0*/);
 #endif
 
 _MAPIMP long int _MAPAPI mapUpdatePointPlane3DInMap(HOBJ info,double x,double y,
-                                                    double h,
-                                                    long int number,
+													double h,
+													long int number,
 #ifdef __cplusplus
-                                                    long int subject = 0);
+													long int subject = 0);
 #else
-                                                    long int subject/* = 0*/);
+													long int subject/* = 0*/);
 #endif
 
  // Изменить координаты общей точки метрики у данного объекта и
@@ -3537,20 +3537,20 @@ _MAPIMP long int _MAPAPI mapUpdatePointPlane3DInMap(HOBJ info,double x,double y,
  // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapUpdatePointPlaneInLayer(HOBJ info,double x,double y,
-                                                    long int number,
+													long int number,
 #ifdef __cplusplus
-                                                    long int subject = 0);
+													long int subject = 0);
 #else
-                                                    long int subject/* = 0*/);
+													long int subject/* = 0*/);
 #endif
 
 _MAPIMP long int _MAPAPI mapUpdatePointPlane3DInLayer(HOBJ info,double x,double y,
-                                                      double h,
-                                                      long int number,
+													  double h,
+													  long int number,
 #ifdef __cplusplus
-                                                      long int subject = 0);
+													  long int subject = 0);
 #else
-                                                      long int subject/* = 0*/);
+													  long int subject/* = 0*/);
 #endif
 
 #endif // HIDEGDX
@@ -3564,23 +3564,23 @@ _MAPIMP long int _MAPAPI mapUpdatePointPlane3DInLayer(HOBJ info,double x,double 
 
 _MAPIMP long int _MAPAPI mapSetXPlane(HOBJ info,double x,long int number/* = 1*/,
 #ifdef __cplusplus
-                                      long int subject = 0);
+									  long int subject = 0);
 #else
-                                      long int subject/* = 0*/);
+									  long int subject/* = 0*/);
 #endif
 
 _MAPIMP long int _MAPAPI mapSetYPlane(HOBJ info,double y,long int number/* = 1*/,
 #ifdef __cplusplus
-                                      long int subject = 0);
+									  long int subject = 0);
 #else
-                                      long int subject/* = 0*/);
+									  long int subject/* = 0*/);
 #endif
 
 _MAPIMP long int _MAPAPI mapSetHPlane(HOBJ info,double h,long int number/* = 1*/,
 #ifdef __cplusplus
-                                      long int subject = 0);
+									  long int subject = 0);
 #else
-                                      long int subject/* = 0*/);
+									  long int subject/* = 0*/);
 #endif
 
  // Создать дескриптор подобъекта в записи метрики
@@ -3608,7 +3608,7 @@ _MAPIMP long int _MAPAPI mapDeleteSubject(HOBJ info,long int number);
  // При ошибке возвращает 0
 
 _MAPIMP long int _MAPAPI mapRelocateObjectPlane(HOBJ info,
-                                                DOUBLEPOINT * delta);
+												DOUBLEPOINT * delta);
 
  // Сместить все координаты метрики объекта на заданную
  // величину (delta) в соответствии с параметром place
@@ -3617,8 +3617,8 @@ _MAPIMP long int _MAPAPI mapRelocateObjectPlane(HOBJ info,
  // При ошибке возвращает 0
 
 _MAPIMP long int _MAPAPI mapRelocateObject(HMAP hmap, HOBJ info,
-                                           DOUBLEPOINT * delta,
-                                           long int place/* = PP_MAP*/);
+										   DOUBLEPOINT * delta,
+										   long int place/* = PP_MAP*/);
 
  // Изменить направление цифрования подобъекта
  // info  - идентификатор объекта карты в памяти
@@ -3641,7 +3641,7 @@ _MAPIMP long int _MAPAPI mapChangeObjectDirect(HOBJ info);
  // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapSetFirstPoint(HOBJ info,
-                                          long int number, long int subject);     //31/01/05
+										  long int number, long int subject);     //31/01/05
 
  // Линейная фильтрация метрики
  // info  - идентификатор объекта карты в памяти
@@ -3661,7 +3661,7 @@ _MAPIMP long int _MAPAPI mapSetFirstPoint(HOBJ info,
  //  -10 - число точек метрики превышает длину записи метрики
 
 _MAPIMP long int _MAPAPI mapLinearFilter(HOBJ info,
-                                         double precision/* = DELTANULL*/);
+										 double precision/* = DELTANULL*/);
 
  // Фильтрация объекта с учетом топологических связей с соседними
  // объектами листа карты, которому принадлежит объект
@@ -3675,7 +3675,7 @@ _MAPIMP long int _MAPAPI mapLinearFilter(HOBJ info,
  // При ошибке возвращает 0
 
 _MAPIMP long int _MAPAPI mapGeneralFilter(HMAP hMap, HOBJ hobj,
-                                           double precision/* = DELTANULL*/);
+										   double precision/* = DELTANULL*/);
 
  // Фильтрация всех объектов одного листа карты с учетом
  // топологических связей с соседними объектами того же листа
@@ -3698,9 +3698,9 @@ _MAPIMP long int _MAPAPI mapGeneralFilter(HMAP hMap, HOBJ hobj,
  // При ошибке возвращает 0
 
 _MAPIMP long int _MAPAPI mapGeneralFilterInMap(HMAP hMap, HSITE hSite,
-                                               long int list,
-                                               double precision/* = DELTANULL*/,
-                                               HWND hwnd);
+											   long int list,
+											   double precision/* = DELTANULL*/,
+											   HWND hwnd);
 
  // Создание сплайна - сглаживание объекта и всех его подобъектов
  // Это сплайн, который проходит только
@@ -3722,8 +3722,8 @@ _MAPIMP long int _MAPAPI mapGeneralFilterInMap(HMAP hMap, HSITE hSite,
  // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapCashionSpline(HOBJ info, long int cashion,
-                                          long int smooth,
-                                          double precision/* = -1*/);
+										  long int smooth,
+										  double precision/* = -1*/);
 
  // Создание сплайна - сглаживание подобъекта
  // Это сплайн, который проходит только
@@ -3745,9 +3745,9 @@ _MAPIMP long int _MAPAPI mapCashionSpline(HOBJ info, long int cashion,
  // также есть высота
 
 _MAPIMP long int _MAPAPI mapCashionSplineSubject(HOBJ info,int subject,
-                                                 long int cashion,
-                                                 long int smooth,
-                                                 double precision/* = -1*/);
+												 long int cashion,
+												 long int smooth,
+												 double precision/* = -1*/);
 
  // Создание сплайна - огибание объекта и всех его подобъектов
  // Это сплайн, который проходит через все точки исходного объекта
@@ -3770,8 +3770,8 @@ _MAPIMP long int _MAPAPI mapCashionSplineSubject(HOBJ info,int subject,
  // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapBendSpline(HOBJ info, long int press,
-                                       long int smooth,
-                                       double precision/* = -1*/);
+									   long int smooth,
+									   double precision/* = -1*/);
 
  // Создание сплайна - огибание подобъекта
  // Это сплайн, который проходит
@@ -3793,9 +3793,9 @@ _MAPIMP long int _MAPAPI mapBendSpline(HOBJ info, long int press,
  // также есть высота
 
 _MAPIMP long int _MAPAPI mapBendSplineSubject(HOBJ info,int subject,
-                                              long int press,
-                                              long int smooth,
-                                              double precision/* = -1*/);
+											  long int press,
+											  long int smooth,
+											  double precision/* = -1*/);
 
  // Одномерный сглаживающий сплайн
  // points - массив точек (одна из координат)
@@ -3842,28 +3842,28 @@ _MAPIMP long int _MAPAPI mapSmoothingSplineObject(HOBJ info, double smooth);    
  // При ошибке возвращает 0
 
 _MAPIMP long int _MAPAPI mapCreateArc(HMAP hmap,HOBJ info,DOUBLEPOINT * point1,
-                                      DOUBLEPOINT * point2,DOUBLEPOINT * point3,
-                                      double radius);
+									  DOUBLEPOINT * point2,DOUBLEPOINT * point3,
+									  double radius);
 
-// Построение зоны вокруг объекта / подобъекта 
-// radius - радиус создаваемой зоны (в метрах на местности) 
+// Построение зоны вокруг объекта / подобъекта
+// radius - радиус создаваемой зоны (в метрах на местности)
 // info - идентификатор копии объекта, по метрике которого строится зона.          // 04/02/09
-// В этот объект будет записана метрика построенной зоны, которую 
-// можно будет сохранить как новый площадной объект 
-// subject - номер подобъекта, вокруг которого строим зону 
-// (0 - если строим вокруг главного объекта) 
-// form - форма края зоны 
-// для незамкнутых объектов 
-// = 0 - край углом 
-// = 1 - прямоугольный край 
+// В этот объект будет записана метрика построенной зоны, которую
+// можно будет сохранить как новый площадной объект
+// subject - номер подобъекта, вокруг которого строим зону
+// (0 - если строим вокруг главного объекта)
+// form - форма края зоны
+// для незамкнутых объектов
+// = 0 - край углом
+// = 1 - прямоугольный край
 // для замкнутых объектов                // 01/02/07
-// = 0 - "срезанные" углы 
-// = 1 - прямые углы 
-// При ошибке возвращает ноль 
+// = 0 - "срезанные" углы
+// = 1 - прямые углы
+// При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapZoneObject(double radius,
-                                       HOBJ info, long int subject/* = 0*/,
-                                       long int form/* = 0*/);
+									   HOBJ info, long int subject/* = 0*/,
+									   long int form/* = 0*/);
 
  // Построение половины зоны вокруг объекта / подобъекта
  // (справа от объекта по направлению цифрования)
@@ -3873,7 +3873,7 @@ _MAPIMP long int _MAPAPI mapZoneObject(double radius,
  // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapHalfZoneObject(double radius,
-                                           HOBJ info, long int subject/* = 0*/);
+										   HOBJ info, long int subject/* = 0*/);
 
  // Построение зоны снаружи/внутри объекта/подобъекта
  // для объектов с количеством точек больше 1
@@ -3887,7 +3887,7 @@ _MAPIMP long int _MAPAPI mapHalfZoneObject(double radius,
  // При ошибке возвращает ноль                                      // 07/03/06
 
 _MAPIMP long int _MAPAPI mapInsideZoneObject(double radius,
-                                             HOBJ info, long int subject);
+											 HOBJ info, long int subject);
 
 // Построение зоны вокруг линейного незамкнутого объекта вида "змейка"
 // radius    - радиус создаваемой зоны (в метрах на местности)
@@ -3923,7 +3923,7 @@ _MAPIMP long int _MAPAPI mapAbrige(HOBJ info,double delta/* = 0.2*/);     //01/0
  // При ошибке возвращает ноль                            // 10/03/04
 
 _MAPIMP long int _MAPAPI mapOrthodrome(DOUBLEPOINT * first,DOUBLEPOINT * second,
-                                       DOUBLEPOINT * array,long int count);
+									   DOUBLEPOINT * array,long int count);
 
  // Построение локсодромии
  // first - координаты первой точки в радианах
@@ -3935,7 +3935,7 @@ _MAPIMP long int _MAPAPI mapOrthodrome(DOUBLEPOINT * first,DOUBLEPOINT * second,
  // 10/03/04
 
 _MAPIMP long int _MAPAPI mapLoxodrome(DOUBLEPOINT * first,DOUBLEPOINT * second,
-                                      DOUBLEPOINT * array,long int count);
+									  DOUBLEPOINT * array,long int count);
 
  // Построение зоны видимости по матрице высот в виде растрового изображения
  // hmap - идентификатор открытой векторной карты
@@ -3947,7 +3947,7 @@ _MAPIMP long int _MAPAPI mapLoxodrome(DOUBLEPOINT * first,DOUBLEPOINT * second,
  // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapVisibilityZone(HMAP hMap, char * namerst,
-                                           TBUILDZONEVISIBILITY *zonevisibility);
+										   TBUILDZONEVISIBILITY *zonevisibility);
 
  // Определение видимости из точки point1 (координаты в метрах на местности) точку point2
  // deltaheight  - высота наблюдения (в метрах),
@@ -3957,7 +3957,7 @@ _MAPIMP long int _MAPAPI mapVisibilityZone(HMAP hMap, char * namerst,
  //            1 - point2 видна из point1
 
 _MAPIMP long int _MAPAPI mapVisibilityFromPoint(HMAP hmap,DOUBLEPOINT * point1,
-                                                DOUBLEPOINT * point2,double deltaheight);
+												DOUBLEPOINT * point2,double deltaheight);
 
  // Удалить петли у объекта
  // При ошибке возвращает ноль    // 08/02/06
@@ -3987,7 +3987,7 @@ _MAPIMP long int _MAPAPI mapRotateObject(HOBJ info, DOUBLEPOINT * center, double
   // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapGetText(HOBJ info, char * text, long int size,
-                                    long int subject);
+									long int subject);
 
 
   // Запросить содержание текстовой строки в UNICODE
@@ -3998,7 +3998,7 @@ _MAPIMP long int _MAPAPI mapGetText(HOBJ info, char * text, long int size,
   // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapGetTextUn(HOBJ info, WCHAR * text, long int size,
-                                      long int subject);
+									  long int subject);
 
   // Установить новое содержание текстовой строки
   // info   - идентификатор объекта карты в памяти
@@ -4061,7 +4061,7 @@ _MAPIMP long int _MAPAPI mapGetTextVerticalAlign(HOBJ info,long int subject);
   // При успешном выполнении возвращает установленное значение
 
 _MAPIMP long int _MAPAPI mapPutTextHorizontalAlign(HOBJ info,long int align,
-                                                   long int subject);
+												   long int subject);
 
   // Установить способ выравнивания текста по вертикали
   // (FA_BOTTOM,FA_TOP,FA_BASELINE,FA_MIDDLE)
@@ -4071,7 +4071,7 @@ _MAPIMP long int _MAPAPI mapPutTextHorizontalAlign(HOBJ info,long int align,
   // При успешном выполнении возвращает установленное значение
 
 _MAPIMP long int _MAPAPI mapPutTextVerticalAlign(HOBJ info,long int align,
-                                                 long int subject);
+												 long int subject);
 
  // ************************************************************
  //                                                            *
@@ -4237,7 +4237,7 @@ _MAPIMP long int _MAPAPI mapDeleteObject(HOBJ info);
  // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapDeleteObjectByNumber(HMAP hMap,
-                                                 long int list, long int number);
+												 long int list, long int number);
 
  // Отменить удаление объекта карты
  // info  - идентификатор объекта карты в памяти
@@ -4257,7 +4257,7 @@ _MAPIMP long int _MAPAPI mapUndeleteObject(HOBJ info);
  // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapUndeleteObjectByNumber(HMAP hMap, HSITE hSite,
-                                                   long int list, long int number);
+												   long int list, long int number);
 
  // Восстановить (в памяти) данные об объекте из файла
  // info  - идентификатор объекта карты в памяти
@@ -4286,7 +4286,7 @@ _MAPIMP long int _MAPAPI mapRevertObject(HOBJ info);
   // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapReadObjectCopyByNumber(HOBJ info,
-                                                   long int copynumber);
+												   long int copynumber);
 
   // Удалить отредактированные копии объекта info
   // info  - идентификатор объекта карты в памяти
@@ -4300,7 +4300,7 @@ _MAPIMP long int _MAPAPI mapReadObjectCopyByNumber(HOBJ info,
   // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapDeleteObjectCopyToNumber(HOBJ info,
-                                                     long int copynumber);
+													 long int copynumber);
 
 
  // ************************************************************
@@ -4318,7 +4318,7 @@ _MAPIMP long int _MAPAPI mapDeleteObjectCopyToNumber(HOBJ info,
  // При ошибке возвращает 0 (при совпадении точек также)
 
 _MAPIMP double _MAPAPI mapSideLength(HOBJ info,long int number,
-                                     long int subject/* = 0*/);
+									 long int subject/* = 0*/);
 
  // Вычисление азимута участка объекта (стороны)
  // Возвращает величину угла в радианах
@@ -4331,7 +4331,7 @@ _MAPIMP double _MAPAPI mapSideLength(HOBJ info,long int number,
  // При ошибке возвращает 0 (при совпадении точек также)
 
 _MAPIMP double _MAPAPI mapSideAzimuth(HOBJ info,long int number,      //16/01/01
-                                      long int subject);
+									  long int subject);
 
  // Вычисление дирекционного угла участка объекта (стороны)
  // Возвращает величину угла в радианах
@@ -4343,7 +4343,7 @@ _MAPIMP double _MAPAPI mapSideAzimuth(HOBJ info,long int number,      //16/01/01
  // При ошибке возвращает 0 (при совпадении точек также)
 
 _MAPIMP double _MAPAPI mapSideDirection(HOBJ info,long int number,
-                                        long int subject/* = 0*/);
+										long int subject/* = 0*/);
 
  // Вычисление площади объекта
  // Для вычисления площади объекта его координаты пересчитываюся
@@ -4398,13 +4398,13 @@ _MAPIMP double _MAPAPI mapLengthToPoint(HOBJ info, DOUBLEPOINT * point);
 
 _MAPIMP double _MAPAPI mapSubjectLength(HOBJ info, long int subject);      //20/01/05
 
- // Вычисление длины отрезка подобъекта/объекта 
+ // Вычисление длины отрезка подобъекта/объекта
  // subject - номер подобъекта (если = 0, обрабатывается объект)
  // point1, point2 - границы отрезка (производится поиск ближайших точек объекта)
  // При ошибке возвращает 0
- 
-_MAPIMP double _MAPAPI mapSubjectCutLength(HOBJ info, long int subject, 
-                                           const DOUBLEPOINT& point1,
+
+_MAPIMP double _MAPAPI mapSubjectCutLength(HOBJ info, long int subject,
+										   const DOUBLEPOINT& point1,
 					   const DOUBLEPOINT& point2);
 
  // Вычисление длины объекта c учетом рельефа
@@ -4430,8 +4430,8 @@ _MAPIMP long int _MAPAPI mapCircuitousSubject(HOBJ info,long int subject/* = 0*/
  // или 0 в случае ошибки
 
 _MAPIMP double _MAPAPI mapDistancePointSubject(HMAP hmap, HOBJ info,
-                                               int long subject,
-                                               DOUBLEPOINT * point);
+											   int long subject,
+											   DOUBLEPOINT * point);
 
  // Определение кратчайшего расстояния от точки до объекта (включая
  // подобъекты)
@@ -4443,7 +4443,7 @@ _MAPIMP double _MAPAPI mapDistancePointSubject(HMAP hmap, HOBJ info,
  // или 0 в случае ошибки
 
 _MAPIMP double _MAPAPI mapDistancePointObject(HMAP hmap, HOBJ info,
-                                              DOUBLEPOINT * point);
+											  DOUBLEPOINT * point);
 
  // Определение кратчайшего расстояния между объектами    //28/06/02
  // info1  - идентификатор 1-го объекта карты в памяти
@@ -4473,7 +4473,7 @@ _MAPIMP double _MAPAPI mapDistance(DOUBLEPOINT * point1, DOUBLEPOINT * point2);
  // расстояния
 
 _MAPIMP double _MAPAPI mapRealDistance(HMAP hmap, DOUBLEPOINT * point1,
-                                       DOUBLEPOINT * point2);
+									   DOUBLEPOINT * point2);
 
  // Определение угла наклона биссектрисы угла, заданного
  // точками p1,p2,p3 с вершиной в точке p2
@@ -4483,7 +4483,7 @@ _MAPIMP double _MAPAPI mapRealDistance(HMAP hmap, DOUBLEPOINT * point1,
  // направление соответствует положительному направлению оси Y
 
 _MAPIMP double _MAPAPI mapBisectorAngle(DOUBLEPOINT * p1, DOUBLEPOINT * p2,
-                                        DOUBLEPOINT * p3);
+										DOUBLEPOINT * p3);
 
  /*********************************************************
  *                                                        *
@@ -4506,10 +4506,10 @@ _MAPIMP char* _MAPAPI GetMapFont(int technology, int index = 0);
 _MAPIMP char* _MAPAPI SetMapFont(int technology, int index, char* fontname);
 
 _MAPIMP long int _MAPAPI mapGetMapFontName(long int technology, long int index,
-                                           char * name, long int size);
+										   char * name, long int size);
 
 _MAPIMP long int _MAPAPI mapSetMapFontName(long int technology, long int index,
-                                           char * name, long int size);
+										   char * name, long int size);
 
   // Запросить/Установить кодировку шрифта карты
   // technology - тип устройства (DT_RASDISPLAY, DT_PLOTTER)
@@ -4519,7 +4519,7 @@ _MAPIMP long int _MAPAPI mapSetMapFontName(long int technology, long int index,
 
 _MAPIMP long int _MAPAPI mapGetMapFontCharSet(long int technology, long int index);
 _MAPIMP long int _MAPAPI mapSetMapFontCharSet(long int technology, long int index,
-                                              long int code);
+											  long int code);
 
   // Запросить номер шрифта (0-4)
 
@@ -4591,8 +4591,8 @@ _MAPIMP long int _MAPAPI mapGetTheTime(char * buffer, long int size);
   // При ошибке возвращает ноль и выдает сообщение на экран
 
 _MAPIMP FARPROC _MAPAPI mapLoadLibrary(const char * dllname,
-                                       HINSTANCE  * libinst,
-                                       const char * funcname);
+									   HINSTANCE  * libinst,
+									   const char * funcname);
 
   // Выгрузить библиотеку DLL
 
@@ -4601,7 +4601,7 @@ _MAPIMP long int _MAPAPI mapFreeLibrary(HINSTANCE  libinst);  // 01/02/02
   //  Загрузить функцию библиотеки DLL
 
 _MAPIMP FARPROC _MAPAPI mapGetProcAddress(HINSTANCE libinst,
-                                          const char * funcname);  // 01/02/02
+										  const char * funcname);  // 01/02/02
 
   // Копирование cодержимого открытых файлов
   // in     - имя входного файла
@@ -4614,9 +4614,9 @@ _MAPIMP FARPROC _MAPAPI mapGetProcAddress(HINSTANCE libinst,
 
 _MAPIMP long int _MAPAPI mapCopyFile(const char * in, const char * out,
 #ifdef __cplusplus
-                                     long int access = 0, long int mode = 0);
+									 long int access = 0, long int mode = 0);
 #else
-                                     long int access/* = 0*/, long int mode/* = 0*/);
+									 long int access/* = 0*/, long int mode/* = 0*/);
 #endif
 
 
@@ -4648,13 +4648,13 @@ _MAPIMP void _MAPAPI mapErrorMessage(long int code,const char * filename);
   // type - тип сообщения (см. maptype.h : MT_INFO,MT_ERROR,...)
 
 _MAPIMP void _MAPAPI mapMessageToLog(HMAP hMap,HSITE hSite,
-                                     const char * message,
-                                     long int type);
+									 const char * message,
+									 long int type);
 
   // Выдать сообщение на экран
 
 _MAPIMP long int _MAPAPI mapMessageBox(HWND hwnd, const TCHAR * message,
-                                       const TCHAR * title, long int flag);
+									   const TCHAR * title, long int flag);
 
   // Запросить версию модуля MapAccess.Dll
   // Если полученная версия не равна значению MAPACCESSVERSION
@@ -4711,7 +4711,7 @@ _MAPIMP HWND _MAPAPI mapGetHandleForEvent(HMAP hmap);
   // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapCompareString(const char * string,
-                                          const char * filter);
+										  const char * filter);
 
   // Преобразовать дату из строки date в число ГГГГММДД
   // Строка может иметь вид ДД/ММ/ГГГГ или ДД.ММ.ГГГГ
@@ -4728,7 +4728,7 @@ _MAPIMP long int _MAPAPI mapDateToLong(const char * date);
   // При ошибке возвращает ноль, иначе - адрес входной строки
 
 _MAPIMP char * _MAPAPI mapLongToDate(long int number,
-                                     char * date, int size);
+									 char * date, int size);
 
   // Преобразовать время из строки time в число ЧЧММСС
   // Строка может иметь вид ЧЧ:ММ:СС
@@ -4744,7 +4744,7 @@ _MAPIMP long int _MAPAPI mapTimeToLong(const char * time);
   // При ошибке возвращает ноль, иначе - адрес входной строки
 
 _MAPIMP char * _MAPAPI mapLongToTime(long int number,
-                                     char * time, int size);
+									 char * time, int size);
 
 
   // Преобразовать угловую величину в градусах из строки
@@ -4763,7 +4763,7 @@ _MAPIMP double _MAPAPI mapAngleToRadian(const char * angle);
   // При ошибке возвращает ноль, иначе - адрес входной строки
 
 _MAPIMP char * _MAPAPI mapRadianToAngle(double radian,
-                                        char * angle, int size);
+										char * angle, int size);
 
   // Запись целого числа в символьном виде со вставкой разделяющих пробелов
   // (разделение на тройки символов от конца строки к началу)
@@ -4783,7 +4783,7 @@ _MAPIMP long int _MAPAPI mapLongToString(long int number,char* string,long int s
   // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapInt64ToString(__int64 number, char* string,
-                                          long int size);
+										  long int size);
 #endif
 
   // Запись масштаба в символьном виде со вставкой разделяющих пробелов
@@ -4806,7 +4806,7 @@ _MAPIMP long int _MAPAPI mapScaleToString(double scale ,char* string,long int si
   // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapObjectKeyToString(long int key , char* string,
-                                              long int size, long int format);
+											  long int size, long int format);
 
  // Преобразование номера объекта из строки XXXXX/XXXXX или ХХХХХХХХХХХ
  // в число (например, 16777339 соответствует строка 256/123)
@@ -4863,7 +4863,7 @@ _MAPIMP const char * _MAPAPI mapGetCommonRscPath();
   // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapPathToShort(const char * source,
-                                        char * target, long int size);
+										char * target, long int size);
 
   // Построить "короткое" имя файла
   // templ - путь к библиотекам приложения (mapGetPathShell)
@@ -4872,7 +4872,7 @@ _MAPIMP long int _MAPAPI mapPathToShort(const char * source,
   // При ошибке возвращает ноль
 
 _MAPIMP const char * _MAPAPI mapBuildShortName(const char * templ,
-                                               const char * name); // 09/05/05
+											   const char * name); // 09/05/05
 
   // Построить "длинное" имя файла
   // templ - путь к библиотекам приложения (mapGetPathShell)
@@ -4881,7 +4881,7 @@ _MAPIMP const char * _MAPAPI mapBuildShortName(const char * templ,
   // При ошибке возвращает ноль
 
 _MAPIMP char * _MAPAPI mapBuildLongName(const char * templ,
-                                        char * name, char * path); // 28/05/01
+										char * name, char * path); // 28/05/01
 
   // Построить усеченный путь к файлу (относительно данных)
   // templ  - путь к данным (например, mapGetMapPath(HMAP hMap))
@@ -4892,7 +4892,7 @@ _MAPIMP char * _MAPAPI mapBuildLongName(const char * templ,
   // При ошибке возвращает ноль
 
 _MAPIMP char * _MAPAPI mapCutPath(const char * templ, const char * name,      // 08/10/04
-                                  char * target, int size);
+								  char * target, int size);
 
   // Построить полное имя файла по усеченному пути
   // templ  - путь к данным (например, mapGetMapPath(HMAP hMap))
@@ -4903,7 +4903,7 @@ _MAPIMP char * _MAPAPI mapCutPath(const char * templ, const char * name,      //
   // При ошибке возвращает ноль
 
 _MAPIMP char * _MAPAPI mapUnionPath(const char * templ, const char * name,  // 08/10/04
-                                    char * target, int size);
+									char * target, int size);
 
 
   // Векторизация битового растра точечного знака
@@ -4914,7 +4914,7 @@ _MAPIMP char * _MAPAPI mapUnionPath(const char * templ, const char * name,  // 0
   // При ошибке возвращает 0
 
 _MAPIMP long int _MAPAPI mapMarkVectorization(int size, char* bits,
-                                              int length, POLYDATA* data);
+											  int length, POLYDATA* data);
 
   // Преобразовать текстовую строку из кодировки OEM (DOS) в ANSI (WINDOWS)
   // При ошибке возвращает 0
@@ -4947,7 +4947,7 @@ _MAPIMP long int _MAPAPI mapGetMapScreenDepth();   // 21/03/03
   *                                                        *
   *********************************************************/
 
-  // Установить предельные размеры буфера изображения       
+  // Установить предельные размеры буфера изображения
   // Функция должна вызываться до открытия данных
   // Чтобы оставить ширину или высоту без изменения соответствующий параметр
   // должен быть равен 0
@@ -5017,7 +5017,7 @@ _MAPIMP double _MAPAPI mapScreenPixel2Meter(long int pixel);
   // выходной массив не заполняется и функция возвращает 0.
 
 _MAPIMP long int _MAPAPI mapCompressLZW(const char* in,  long int sizein,
-                                        char* out, long int sizeout);
+										char* out, long int sizeout);
 
   // Декомпрессия данных по алгоритму типа LZW
   //  in      - массив исходных (сжатых) данных
@@ -5027,7 +5027,7 @@ _MAPIMP long int _MAPAPI mapCompressLZW(const char* in,  long int sizein,
   // При ошибке возвращает 0
 
 _MAPIMP long int _MAPAPI mapDecompressLZW(const char* in,  long int sizein,
-                                          char* out, long int sizeout);
+										  char* out, long int sizeout);
 
  /*********************************************************
  *                                                        *
@@ -5072,7 +5072,7 @@ _MAPIMP unsigned long int _MAPAPI GetKeyNumber();
   // При ошибке возвращает ноль
 
 _MAPIMP long int _MAPAPI mapSetConnectParameters(const char * name,
-                                                 long int port, long int ishost);
+												 long int port, long int ishost);
 
   // Запросить номер порта для связи с ГИС-сервером
   // Номер порта от 1024 до 65536, по умолчанию - 2047

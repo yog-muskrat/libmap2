@@ -21,6 +21,7 @@ void LayersModel::addLayer(MapLayer *layer)
 	mLayers << layer;
 	connect(layer, SIGNAL(layerNameChanged(QString)), this, SLOT(onLayerUpdated()));
 	connect(layer, SIGNAL(toggled(bool)), this, SLOT(onLayerUpdated()));
+	connect(layer, SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(onLayerUpdated()));
 
 	endInsertRows();
 }

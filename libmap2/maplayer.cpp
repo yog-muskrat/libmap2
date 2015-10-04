@@ -1,6 +1,9 @@
 #include "maplayer.h"
 #include "mapview.h"
 #include "mapobject.h"
+#include "mapvectorobject.h"
+#include "maplineobject.h"
+#include "mapzoneobject.h"
 
 #include <QDir>
 #include <QFile>
@@ -92,6 +95,19 @@ QVariant MapLayer::editRole(const QModelIndex &idx) const
 	return QVariant();
 }
 
+void MapLayer::objectChangedNotify(MapObject *obj)
+{
+	if(mObjects.contains(obj))
+	{
+		return;
+	}
+
+	const QModelIndex &idxFrom = index(mObjects.indexOf(obj), 0);
+	const QModelIndex &idxTo = index(mObjects.indexOf(obj), columnCount()-1);
+
+	emit dataChanged(idxFrom, idxTo);
+}
+
 MapLayer::~MapLayer()
 {
 	if(mSiteHandle > 1 && pMapView->mapHandle() > 0)
@@ -135,6 +151,29 @@ void MapLayer::setLayerName(const QString &value)
 	}
 }
 
+MapObject *MapLayer::takeObjectAt(QModelIndex index)
+{
+	if(!index.isValid() || index.row() >= rowCount())
+	{
+		return 0;
+	}
+
+	beginRemoveColumns(QModelIndex(), index.row(), index.row());
+	MapObject *obj = mObjects.takeAt( index.row() );
+	endRemoveRows();
+	return obj;
+}
+
+MapObject *MapLayer::takeObject(MapObject *obj)
+{
+	if(!mObjects.contains(obj))
+	{
+		return 0;
+	}
+
+	return takeObjectAt( index(mObjects.indexOf(obj), 0) );
+}
+
 void MapLayer::deleteFiles()
 {
 	long number = mapGetSiteNumber( mapView()->mapHandle(), mSiteHandle);
@@ -172,12 +211,35 @@ void MapLayer::addObject(MapObject *object, MapObject *parent)
 
 	if(mObjects.contains(object) )
 	{
-			return;
+		return;
 	}
 
 	beginInsertRows(QModelIndex(), row, row);
+	object->setMapLayer( this );
 	mObjects << object;
 	endInsertRows();
+}
+
+MapVectorObject *MapLayer::addVectorObject(long rscCode, Coord coords)
+{
+	MapVectorObject *obj = new MapVectorObject(rscCode, this);
+	addObject(obj);
+	obj->setCoordinates(coords);
+	return obj;
+}
+
+MapLineObject *MapLayer::addLineObject(long rscCode, QList<Coord> coords)
+{
+	MapLineObject *obj = new MapLineObject(rscCode, coords, this);
+	addObject(obj);
+	return obj;
+}
+
+MapZoneObject *MapLayer::addZoneObject(long rscCode, QList<Coord> coords)
+{
+	MapZoneObject *obj = new MapZoneObject(rscCode, coords, this);
+	addObject(obj);
+	return obj;
 }
 
 void MapLayer::removeObject(MapObject *object)

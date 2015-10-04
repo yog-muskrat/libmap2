@@ -6,12 +6,13 @@
 #include "structs.h"
 #include "gis.h"
 
+class QLabel;
+class MapLayer;
 class MapCanvas;
+class MapObject;
+class QScrollBar;
 class LayersModel;
 class MapNavigation;
-class MapLayer;
-class QLabel;
-class QScrollBar;
 
 /*!
  * \brief Виджет для отображения карты
@@ -31,7 +32,8 @@ public:
 		AddVectorObject,
 		AddZoneObject,
 		AddLineObject,
-		Ruler
+		Ruler,
+		RectZoom
 	};
 
 	/*!
@@ -78,6 +80,11 @@ public:
 	QWidget * detachNavigation();
 	void attachNavigation();
 
+	/*!
+	 * \brief Ищет объекты в заданной точке.
+	 */
+	QList<MapObject*> objectsAtPoint(QPoint point, double radiusPx = 10);
+
 public slots:
 	/*!
 	 * \brief Устанавливает масштаб карты.
@@ -90,6 +97,13 @@ public slots:
 	void setCenter(QPoint pictureCoord);
 	void setCenter(Coord geoCoord);
 	void setCenter(CoordPlane planeCoord);
+
+	/*!
+	 * \brief Устанавливает режим редактирования карты.
+	 * В зависимости от режима будут иначе обрабатываться действия мыши.
+	 * \param tool
+	 */
+	void setCurrentTool(Tools tool) {mTool = tool;}
 
 signals:
 	/*!
@@ -168,6 +182,7 @@ private:
 	MapNavigation *pNavigation;
 
 	HMAP mMapHandle;
+	HSELECT mSelect;
 	bool mIsDragged;
 	QPoint mDragStartPoint;
 
@@ -177,6 +192,8 @@ private:
 
 	QString mRscDir;
 	QString mSitDir;
+
+	Tools mTool;
 };
 
 #endif // MAPVIEW_H

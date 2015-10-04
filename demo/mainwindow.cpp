@@ -28,21 +28,17 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	MapLayer *l = pView->createLayer("mgk.rsc", "Слой 1");
 
-	MapVectorObject *obj = new MapVectorObject(10403010, l);
-	obj->setCoordinates( Coord(60., 30.) );
-	obj->setName("Самолетик");
+	MapVectorObject *obj1 = l->addVectorObject(10403010, Coord(60., 30.) );
+	obj1->setName("Самолетик");
 
-	QSize size = QDesktopWidget().availableGeometry().size();
-
-	resize( size * 0.85 );
-
-	pScaleLabel = new QLabel( QString("1:%0").arg(pView->scale(), 0, 'f' ) );
-
-	statusBar()->addPermanentWidget( pScaleLabel );
+	statusBar()->addPermanentWidget( pScaleLabel = new QLabel( QString("1:%0").arg(pView->scale(), 0, 'f' )));
 	statusBar()->addPermanentWidget( pCoordLabel = new QLabel());
 
 	connect(pView, SIGNAL(coordChanged(Coord)), this, SLOT(onCoordChanged(Coord)));
 	connect(pView, SIGNAL(scaleChanged(double)), this, SLOT(onScaleChanged(double)));
+
+	QSize size = QDesktopWidget().availableGeometry().size();
+	resize( size * 0.85 );
 }
 
 MainWindow::~MainWindow()
@@ -113,6 +109,8 @@ void MainWindow::on_pbAddObject_clicked()
 	MapVectorObject *obj = new MapVectorObject(code, l);
 	obj->setCoordinates( Coord(0, 0) );
 	obj->center();
+
+	obj->setRotation(45);
 }
 
 void MainWindow::on_pbRemoveObject_clicked()
