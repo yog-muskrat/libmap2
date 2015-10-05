@@ -11,7 +11,7 @@
 #include <QTextCodec>
 #include <QApplication>
 
-MapLayer::MapLayer(quint16 id, QString rscName, MapView *parent) : QAbstractItemModel(parent),
+MapLayer::MapLayer(quint16 id, QString rscName, MapView *parent, bool temp) : QAbstractItemModel(parent),
 	pMapView(parent), mSiteHandle(-1), mRscName(rscName), mLastInternalId(0), mVisible(true), mValid(false)
 {
 	MAPREGISTER mapreg;
@@ -40,7 +40,14 @@ MapLayer::MapLayer(quint16 id, QString rscName, MapView *parent) : QAbstractItem
 		return;
 	}
 
-	mSiteHandle = mapCreateAndAppendSite(pMapView->mapHandle(), qPrintable(sitname), qPrintable(rscname), &cs);
+	if(temp)
+	{
+		mSiteHandle = mapCreateAndAppendTempSite(pMapView->mapHandle(), qPrintable(rscname));
+	}
+	else
+	{
+		mSiteHandle = mapCreateAndAppendSite(pMapView->mapHandle(), qPrintable(sitname), qPrintable(rscname), &cs);
+	}
 
 	mValid = mSiteHandle > 0;
 }
@@ -338,18 +345,21 @@ QVariant MapLayer::headerData(int section, Qt::Orientation orientation, int role
 	return QVariant();
 }
 
-bool MapLayer::removeRow(int row, const QModelIndex &parent)
+bool MapLayer::removeRows(int row, int count, const QModelIndex &parent)
 {
-	if(row < 0 || row >= mObjects.count())
+	if(row < 0 || row+count > mObjects.count())
 	{
 		return false;
 	}
 
-	beginRemoveRows(QModelIndex(), row, row);
+	beginRemoveRows(QModelIndex(), row, row + count - 1);
 
-	MapObject *obj = mObjects.takeAt(row);
-	obj->remove();
-	delete obj;
+	for(int i = 0; i < count; ++i)
+	{
+		MapObject *obj = mObjects.takeAt(row);
+		obj->removeFromMap();
+		delete obj;
+	}
 
 	endRemoveRows();
 

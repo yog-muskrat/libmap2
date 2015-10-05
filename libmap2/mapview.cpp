@@ -62,6 +62,7 @@ MapView::~MapView()
 
 	if(mMapHandle > 0)
 	{
+		qDeleteAll(mTempSites);
 		mapCloseData( mMapHandle );
 	}
 }
@@ -312,6 +313,27 @@ void MapView::setCenter(CoordPlane planeCoord)
 {
 	QPoint p = MapTools::planeToPicture(mapHandle(), planeCoord);
 	setCenter(p);
+}
+
+void MapView::setCurrentTool(MapView::Tools tool)
+{
+	mTool = tool;
+
+	if(mTool == MapView::Ruler)
+	{
+		if(!mTempSites.contains("ruler"))
+		{
+			mTempSites["ruler"] = new MapLayer(-1, "mgk.rsc", this, true);
+		}
+		mTempSites["ruler"]->setVisible(true);
+	}
+	else
+	{
+		if(mTempSites.contains("ruler"))
+		{
+			mTempSites["ruler"]->setVisible(false);
+		}
+	}
 }
 
 void MapView::onScrollMap()

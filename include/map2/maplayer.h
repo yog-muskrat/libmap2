@@ -79,7 +79,7 @@ public:
 	virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
 	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
 	virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
-	virtual bool removeRow(int row, const QModelIndex &parent = QModelIndex());
+	virtual bool removeRows(int row, int count, const QModelIndex &parent);
 
 	friend class MapView;
 	friend class MapObject;
@@ -89,7 +89,7 @@ signals:
 	void toggled(bool visible);
 
 private:
-	explicit MapLayer(quint16 id, QString rscName, MapView *parent);
+	explicit MapLayer(quint16 id, QString rscName, MapView *parent, bool temp = false);
 	QVariant displayRole(const QModelIndex &idx) const;
 	QVariant editRole(const QModelIndex &idx) const;
 

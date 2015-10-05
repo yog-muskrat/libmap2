@@ -81,6 +81,8 @@ private:
 	void addMetricBinding(MetricBinding binding, int targetMetric);
 	void removeMetricBinding(MetricBinding binding, int targetMetric);
 
+	void removeFromMap();
+
 protected:
 	void commit();
 

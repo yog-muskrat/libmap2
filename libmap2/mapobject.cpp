@@ -25,12 +25,14 @@ void MapObject::remove()
 {
 	Q_ASSERT(handle() > 0);
 
-	mapDeleteObject( handle() );
-	mapCommitObject( handle() );
-	mapFreeObject( handle() );
-
-	mObjHandle = 0;
-	mMapIndex = 0;
+	if(mapLayer())
+	{
+		mapLayer()->removeObject(this);
+	}
+	else
+	{
+		removeFromMap();
+	}
 }
 
 void MapObject::center()
@@ -111,6 +113,18 @@ void MapObject::addMetricBinding(MetricBinding binding, int targetMetric)
 void MapObject::removeMetricBinding(MetricBinding binding, int targetMetric)
 {
 	mObjectsBindings.remove(targetMetric, binding);
+}
+
+void MapObject::removeFromMap()
+{
+	Q_ASSERT(handle() > 0);
+
+	mapDeleteObject( handle() );
+	mapCommitObject( handle() );
+	mapFreeObject( handle() );
+
+	mObjHandle = 0;
+	mMapIndex = 0;
 }
 
 void MapObject::setName(QString name)

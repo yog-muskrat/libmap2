@@ -108,7 +108,11 @@ public slots:
 	 * В зависимости от режима будут иначе обрабатываться действия мыши.
 	 * \param tool
 	 */
-	void setCurrentTool(MapView::Tools tool) {mTool = tool;}
+	void setCurrentTool(MapView::Tools tool);
+
+
+//	void setActiveLayer(MapLayer *layer);
+//	void setActiveLayer(int index);
 
 signals:
 	/*!
@@ -203,6 +207,8 @@ private:
 	QString mSitDir; //!< Каталог пользовательских карт (слоев).
 
 	Tools mTool; //!< Текущий инструмент карты.
+
+	QMap<QString, MapLayer*> mTempSites;
 };
 
 Q_DECLARE_METATYPE(MapView::Tools)
