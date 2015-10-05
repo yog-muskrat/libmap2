@@ -8,6 +8,7 @@
 
 class QLabel;
 class MapLayer;
+class QToolBar;
 class MapCanvas;
 class MapObject;
 class QScrollBar;
@@ -32,8 +33,8 @@ public:
 		AddVectorObject,
 		AddZoneObject,
 		AddLineObject,
-		Ruler,
-		RectZoom
+		Ruler, //!< Измерение расстояний
+		RectZoom //!< Приблизить область
 	};
 
 	/*!
@@ -85,6 +86,10 @@ public:
 	 */
 	QList<MapObject*> objectsAtPoint(QPoint point, double radiusPx = 10);
 
+	HSELECT selectContext() {return mSelect;}
+
+	QToolBar * toolBar();
+
 public slots:
 	/*!
 	 * \brief Устанавливает масштаб карты.
@@ -103,7 +108,7 @@ public slots:
 	 * В зависимости от режима будут иначе обрабатываться действия мыши.
 	 * \param tool
 	 */
-	void setCurrentTool(Tools tool) {mTool = tool;}
+	void setCurrentTool(MapView::Tools tool) {mTool = tool;}
 
 signals:
 	/*!
@@ -176,24 +181,30 @@ private:
 	 */
 	bool checkDirs();
 
+	void zoomToRect( const QRect &rect );
+
 	QScrollBar *pHorizontalScroll;
 	QScrollBar *pVerticalScroll;
 	MapCanvas *pCanvas;
-	MapNavigation *pNavigation;
+
+	MapNavigation *pNavigation; //!< Виджет навигации.
+	QToolBar * pToolBar; //!< Панель инструментов карты.
 
 	HMAP mMapHandle;
 	HSELECT mSelect;
 	bool mIsDragged;
 	QPoint mDragStartPoint;
 
-	LayersModel *mLayersModel;
+	LayersModel *mLayersModel; //!< Модель с перечнем слоев карты.
 
 	quint16 mLastLayerId;
 
-	QString mRscDir;
-	QString mSitDir;
+	QString mRscDir; //!< Каталог классификаторов.
+	QString mSitDir; //!< Каталог пользовательских карт (слоев).
 
-	Tools mTool;
+	Tools mTool; //!< Текущий инструмент карты.
 };
+
+Q_DECLARE_METATYPE(MapView::Tools)
 
 #endif // MAPVIEW_H

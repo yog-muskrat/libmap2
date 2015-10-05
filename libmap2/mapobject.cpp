@@ -2,19 +2,23 @@
 #include "maplayer.h"
 #include "mapview.h"
 
-MapObject::MapObject(Type t, MapLayer *layer): mType(t), mObjHandle(-1), pLayer(layer)
+#include <QDebug>
+
+MapObject::MapObject(Type t, MapLayer *layer): mType(t), mObjHandle(-1), pLayer(layer), mMapIndex(-1), mSelected(false)
 {
 	mObjHandle = mapCreateSiteObject(mapLayer()->mapHandle(), mapLayer()->siteHandle(), 1, IDFLOAT2 );
+	mapCommitObject( handle() );
 
 	layer->addObject(this);
 }
 
 MapObject::~MapObject()
 {
-	Q_ASSERT(handle() > 0);
-
-	mapCommitObject(handle());
-	mapFreeObject(handle());
+	if(handle() >0 )
+	{
+		mapCommitObject(handle());
+		mapFreeObject(handle());
+	}
 }
 
 void MapObject::remove()
@@ -26,6 +30,7 @@ void MapObject::remove()
 	mapFreeObject( handle() );
 
 	mObjHandle = 0;
+	mMapIndex = 0;
 }
 
 void MapObject::center()
@@ -37,7 +42,16 @@ void MapObject::center()
 
 void MapObject::setSelected(bool b)
 {
+	mSelected = b;
 
+	if(!mapLayer())
+	{
+		return;
+	}
+
+	HSELECT hselect = mapLayer()->mapView()->selectContext();
+
+	mapSelectObject(hselect, mapIndex(), (mSelected ? 1 : 0) );
 }
 
 CoordPlane MapObject::coordinate() const {
@@ -76,6 +90,7 @@ void MapObject::setMapLayer(MapLayer *layer)
 	pLayer->addObject( this );
 	mapChangeObjectMap(handle(), layer->mapHandle(), layer->siteHandle());
 	mapCommitObject(handle());
+	mMapIndex = 0;
 }
 
 void MapObject::commit()
@@ -146,4 +161,14 @@ void MapObject::updateMetric(int metricNumber, CoordPlane coord)
 		mb.object->updateMetric(mb.metricNumber, coord);
 		mb.object->commit();
 	}
+}
+
+long MapObject::mapIndex()
+{
+	if(mMapIndex <= 0)
+	{
+		mMapIndex = mapObjectCode( handle() );
+	}
+
+	return mMapIndex;
 }

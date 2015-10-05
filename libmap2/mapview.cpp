@@ -2,6 +2,8 @@
 #include "maplayer.h"
 #include "maptools.h"
 #include "mapcanvas.h"
+#include "mapobject.h"
+#include "maptoolbar.h"
 #include "layersmodel.h"
 #include "mapnavigation.h"
 #include "rscselectdialog.h"
@@ -15,8 +17,8 @@
 #include <QApplication>
 
 MapView::MapView(QString sitDir, QString rscDir, QWidget *parent)
-	: QWidget(parent), pNavigation(0), mMapHandle(0), mSelect(0), mIsDragged(false), mLastLayerId(0), mRscDir(rscDir), mSitDir(sitDir),
-	  mTool(None)
+	: QWidget(parent), pNavigation(0), pToolBar(0), mMapHandle(0), mSelect(0), mIsDragged(false), mLastLayerId(0),
+	  mRscDir(rscDir), mSitDir(sitDir),mTool(None)
 {
 	setFocusPolicy(Qt::TabFocus);
 
@@ -156,15 +158,43 @@ QList<MapObject *> MapView::objectsAtPoint(QPoint point, double radiusPx)
 	frame.X2 = point.x() + radiusPx;
 	frame.Y2 = point.y() + radiusPx;
 
-	hobj = mapWhatObject(mMapHandle, hobj, &frame, WO_LAST, PP_PICTURE);
+	HOBJ found = mapWhatObject(mMapHandle, hobj, &frame, WO_LAST, PP_PICTURE);
 
-	while(hobj)
+	QList<MapObject*> result;
+
+	while(found)
 	{
-		qDebug()<<"Found an object!"<<mMapHandle<<mapGetObjectSiteIdent(mMapHandle, hobj);
-		hobj = mapWhatObject(mMapHandle, hobj, &frame, WO_BACK, PP_PICTURE);
+		HSITE site = mapGetObjectSiteIdent(mMapHandle, found);
+		long index = mapObjectCode(found);
+
+		MapLayer *l = mLayersModel->layerByHandle( site);
+		if(l)
+		{
+			MapObject *obj = l->objectByMapIndex(index);
+			if(obj)
+			{
+				obj->setSelected( !obj->selected() );
+				result << obj;
+			}
+		}
+		found = mapWhatObject(mMapHandle, hobj, &frame, WO_BACK, PP_PICTURE);
 	}
 
-	return QList<MapObject*>();
+	mapFreeObject(hobj);
+
+	return result;
+}
+
+QToolBar *MapView::toolBar()
+{
+	if(!pToolBar)
+	{
+		MapToolBar *tb = new MapToolBar(this);
+		connect(tb, SIGNAL(toolSelected(MapView::Tools)), this, SLOT(setCurrentTool(MapView::Tools)));
+		pToolBar = tb;
+	}
+
+	return pToolBar;
 }
 
 void MapView::createNavigation()
@@ -212,6 +242,40 @@ bool MapView::checkDirs()
 	}
 
 	return QDir(mRscDir).exists() && QDir(mSitDir).exists();
+}
+
+void MapView::zoomToRect(const QRect &rect)
+{
+	if(rect.width() == 0 && rect.height()==0)
+	{
+		return;
+	}
+
+	QRect selfRect = pCanvas->rect();
+
+	double selfRatio = (double)selfRect.width() / (double)selfRect.height();
+	double rectRatio = (double)rect.width() / (double)rect.height();
+
+
+	if(selfRatio > rectRatio)
+	{
+		int w = (double)rect.height() * (double)selfRect.width() / (double)selfRect.height();
+		selfRect.setHeight( rect.height() );
+		selfRect.setWidth( w );
+	}
+	else
+	{
+		int h = (double)rect.width() * (double)selfRect.height() / (double)selfRect.width();
+		selfRect.setWidth( rect.width() );
+		selfRect.setHeight( h );
+	}
+
+	selfRect.moveCenter( rect.center() );
+	QPoint p = rect.center() - pCanvas->rect().center();
+	scrollMapTopLeft( p.x(), p.y() );
+
+	double newScale = scale() * selfRect.width() / pCanvas->width();
+	setScale(newScale);
 }
 
 void MapView::setScale(double scale)
@@ -396,6 +460,11 @@ void MapView::processMousePressEvent(QEvent *e)
 	{
 		mIsDragged = true;
 		mDragStartPoint = mouseEvent->pos();
+
+		if(mTool == MapView::RectZoom)
+		{
+			pCanvas->setZoomRect( QRect(mouseEvent->pos(), mouseEvent->pos()));
+		}
 	}
 }
 
@@ -409,17 +478,42 @@ void MapView::processMouseMoveEvent(QEvent *e)
 
 	if(mIsDragged)
 	{
-		if(QLineF(mDragStartPoint, mouseEvent->pos()).length() > 20 )
+		if(mTool == MapView::RectZoom)
 		{
-			int dx = mDragStartPoint.x() - mouseEvent->x();
-			int dy = mDragStartPoint.y() - mouseEvent->y();
+			QRect rect = pCanvas->zoomRect();
+			if(mouseEvent->x() > rect.x())
+			{
+				rect.setRight(mouseEvent->x());
+			}
+			else
+			{
+				rect.setLeft(mouseEvent->x());
+			}
 
-			scrollMapTopLeft(dx, dy);
+			if(mouseEvent->y() > rect.y())
+			{
+				rect.setBottom(mouseEvent->y());
+			}
+			else
+			{
+				rect.setTop(mouseEvent->y());
+			}
+			pCanvas->setZoomRect(rect);
+		}
+		else
+		{
+			if(QLineF(mDragStartPoint, mouseEvent->pos()).length() > 20 )
+			{
+				int dx = mDragStartPoint.x() - mouseEvent->x();
+				int dy = mDragStartPoint.y() - mouseEvent->y();
 
-			mDragStartPoint = mouseEvent->pos();
+				scrollMapTopLeft(dx, dy);
 
-			adjustScrollValues();
-			pNavigation->moveFrame(pCanvas->mapTopLeft());
+				mDragStartPoint = mouseEvent->pos();
+
+				adjustScrollValues();
+				pNavigation->moveFrame(pCanvas->mapTopLeft());
+			}
 		}
 	}
 
@@ -445,6 +539,12 @@ void MapView::processMouseReleaseEvent(QEvent *e)
 
 	mIsDragged = false;
 	mDragStartPoint = QPoint();
+
+	if(mTool == MapView::RectZoom && mouseEvent->button() == Qt::LeftButton)
+	{
+		zoomToRect( pCanvas->zoomRect() );
+		pCanvas->setZoomRect(QRect(0,0,0,0));
+	}
 }
 
 void MapView::processMouseDoubleClickEvent(QEvent *e)

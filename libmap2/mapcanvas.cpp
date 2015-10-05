@@ -17,7 +17,14 @@ MapCanvas::MapCanvas(QWidget *parent) :
 	connect(&mRepaintTi, SIGNAL(timeout()), this, SLOT(onRepaintTimer()));
 	mRepaintTi.start(150);
 
-	setSelectionColor(QColor(Qt::red));
+	mZoomRectPen.setColor( QColor(Qt::green) );
+	mZoomRectPen.setWidth(2);
+	mZoomRectPen.setCapStyle(Qt::RoundCap);
+	mZoomRectPen.setJoinStyle( Qt::RoundJoin );
+
+	setSelectionColor(QColor(Qt::green));
+
+	mapSetSelectType(STF_OBJECT);
 }
 
 MapCanvas::~MapCanvas()
@@ -81,6 +88,12 @@ QPixmap MapCanvas::mapPreview(int width)
 	return pm;
 }
 
+void MapCanvas::setZoomRect(QRect rect)
+{
+	mZoomRect = rect;
+	mRepaint = true;
+}
+
 void MapCanvas::setMapTopLeft(const QPoint &point)
 {
 	mMapTopLeft = point;
@@ -109,7 +122,7 @@ double MapCanvas::scale() const
 
 void MapCanvas::setSelectionColor(const QColor &color)
 {
-	mSelectColor = color.red() + color.green() * 256 * color.blue() * 256 * 256;
+	mSelectColor = RGB(color.red(), color.green(), color.blue());
 }
 
 void MapCanvas::queueRepaint()
@@ -160,6 +173,8 @@ void MapCanvas::paintEvent(QPaintEvent *e)
 
 	QPainter p(this);
 	p.drawImage(0, 0, img);
+	p.setPen( mZoomRectPen);
+	p.drawRect(mZoomRect);
 
 	FreeTheMemory(dataBytes);
 

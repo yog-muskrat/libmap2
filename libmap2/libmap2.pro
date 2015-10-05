@@ -33,7 +33,8 @@ HEADERS += mapcanvas.h \
 	../include/map2/maptools.h \
 	../include/map2/gis.h \
     ../include/map2/maplineobject.h \
-    ../include/map2/mapzoneobject.h
+    ../include/map2/mapzoneobject.h \
+    maptoolbar.h
 SOURCES += layersmodel.cpp \
 		   mapcanvas.cpp \
 		   maplayer.cpp \
@@ -46,7 +47,8 @@ SOURCES += layersmodel.cpp \
 	maptools.cpp \
 	structs.cpp \
     maplineobject.cpp \
-    mapzoneobject.cpp
+    mapzoneobject.cpp \
+    maptoolbar.cpp
 
 FORMS += \
 	rscselectdialog.ui \

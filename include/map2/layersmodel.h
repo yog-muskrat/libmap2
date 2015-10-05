@@ -3,7 +3,10 @@
 
 #include <QAbstractTableModel>
 
+#include "gis.h"
+
 class MapLayer;
+class MapObject;
 
 /*!
  * \brief Модель для работы с пользовательскими слоями карты.
@@ -26,6 +29,7 @@ public:
 	void removeLayer(MapLayer *layer);
 	void removeLayer(int row);
 	MapLayer * layerAt(int row);
+	MapLayer * layerByHandle(HSITE handle);
 
 	virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
 	virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;

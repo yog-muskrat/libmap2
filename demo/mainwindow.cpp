@@ -26,6 +26,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	ui->navigationDockLayout->insertWidget(0, pView->detachNavigation());
 
+	addToolBar( pView->toolBar() );
+
 	MapLayer *l = pView->createLayer("mgk.rsc", "Слой 1");
 
 	MapVectorObject *obj1 = l->addVectorObject(10403010, Coord(60., 30.) );
@@ -115,7 +117,13 @@ void MainWindow::on_pbAddObject_clicked()
 
 void MainWindow::on_pbRemoveObject_clicked()
 {
+	QModelIndex objectIdx = ui->objectsTable->currentIndex();
+	if(!objectIdx.isValid())
+	{
+		return;
+	}
 
+	ui->objectsTable->model()->removeRow( objectIdx.row());
 }
 
 void MainWindow::on_objectsTable_doubleClicked(const QModelIndex &index)

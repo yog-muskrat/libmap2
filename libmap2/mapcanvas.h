@@ -1,6 +1,7 @@
 #ifndef MAPCANVAS_H
 #define MAPCANVAS_H
 
+#include <QPen>
 #include <QTimer>
 #include <QWidget>
 
@@ -17,6 +18,9 @@ public:
 	void setMapHandle(const HMAP &hnd, const HSELECT &select);
 	QPixmap mapPreview(int width);
 	QPoint mapTopLeft() const {return mMapTopLeft;}
+
+	void setZoomRect(QRect rect);
+	QRect zoomRect() const {return mZoomRect;}
 
 public slots:
 	void setMapTopLeft(const QPoint &point);
@@ -42,6 +46,9 @@ private:
 	QPoint mMapTopLeft;
 	bool mRepaint; //!< Флаг необходимости перерисовки карты по таймеру.
 	QTimer mRepaintTi; //!< Таймер перерисовки;
+
+	QRect mZoomRect; //!< Прямоугольник для интсрумента "Приблизить область".
+	QPen mZoomRectPen;
 
 	COLORREF mSelectColor;
 	HSELECT mSelect;

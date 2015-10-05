@@ -22,6 +22,7 @@ void LayersModel::addLayer(MapLayer *layer)
 	connect(layer, SIGNAL(layerNameChanged(QString)), this, SLOT(onLayerUpdated()));
 	connect(layer, SIGNAL(toggled(bool)), this, SLOT(onLayerUpdated()));
 	connect(layer, SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(onLayerUpdated()));
+	connect(layer, SIGNAL(rowsRemoved(QModelIndex, int, int)), this, SLOT(onLayerUpdated()));
 
 	endInsertRows();
 }
@@ -53,6 +54,19 @@ MapLayer *LayersModel::layerAt(int row)
 	}
 
 	return mLayers[row];
+}
+
+MapLayer *LayersModel::layerByHandle(HSITE handle)
+{
+	foreach(MapLayer *l, mLayers)
+	{
+		if(l->siteHandle() == handle)
+		{
+			return l;
+		}
+	}
+
+	return 0;
 }
 
 

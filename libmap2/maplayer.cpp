@@ -174,6 +174,19 @@ MapObject *MapLayer::takeObject(MapObject *obj)
 	return takeObjectAt( index(mObjects.indexOf(obj), 0) );
 }
 
+MapObject *MapLayer::objectByMapIndex(long mapIndex)
+{
+	foreach(MapObject *obj, mObjects)
+	{
+		if(obj->mapIndex() == mapIndex)
+		{
+			return obj;
+		}
+	}
+
+	return 0;
+}
+
 void MapLayer::deleteFiles()
 {
 	long number = mapGetSiteNumber( mapView()->mapHandle(), mSiteHandle);
@@ -244,21 +257,8 @@ MapZoneObject *MapLayer::addZoneObject(long rscCode, QList<Coord> coords)
 
 void MapLayer::removeObject(MapObject *object)
 {
-
 	int row = mObjects.indexOf(object);
-
-	if(row < 0)
-	{
-		return;
-	}
-
-	beginRemoveRows(QModelIndex(), row, row);
-
-	MapObject *obj = mObjects.takeAt(row);
-	obj->remove();
-	delete obj;
-
-	endRemoveRows();
+	removeRow(row);
 }
 
 MapObject *MapLayer::objectAtIndex(const QModelIndex &index)
@@ -336,4 +336,22 @@ QVariant MapLayer::headerData(int section, Qt::Orientation orientation, int role
 	}
 
 	return QVariant();
+}
+
+bool MapLayer::removeRow(int row, const QModelIndex &parent)
+{
+	if(row < 0 || row >= mObjects.count())
+	{
+		return false;
+	}
+
+	beginRemoveRows(QModelIndex(), row, row);
+
+	MapObject *obj = mObjects.takeAt(row);
+	obj->remove();
+	delete obj;
+
+	endRemoveRows();
+
+	return true;
 }

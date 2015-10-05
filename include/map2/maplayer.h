@@ -42,6 +42,12 @@ public:
 	MapObject *takeObject(MapObject *obj);
 
 	/*!
+	 * \brief Возвращает объект по его уникальному номеру на карте.
+	 * \param number Уникальный номер объекта карты.
+	 */
+	MapObject *objectByMapIndex(long mapIndex);
+
+	/*!
 	 * \brief Удаляет файлы слоя.
 	 * \return Признак успешности.
 	 */
@@ -73,6 +79,7 @@ public:
 	virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
 	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;
 	virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+	virtual bool removeRow(int row, const QModelIndex &parent = QModelIndex());
 
 	friend class MapView;
 	friend class MapObject;

@@ -38,6 +38,8 @@ public:
 	 */
 	virtual void setSelected(bool b = true);
 
+	bool selected() const {return mSelected;}
+
 	/*!
 	 * \brief Возвращает координаты объекта.
 	 * В базовой реализации возвращаются координаты первой точки метрики.
@@ -59,6 +61,8 @@ public:
 	void unbindMetrics();
 
 	void updateMetric(int metricNumber, CoordPlane coord);
+
+	long mapIndex();
 
 	friend class MapLayer;
 
@@ -84,6 +88,8 @@ protected:
 	HOBJ mObjHandle;
 	MapLayer *pLayer;
 	QString mName;
+	long mMapIndex; //!< Порядковый номер объекта в карте.
+	bool mSelected;
 
 	QMap<int, MetricBinding> mMetricsBindings; //!< Метрики текущего объекта, привязанные к другим объектам.
 	QMultiMap<int, MetricBinding> mObjectsBindings; //!< Метрики других объектов, привязанные к текущему.
