@@ -104,7 +104,7 @@ QVariant MapLayer::editRole(const QModelIndex &idx) const
 
 void MapLayer::objectChangedNotify(MapObject *obj)
 {
-	if(mObjects.contains(obj))
+	if(!mObjects.contains(obj))
 	{
 		return;
 	}
@@ -181,11 +181,11 @@ MapObject *MapLayer::takeObject(MapObject *obj)
 	return takeObjectAt( index(mObjects.indexOf(obj), 0) );
 }
 
-MapObject *MapLayer::objectByMapIndex(long mapIndex)
+MapObject *MapLayer::objectByMapKey(long mapKey)
 {
 	foreach(MapObject *obj, mObjects)
 	{
-		if(obj->mapIndex() == mapIndex)
+		if(obj->mapKey() == mapKey)
 		{
 			return obj;
 		}
@@ -240,17 +240,18 @@ void MapLayer::addObject(MapObject *object, MapObject *parent)
 	endInsertRows();
 }
 
-MapVectorObject *MapLayer::addVectorObject(long rscCode, Coord coords)
+MapVectorObject *MapLayer::addVectorObject(long rscCode, Coord coords, QString name)
 {
 	MapVectorObject *obj = new MapVectorObject(rscCode, this);
 	addObject(obj);
 	obj->setCoordinates(coords);
+	obj->setName(name);
 	return obj;
 }
 
 MapLineObject *MapLayer::addLineObject(long rscCode, QList<Coord> coords)
 {
-	MapLineObject *obj = new MapLineObject(rscCode, coords, this);
+	MapLineObject *obj = new MapLineObject(rscCode, this, coords);
 	addObject(obj);
 	return obj;
 }

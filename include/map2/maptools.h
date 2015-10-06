@@ -16,6 +16,7 @@ public:
 	static CoordPlane geoToPlane(HMAP mapHnd, const Coord &coord);
 	static QPoint planeToPicture(HMAP mapHnd, const CoordPlane &coord);
 	static QPoint geoToPicture(HMAP mapHnd, const Coord &coord);
+	static CoordPlane pictureToPlane(HMAP mapHnd, const QPoint &point);
 private:
 	MapTools(){}
 };

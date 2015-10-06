@@ -51,3 +51,13 @@ QPoint MapTools::geoToPicture(HMAP mapHnd, const Coord &coord)
 
 	return planeToPicture( mapHnd, coordPlane );
 }
+
+CoordPlane MapTools::pictureToPlane(HMAP mapHnd, const QPoint &point)
+{
+	double x = point.x();
+	double y = point.y();
+
+	mapPictureToPlane(mapHnd, &x, &y);
+
+	return CoordPlane(x, y);
+}

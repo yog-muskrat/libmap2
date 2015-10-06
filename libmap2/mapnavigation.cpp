@@ -24,6 +24,8 @@ MapNavigation::MapNavigation(QWidget *parent) :
 	setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
 	setFrameShape( QFrame::Box );
 	setFrameShadow( QFrame::Plain );
+
+	setMouseTracking(true);
 }
 
 void MapNavigation::updatePixmap()
@@ -86,6 +88,7 @@ void MapNavigation::mousePressEvent(QMouseEvent *event)
 	{
 		mIsDragged = true;
 		mPrevPoint = event->pos();
+		setCursor( QCursor( Qt::ClosedHandCursor));
 	}
 
 	QGraphicsView::mousePressEvent(event);
@@ -101,6 +104,18 @@ void MapNavigation::mouseMoveEvent(QMouseEvent *event)
 		dragFrameBy(dx, dy);
 
 		mPrevPoint = event->pos();
+		setCursor( QCursor( Qt::ClosedHandCursor));
+	}
+	else
+	{
+		if(itemAt(event->pos()) == pFrame)
+		{
+			setCursor( QCursor( Qt::OpenHandCursor));
+		}
+		else
+		{
+			setCursor( QCursor( Qt::ArrowCursor));
+		}
 	}
 
 	QGraphicsView::mouseMoveEvent(event);
@@ -109,6 +124,15 @@ void MapNavigation::mouseMoveEvent(QMouseEvent *event)
 void MapNavigation::mouseReleaseEvent(QMouseEvent *event)
 {
 	mIsDragged = false;
+
+	if(itemAt(event->pos()) == pFrame)
+	{
+		setCursor( QCursor( Qt::OpenHandCursor));
+	}
+	else
+	{
+		setCursor( QCursor( Qt::ArrowCursor));
+	}
 
 	QGraphicsView::mouseReleaseEvent(event);
 }

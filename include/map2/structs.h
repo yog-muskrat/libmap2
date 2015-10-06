@@ -44,8 +44,11 @@ struct CoordPlane
 	QString toString() const { return QString("X:%0 Y:%1").arg(x, 0, 'f').arg(y, 0, 'f'); }
 	bool operator ==(const CoordPlane &other) const { return other.x == x && other.y == y;}
 
-	CoordPlane operator +(const CoordPlane &right);
-	CoordPlane& operator +=(const CoordPlane &other);
+	CoordPlane operator+(const CoordPlane &right);
+	CoordPlane& operator+=(const CoordPlane &other);
+
+	CoordPlane operator-(const CoordPlane &right);
+	CoordPlane& operator-=(const CoordPlane &other);
 
 	Coord toGeo(HMAP mapHnd) const;
 };

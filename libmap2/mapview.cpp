@@ -3,6 +3,7 @@
 #include "maptools.h"
 #include "mapcanvas.h"
 #include "mapobject.h"
+#include "maplineobject.h"
 #include "maptoolbar.h"
 #include "layersmodel.h"
 #include "mapnavigation.h"
@@ -18,7 +19,7 @@
 
 MapView::MapView(QString sitDir, QString rscDir, QWidget *parent)
 	: QWidget(parent), pNavigation(0), pToolBar(0), mMapHandle(0), mSelect(0), mIsDragged(false), mLastLayerId(0),
-	  mRscDir(rscDir), mSitDir(sitDir),mTool(None)
+	  mRscDir(rscDir), mSitDir(sitDir),mTool(None), pRuler(0)
 {
 	setFocusPolicy(Qt::TabFocus);
 
@@ -148,8 +149,6 @@ void MapView::attachNavigation()
 
 QList<MapObject *> MapView::objectsAtPoint(QPoint point, double radiusPx)
 {
-	mapSelectObject(mSelect, -1, 0);
-
 	HOBJ hobj = mapCreateObject(mMapHandle);
 
 	point += pCanvas->mapTopLeft();
@@ -166,15 +165,14 @@ QList<MapObject *> MapView::objectsAtPoint(QPoint point, double radiusPx)
 	while(found)
 	{
 		HSITE site = mapGetObjectSiteIdent(mMapHandle, found);
-		long index = mapObjectCode(found);
+		long key = mapObjectKey(found);
 
 		MapLayer *l = mLayersModel->layerByHandle( site);
 		if(l)
 		{
-			MapObject *obj = l->objectByMapIndex(index);
+			MapObject *obj = l->objectByMapKey(key);
 			if(obj)
 			{
-				obj->setSelected( !obj->selected() );
 				result << obj;
 			}
 		}
@@ -323,9 +321,17 @@ void MapView::setCurrentTool(MapView::Tools tool)
 	{
 		if(!mTempSites.contains("ruler"))
 		{
-			mTempSites["ruler"] = new MapLayer(-1, "mgk.rsc", this, true);
+			MapLayer *l = new MapLayer(-1, "mgk.rsc", this, true);
+			mTempSites["ruler"] = l;
+
+			connect(l, SIGNAL(dataChanged(QModelIndex,QModelIndex,QVector<int>)), pCanvas, SLOT(queueRepaint()));
 		}
 		mTempSites["ruler"]->setVisible(true);
+
+		if(!pRuler)
+		{
+			pRuler = new MapLineObject(22500110, mTempSites["ruler"]);
+		}
 	}
 	else
 	{
@@ -333,6 +339,19 @@ void MapView::setCurrentTool(MapView::Tools tool)
 		{
 			mTempSites["ruler"]->setVisible(false);
 		}
+
+		if(pRuler)
+		{
+			pRuler->clear();
+		}
+	}
+}
+
+void MapView::clearSelection()
+{
+	while(!mSelectedObjects.isEmpty())
+	{
+		mSelectedObjects.takeFirst()->setSelected(false);
 	}
 }
 
@@ -480,12 +499,44 @@ void MapView::processMousePressEvent(QEvent *e)
 
 	if(mouseEvent->button() == Qt::LeftButton)
 	{
-		mIsDragged = true;
-		mDragStartPoint = mouseEvent->pos();
-
 		if(mTool == MapView::RectZoom)
 		{
+			mIsDragged = true;
+			mDragStartPoint = mouseEvent->pos();
+
 			pCanvas->setZoomRect( QRect(mouseEvent->pos(), mouseEvent->pos()));
+			pCanvas->setCursor( QCursor(Qt::SizeFDiagCursor) );
+		}
+		else if(mTool == MapView::None)
+		{
+			mIsDragged = true;
+			mDragStartPoint = mouseEvent->pos();
+
+			pCanvas->setCursor( QCursor(Qt::ClosedHandCursor) );
+		}
+		else if(mTool == MapView::MoveObject)
+		{
+			QList<MapObject*> objects = objectsAtPoint(mouseEvent->pos(), 5);
+
+			if(!objects.isEmpty())
+			{
+				mIsDragged = true;
+				mDragStartPoint = mouseEvent->pos();
+
+				MapObject *obj = objects.first();
+				obj->setSelected();
+				qDebug()<<"Object clicked "<<obj->name();
+
+				if(!mouseEvent->modifiers().testFlag( Qt::ControlModifier ))
+				{
+					clearSelection();
+				}
+				mSelectedObjects.append( obj );
+			}
+			else
+			{
+				clearSelection();
+			}
 		}
 	}
 }
@@ -521,8 +572,9 @@ void MapView::processMouseMoveEvent(QEvent *e)
 				rect.setTop(mouseEvent->y());
 			}
 			pCanvas->setZoomRect(rect);
+			pCanvas->setCursor( QCursor(Qt::SizeFDiagCursor) );
 		}
-		else
+		else if(mTool == MapView::None)
 		{
 			if(QLineF(mDragStartPoint, mouseEvent->pos()).length() > 20 )
 			{
@@ -536,6 +588,59 @@ void MapView::processMouseMoveEvent(QEvent *e)
 				adjustScrollValues();
 				pNavigation->moveFrame(pCanvas->mapTopLeft());
 			}
+			pCanvas->setCursor( QCursor(Qt::ClosedHandCursor) );
+		}
+		else if(mTool == MapView::MoveObject)
+		{
+			if(!mSelectedObjects.isEmpty())
+			{
+				CoordPlane oldCoord = MapTools::pictureToPlane(mapHandle(), mDragStartPoint);
+				CoordPlane newCoord = MapTools::pictureToPlane(mapHandle(), mouseEvent->pos());
+
+				CoordPlane delta = oldCoord - newCoord;
+
+				foreach(MapObject *o, mSelectedObjects)
+				{
+					o->moveBy(delta.x, delta.y);
+				}
+
+				mDragStartPoint = mouseEvent->pos();
+
+				pCanvas->setCursor( QCursor(Qt::ClosedHandCursor) );
+			}
+		}
+	}
+	else
+	{
+		if(mTool == MapView::None)
+		{
+			pCanvas->setCursor( QCursor(Qt::OpenHandCursor) );
+		}
+		else if(mTool == MapView::RectZoom)
+		{
+			pCanvas->setCursor( QCursor(Qt::CrossCursor) );
+		}
+		else if(mTool == MapView::MoveObject)
+		{
+			if(!objectsAtPoint(mouseEvent->pos(), 5).isEmpty())
+			{
+				if(mouseEvent->modifiers().testFlag( Qt::ControlModifier))
+				{
+					pCanvas->setCursor( QCursor(Qt::ArrowCursor) );
+				}
+				else
+				{
+					pCanvas->setCursor( QCursor(Qt::OpenHandCursor) );
+				}
+			}
+			else
+			{
+				pCanvas->setCursor( QCursor(Qt::ArrowCursor) );
+			}
+		}
+		else
+		{
+			pCanvas->setCursor( QCursor(Qt::ArrowCursor) );
 		}
 	}
 
@@ -566,6 +671,29 @@ void MapView::processMouseReleaseEvent(QEvent *e)
 	{
 		zoomToRect( pCanvas->zoomRect() );
 		pCanvas->setZoomRect(QRect(0,0,0,0));
+		pCanvas->setCursor( QCursor(Qt::CrossCursor) );
+	}
+	else if(mTool == MapView::None)
+	{
+		pCanvas->setCursor( QCursor(Qt::OpenHandCursor) );
+	}
+	else if(mTool == MapView::MoveObject)
+	{
+		if(objectsAtPoint(mouseEvent->pos()).isEmpty(), 5)
+		{
+			pCanvas->setCursor( QCursor(Qt::ArrowCursor) );
+		}
+		else
+		{
+			pCanvas->setCursor( QCursor(Qt::OpenHandCursor) );
+		}
+	}
+	else if(mTool == MapView::Ruler)
+	{
+		Q_ASSERT(pRuler);
+
+		pRuler->addPoint( MapTools::pictureToPlane( mapHandle(), mouseEvent->pos()+pCanvas->mapTopLeft() ) );
+		qDebug()<<"Distance="<<pRuler->length();
 	}
 }
 
@@ -578,8 +706,6 @@ void MapView::processMouseDoubleClickEvent(QEvent *e)
 	}
 
 	setCenter(pCanvas->mapTopLeft() + mouseEvent->pos());
-
-	objectsAtPoint(mouseEvent->pos());
 }
 
 QSize MapView::mapSizePx() const

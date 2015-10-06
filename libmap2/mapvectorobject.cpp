@@ -9,9 +9,9 @@
 MapVectorObject::MapVectorObject(long rscCode, MapLayer *layer)
 	: MapObject(MO_Vector, layer), mRotation(0), mCoord( CoordPlane() )
 {
-	mapRegisterObject(mObjHandle, rscCode, LOCAL_VECTOR);
-	mapAppendPointPlane(mObjHandle, 0, 0);
-	mapAppendPointPlane(mObjHandle, 0, 0);
+	mapRegisterObject(handle(), rscCode, LOCAL_VECTOR);
+	mapAppendPointPlane(handle(), 0, 0);
+	mapAppendPointPlane(handle(), 0, 0);
 	setRotation(0);
 
 	commit();
@@ -75,11 +75,6 @@ double MapVectorObject::lng()
 
 void MapVectorObject::setRotation(double degree)
 {
-//	if(degree == mRotation)
-//	{
-//		return;
-//	}
-
 	mRotation = degree;
 
 	QLineF line( mCoord.toPointF(), mCoord.toPointF() + QPointF(1000, 0));

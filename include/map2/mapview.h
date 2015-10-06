@@ -11,6 +11,7 @@ class MapLayer;
 class QToolBar;
 class MapCanvas;
 class MapObject;
+class MapLineObject;
 class QScrollBar;
 class LayersModel;
 class MapNavigation;
@@ -83,6 +84,8 @@ public:
 
 	/*!
 	 * \brief Ищет объекты в заданной точке.
+	 * \param point Координаты точки в пикселях.
+	 * \param radiusPx Радиус поиска в пикселях.
 	 */
 	QList<MapObject*> objectsAtPoint(QPoint point, double radiusPx = 10);
 
@@ -99,8 +102,22 @@ public slots:
 
 	void setNavigationVisible(bool visible = true);
 
+	/*!
+	 * \brief Центрирует область отображения в заданной точке.
+	 * \param pictureCoord Координаты точки в пикселях.
+	 */
 	void setCenter(QPoint pictureCoord);
+
+	/*!
+	 * \brief Перегрузка предыдущей функции.
+	 * \param geoCoord Координаты точки в градусах с десятой частью.
+	 */
 	void setCenter(Coord geoCoord);
+
+	/*!
+	 * \brief Перегрузка предыдущей функции.
+	 * \param planeCoord Координаты в метрах.
+	 */
 	void setCenter(CoordPlane planeCoord);
 
 	/*!
@@ -109,6 +126,11 @@ public slots:
 	 * \param tool
 	 */
 	void setCurrentTool(MapView::Tools tool);
+
+	/*!
+	 * \brief Очищает список выделенных объектов и снимает с них признак выделения.
+	 */
+	void clearSelection();
 
 
 //	void setActiveLayer(MapLayer *layer);
@@ -157,12 +179,28 @@ private slots:
 
 private:
 	/*!
-	 * \brief Изменение масштаба карты при помощи колеса мыши.
+	 * \brief Обработка прокрутки колесика мыши над областью отображения карты.
 	 */
 	void processWheelEvent(QEvent *e);
+
+	/*!
+	 * \brief Обработка нажатия кнопки мыши над областью отображения карты.
+	 */
 	void processMousePressEvent(QEvent *e);
+
+	/*!
+	 * \brief Обработка перемещения мыши над областью отображения карты.
+	 */
 	void processMouseMoveEvent(QEvent *e);
+
+	/*!
+	 * \brief Обработка отжатия кнопки мыши над областью отображения карты.
+	 */
 	void processMouseReleaseEvent(QEvent *e);
+
+	/*!
+	 * \brief Обработка двойного щелчка мыши над областью отображения карты.
+	 */
 	void processMouseDoubleClickEvent(QEvent *e);
 
 	/*!
@@ -209,6 +247,10 @@ private:
 	Tools mTool; //!< Текущий инструмент карты.
 
 	QMap<QString, MapLayer*> mTempSites;
+
+	QList<MapObject*> mSelectedObjects;
+
+	MapLineObject *pRuler;
 };
 
 Q_DECLARE_METATYPE(MapView::Tools)

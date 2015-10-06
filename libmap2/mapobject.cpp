@@ -4,7 +4,7 @@
 
 #include <QDebug>
 
-MapObject::MapObject(Type t, MapLayer *layer): mType(t), mObjHandle(-1), pLayer(layer), mMapIndex(-1), mSelected(false)
+MapObject::MapObject(Type t, MapLayer *layer): mType(t), mObjHandle(-1), pLayer(layer), mMapKey(-1), mSelected(false)
 {
 	mObjHandle = mapCreateSiteObject(mapLayer()->mapHandle(), mapLayer()->siteHandle(), 1, IDFLOAT2 );
 	mapCommitObject( handle() );
@@ -53,7 +53,7 @@ void MapObject::setSelected(bool b)
 
 	HSELECT hselect = mapLayer()->mapView()->selectContext();
 
-	mapSelectObject(hselect, mapIndex(), (mSelected ? 1 : 0) );
+	mapSelectObject(hselect, mapKey(), (mSelected ? 1 : 0) );
 }
 
 CoordPlane MapObject::coordinate() const {
@@ -61,6 +61,18 @@ CoordPlane MapObject::coordinate() const {
 	double y = mapYPlane( handle() );
 
 	return CoordPlane(x, y);
+}
+
+void MapObject::moveBy(double dxPlane, double dyPlane)
+{
+	for(int  i = 1; i <= mapPointCount(handle(), 0); i++)
+	{
+		double x = mapXPlane(handle(), i) - dxPlane;
+		double y = mapYPlane(handle(), i) - dyPlane;
+		updateMetric(i, CoordPlane(x, y));
+	}
+
+	commit();
 }
 
 QString MapObject::typeName() const
@@ -92,12 +104,24 @@ void MapObject::setMapLayer(MapLayer *layer)
 	pLayer->addObject( this );
 	mapChangeObjectMap(handle(), layer->mapHandle(), layer->siteHandle());
 	mapCommitObject(handle());
-	mMapIndex = 0;
+	mMapKey = 0;
 }
 
 void MapObject::commit()
 {
 	mapCommitObject(handle());
+	if(mapLayer())
+	{
+		mapLayer()->objectChangedNotify(this);
+	}
+}
+
+void MapObject::notifyLayer()
+{
+	if( mapLayer())
+	{
+		mapLayer()->objectChangedNotify( this );
+	}
 }
 
 void MapObject::addMetricBinding(MetricBinding binding, int targetMetric)
@@ -124,7 +148,7 @@ void MapObject::removeFromMap()
 	mapFreeObject( handle() );
 
 	mObjHandle = 0;
-	mMapIndex = 0;
+	mMapKey = 0;
 }
 
 void MapObject::setName(QString name)
@@ -177,12 +201,12 @@ void MapObject::updateMetric(int metricNumber, CoordPlane coord)
 	}
 }
 
-long MapObject::mapIndex()
+long MapObject::mapKey()
 {
-	if(mMapIndex <= 0)
+	if(mMapKey <= 0)
 	{
-		mMapIndex = mapObjectCode( handle() );
+		mMapKey = mapObjectKey( handle() );
 	}
 
-	return mMapIndex;
+	return mMapKey;
 }

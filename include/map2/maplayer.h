@@ -45,7 +45,7 @@ public:
 	 * \brief Возвращает объект по его уникальному номеру на карте.
 	 * \param number Уникальный номер объекта карты.
 	 */
-	MapObject *objectByMapIndex(long mapIndex);
+	MapObject *objectByMapKey(long mapIndex);
 
 	/*!
 	 * \brief Удаляет файлы слоя.
@@ -64,7 +64,7 @@ public:
 	MapView *mapView() { return pMapView; }
 
 	void addObject(MapObject *object, MapObject *parent = 0);
-	MapVectorObject* addVectorObject(long rscCode, Coord coords = Coord());
+	MapVectorObject* addVectorObject(long rscCode, Coord coords = Coord(), QString name = "");
 	MapLineObject* addLineObject(long rscCode, QList<Coord> coords = QList<Coord>());
 	MapZoneObject* addZoneObject(long rscCode, QList<Coord> coords = QList<Coord>());
 

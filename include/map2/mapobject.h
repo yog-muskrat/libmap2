@@ -47,6 +47,12 @@ public:
 	 */
 	virtual CoordPlane coordinate() const;
 
+	/*!
+	 * \brief Смещает объект на указанную величину.
+	 * \param dxPlane, dyPlane Величины смещения по осям X и Y в метрах.
+	 */
+	virtual void moveBy(double dxPlane, double dyPlane);
+
 	Type type() const {return mType;}
 	QString typeName()const;
 	HOBJ handle() const {return mObjHandle;}
@@ -60,9 +66,7 @@ public:
 	void unbindMetric(int metricNumber);
 	void unbindMetrics();
 
-	void updateMetric(int metricNumber, CoordPlane coord);
-
-	long mapIndex();
+	long mapKey();
 
 	friend class MapLayer;
 
@@ -84,13 +88,19 @@ private:
 	void removeFromMap();
 
 protected:
+	void updateMetric(int metricNumber, CoordPlane coord);
 	void commit();
+
+	/*!
+	 * \brief Уведомляет слой объекта об изменении объекта.
+	 */
+	void notifyLayer();
 
 	Type mType;
 	HOBJ mObjHandle;
 	MapLayer *pLayer;
 	QString mName;
-	long mMapIndex; //!< Порядковый номер объекта в карте.
+	long mMapKey; //!< Порядковый номер объекта в карте.
 	bool mSelected;
 
 	QMap<int, MetricBinding> mMetricsBindings; //!< Метрики текущего объекта, привязанные к другим объектам.

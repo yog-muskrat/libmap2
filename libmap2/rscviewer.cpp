@@ -154,6 +154,8 @@ void RscViewer::showObjectsForRscLayer(const QModelIndex &index)
 	rect.bottom = iconSize.height();
 	rect.right = iconSize.width();
 
+	QString tooltip = "<b>Знак:</b>%0<br><b>Ключ:</b>%1<br><b>Код:</b>%2";
+
 	for(int i = 1; i <= objCount; ++i)
 	{
 		memset(dataBytes, 0x0, size);
@@ -185,6 +187,8 @@ void RscViewer::showObjectsForRscLayer(const QModelIndex &index)
 		pRscObjectsModel->setData( idx, keyString, KeyRole);
 		pRscObjectsModel->setData( idx, QVariant::fromValue(excode), ExCodeRole);
 		pRscObjectsModel->setData( idx, img, ImageRole);
+
+		pRscObjectsModel->setData( idx, tooltip.arg(nameString, keyString).arg(excode), Qt::ToolTipRole);
 	}
 
 	FreeTheMemory(dataBytes);

@@ -30,8 +30,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	MapLayer *l = pView->createLayer("mgk.rsc", "Слой 1");
 
-	MapVectorObject *obj1 = l->addVectorObject(10403010, Coord(60., 30.) );
-	obj1->setName("Самолетик");
+	l->addVectorObject(10403010, Coord(60., 30.), "Самолетик 1");
+	l->addVectorObject(10403010, Coord(60., 31.), "Самолетик 2");
+
+	MapVectorObject *obj1 = l->addVectorObject(10403010, Coord(59., 30.), "Самолетик 3");
+	MapVectorObject *obj2 = l->addVectorObject(10403010, Coord(58., 30.), "Самолетик 4");
+	obj2->bindMetric(2, obj1, 1);
 
 	statusBar()->addPermanentWidget( pScaleLabel = new QLabel( QString("1:%0").arg(pView->scale(), 0, 'f' )));
 	statusBar()->addPermanentWidget( pCoordLabel = new QLabel());
