@@ -10,6 +10,7 @@
 #include <QDockWidget>
 #include <QTableView>
 #include <QLabel>
+#include <QDebug>
 
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
@@ -30,12 +31,16 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	MapLayer *l = pView->createLayer("mgk.rsc", "Слой 1");
 
-	l->addVectorObject(10403010, Coord(60., 30.), "Самолетик 1");
-	l->addVectorObject(10403010, Coord(60., 31.), "Самолетик 2");
+	l->addVectorObject(10403010, Coord(61., 30.), "Самолетик 1");
+	l->addVectorObject(10403010, Coord(60., 30.), "Самолетик 2");
+	l->addVectorObject(10403010, Coord(59., 30.), "Самолетик 3");
+	l->addVectorObject(10403010, Coord(58., 30.), "Самолетик 4");
 
-	MapVectorObject *obj1 = l->addVectorObject(10403010, Coord(59., 30.), "Самолетик 3");
-	MapVectorObject *obj2 = l->addVectorObject(10403010, Coord(58., 30.), "Самолетик 4");
-	obj2->bindMetric(2, obj1, 1);
+	l = pView->createLayer("mgk.rsc", "Слой 2");
+	l->addVectorObject(10403010, Coord(61., 32.), "Самолетик 5");
+	l->addVectorObject(10403010, Coord(60., 32.), "Самолетик 6");
+	l->addVectorObject(10403010, Coord(59., 32.), "Самолетик 7");
+	l->addVectorObject(10403010, Coord(58., 32.), "Самолетик 8");
 
 	statusBar()->addPermanentWidget( pScaleLabel = new QLabel( QString("1:%0").arg(pView->scale(), 0, 'f' )));
 	statusBar()->addPermanentWidget( pCoordLabel = new QLabel());
@@ -112,11 +117,8 @@ void MainWindow::on_pbAddObject_clicked()
 		return;
 	}
 
-	MapVectorObject *obj = new MapVectorObject(code, l);
-	obj->setCoordinates( Coord(0, 0) );
+	MapVectorObject *obj = l->addVectorObject(code, Coord(0, 0),"loh1" );
 	obj->center();
-
-	obj->setRotation(45);
 }
 
 void MainWindow::on_pbRemoveObject_clicked()

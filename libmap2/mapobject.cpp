@@ -7,8 +7,7 @@
 MapObject::MapObject(Type t, MapLayer *layer): mType(t), mObjHandle(-1), pLayer(layer), mMapKey(-1), mSelected(false)
 {
 	mObjHandle = mapCreateSiteObject(mapLayer()->mapHandle(), mapLayer()->siteHandle(), 1, IDFLOAT2 );
-	mapCommitObject( handle() );
-
+	commit();
 	layer->addObject(this);
 }
 
@@ -103,7 +102,7 @@ void MapObject::setMapLayer(MapLayer *layer)
 	pLayer = layer;
 	pLayer->addObject( this );
 	mapChangeObjectMap(handle(), layer->mapHandle(), layer->siteHandle());
-	mapCommitObject(handle());
+	commit();
 	mMapKey = 0;
 }
 
@@ -116,14 +115,6 @@ void MapObject::commit()
 	}
 }
 
-void MapObject::notifyLayer()
-{
-	if( mapLayer())
-	{
-		mapLayer()->objectChangedNotify( this );
-	}
-}
-
 void MapObject::addMetricBinding(MetricBinding binding, int targetMetric)
 {
 	if(mObjectsBindings.contains(targetMetric, binding))
@@ -132,6 +123,11 @@ void MapObject::addMetricBinding(MetricBinding binding, int targetMetric)
 	}
 
 	mObjectsBindings.insertMulti(targetMetric, binding);
+
+	double x = mapXPlane( handle(), targetMetric);
+	double y = mapYPlane( handle(), targetMetric);
+
+	updateMetric(targetMetric, CoordPlane(x,y));
 }
 
 void MapObject::removeMetricBinding(MetricBinding binding, int targetMetric)
@@ -192,13 +188,27 @@ void MapObject::unbindMetrics()
 
 void MapObject::updateMetric(int metricNumber, CoordPlane coord)
 {
+	if(!mMetricsBindings.contains(metricNumber))
+	{
+		mapUpdatePointPlane(handle(), coord.x, coord.y, metricNumber);
+	}
+
+	foreach(const MetricBinding &mb, mObjectsBindings.values(metricNumber))
+	{
+		mb.object->updateBindedMetric(mb.metricNumber, coord);
+	}
+}
+
+void MapObject::updateBindedMetric(int metricNumber, CoordPlane coord)
+{
 	mapUpdatePointPlane(handle(), coord.x, coord.y, metricNumber);
 
 	foreach(const MetricBinding &mb, mObjectsBindings.values(metricNumber))
 	{
-		mb.object->updateMetric(mb.metricNumber, coord);
-		mb.object->commit();
+		mb.object->updateBindedMetric(mb.metricNumber, coord);
 	}
+
+	commit();
 }
 
 long MapObject::mapKey()
@@ -207,6 +217,5 @@ long MapObject::mapKey()
 	{
 		mMapKey = mapObjectKey( handle() );
 	}
-
 	return mMapKey;
 }

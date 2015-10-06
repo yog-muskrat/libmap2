@@ -88,13 +88,22 @@ private:
 	void removeFromMap();
 
 protected:
+	/*!
+	 * \brief Обновляет метрику объекты и все связанные с ней метрики других объектов.
+	 * \param metricNumber Номер обновляемой метрики (начинается с 1)
+	 * \param coord Новые координаты обновляемой метрики в метрах.
+	 */
 	void updateMetric(int metricNumber, CoordPlane coord);
-	void commit();
 
 	/*!
-	 * \brief Уведомляет слой объекта об изменении объекта.
+	 * \brief Пердназначена для вызова объектом, на который "повязана" метрика текущего объекта.
 	 */
-	void notifyLayer();
+	void updateBindedMetric(int metricNumber, CoordPlane coord);
+
+	/*!
+	 * \brief Сохраняет изменения в пользовательской карте и уведомляет родительский слой.
+	 */
+	void commit();
 
 	Type mType;
 	HOBJ mObjHandle;

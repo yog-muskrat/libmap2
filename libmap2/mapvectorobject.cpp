@@ -39,8 +39,6 @@ void MapVectorObject::setCoordinates(CoordPlane coord)
 	updateMetric(1, mCoord);
 	setRotation( rotation() );
 	commit();
-
-//	pLayer->objectChangedNotify(this);
 }
 
 Coord MapVectorObject::coordinatesGeo()
