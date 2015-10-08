@@ -80,7 +80,7 @@ void MapLineObject::clear()
 	commit();
 }
 
-double MapLineObject::length() const
+double MapLineObject::length()
 {
 	return mapPerimeter( handle() );
 }

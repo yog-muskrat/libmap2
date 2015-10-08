@@ -9,9 +9,12 @@
 MapVectorObject::MapVectorObject(long rscCode, MapLayer *layer)
 	: MapObject(MO_Vector, layer), mRotation(0), mCoord( CoordPlane() )
 {
+	mapAppendPointPlane(handle(), 0, 0);
+	mapAppendPointPlane(handle(), 0, 0);
 	mapRegisterObject(handle(), rscCode, LOCAL_VECTOR);
-	mapAppendPointPlane(handle(), 0, 0);
-	mapAppendPointPlane(handle(), 0, 0);
+
+	commit();
+
 	setRotation(0);
 
 	commit();
@@ -19,7 +22,7 @@ MapVectorObject::MapVectorObject(long rscCode, MapLayer *layer)
 
 void MapVectorObject::setCoordinates(Coord coord)
 {
-	if(mObjHandle <= 0)
+	if(handle() <= 0)
 	{
 		return;
 	}
@@ -38,7 +41,6 @@ void MapVectorObject::setCoordinates(CoordPlane coord)
 
 	updateMetric(1, mCoord);
 	setRotation( rotation() );
-	commit();
 }
 
 Coord MapVectorObject::coordinatesGeo()
@@ -80,6 +82,4 @@ void MapVectorObject::setRotation(double degree)
 
 	updateMetric(2, CoordPlane( line.p2()) );
 	commit();
-
-//	pLayer->objectChangedNotify(this);
 }

@@ -4,10 +4,11 @@
 
 #include <QDebug>
 
-MapObject::MapObject(Type t, MapLayer *layer): mType(t), mObjHandle(-1), pLayer(layer), mMapKey(-1), mSelected(false)
+MapObject::MapObject(Type t, MapLayer *layer): mType(t), mObjHandle(-1), pLayer(layer), mMapKey(-1), mSelected(false), tmp(0)
 {
 	mObjHandle = mapCreateSiteObject(mapLayer()->mapHandle(), mapLayer()->siteHandle(), 1, IDFLOAT2 );
 	commit();
+
 	layer->addObject(this);
 }
 
@@ -55,7 +56,7 @@ void MapObject::setSelected(bool b)
 	mapSelectObject(hselect, mapKey(), (mSelected ? 1 : 0) );
 }
 
-CoordPlane MapObject::coordinate() const {
+CoordPlane MapObject::coordinate() {
 	double x = mapXPlane( handle() );
 	double y = mapYPlane( handle() );
 
@@ -109,6 +110,7 @@ void MapObject::setMapLayer(MapLayer *layer)
 void MapObject::commit()
 {
 	mapCommitObject(handle());
+
 	if(mapLayer())
 	{
 		mapLayer()->objectChangedNotify(this);
@@ -216,6 +218,8 @@ long MapObject::mapKey()
 	if(mMapKey <= 0)
 	{
 		mMapKey = mapObjectKey( handle() );
+		qDebug()<<"Handle="<<handle()<<"key="<<mMapKey;
 	}
+
 	return mMapKey;
 }

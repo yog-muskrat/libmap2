@@ -20,6 +20,7 @@ MapLayer::MapLayer(quint16 id, QString rscName, MapView *parent, bool temp) : QA
 	mapGetMapInfo(pMapView->mapHandle(), 1, &mapreg, &listreg);
 
 	CREATESITE cs;
+	memset((void*)&cs,0,sizeof(cs));
 	cs.Length = sizeof( CREATESITE );
 
 	cs.MaterialProjection = mapreg.MaterialProjection;
@@ -48,6 +49,15 @@ MapLayer::MapLayer(quint16 id, QString rscName, MapView *parent, bool temp) : QA
 	{
 		mSiteHandle = mapCreateAndAppendSite(pMapView->mapHandle(), qPrintable(sitname), qPrintable(rscname), &cs);
 	}
+
+	//! Нижеследующий блок - костыль против странного глюка с дублированием первого объекта в сите.
+	//! Возможно его можно будет убрать после обновления библиотек.
+	HOBJ hobj = mapCreateSiteObject(pMapView->mapHandle(), siteHandle());
+	mapAppendPointPlane(hobj, 0, 0);
+	mapCommitObject(hobj);
+	mapDeleteObject(hobj);
+	mapCommitObject(hobj);
+	mapFreeObject(hobj);
 
 	mValid = mSiteHandle > 0;
 }

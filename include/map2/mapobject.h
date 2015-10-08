@@ -45,7 +45,7 @@ public:
 	 * В базовой реализации возвращаются координаты первой точки метрики.
 	 * В классах-наследниках эта функция может быть переописана для более правильного поведения.
 	 */
-	virtual CoordPlane coordinate() const;
+	virtual CoordPlane coordinate();
 
 	/*!
 	 * \brief Смещает объект на указанную величину.
@@ -114,6 +114,8 @@ protected:
 
 	QMap<int, MetricBinding> mMetricsBindings; //!< Метрики текущего объекта, привязанные к другим объектам.
 	QMultiMap<int, MetricBinding> mObjectsBindings; //!< Метрики других объектов, привязанные к текущему.
+
+	int tmp;
 };
 
 Q_DECLARE_METATYPE(MapObject::Type)

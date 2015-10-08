@@ -158,7 +158,7 @@ QList<MapObject *> MapView::objectsAtPoint(QPoint point, double radiusPx)
 	frame.X2 = point.x() + radiusPx;
 	frame.Y2 = point.y() + radiusPx;
 
-	HOBJ found = mapWhatObject(mMapHandle, hobj, &frame, WO_CANCEL, PP_PICTURE);
+	HOBJ found = mapWhatObject(mMapHandle, hobj, &frame, WO_LAST, PP_PICTURE);
 
 	QList<MapObject*> result;
 
@@ -525,7 +525,7 @@ void MapView::processMousePressEvent(QEvent *e)
 
 				MapObject *obj = objects.first();
 				qDebug()<<obj->mapKey()<<obj->name();
-				obj->setSelected();
+//				obj->setSelected();
 
 				if(!mouseEvent->modifiers().testFlag( Qt::ControlModifier ))
 				{

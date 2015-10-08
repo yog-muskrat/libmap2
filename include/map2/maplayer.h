@@ -72,6 +72,7 @@ public:
 
 	MapObject * objectAtIndex(const QModelIndex &index);
 
+
 	// QAbstractItemModel interface
 	virtual QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
 	virtual QModelIndex parent(const QModelIndex &child) const;

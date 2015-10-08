@@ -9,6 +9,7 @@
 #include <QDesktopWidget>
 #include <QDockWidget>
 #include <QTableView>
+#include <QTimer>
 #include <QLabel>
 #include <QDebug>
 
@@ -29,18 +30,19 @@ MainWindow::MainWindow(QWidget *parent) :
 
 	addToolBar( pView->toolBar() );
 
+	pView->setScale(50000000);
+	pView->setCenter(Coord(60., 30.));
+
 	MapLayer *l = pView->createLayer("mgk.rsc", "Слой 1");
 
-	l->addVectorObject(10403010, Coord(61., 30.), "Самолетик 1");
-	l->addVectorObject(10403010, Coord(60., 30.), "Самолетик 2");
-	l->addVectorObject(10403010, Coord(59., 30.), "Самолетик 3");
-	l->addVectorObject(10403010, Coord(58., 30.), "Самолетик 4");
+	obj = l->addVectorObject(10403010, Coord(60., 30.), "Самолетик 2");
+	MapObject * o = l->addVectorObject(10403010, Coord(61., 30.), "Самолетик 1");
 
-	l = pView->createLayer("mgk.rsc", "Слой 2");
-	l->addVectorObject(10403010, Coord(61., 32.), "Самолетик 5");
-	l->addVectorObject(10403010, Coord(60., 32.), "Самолетик 6");
-	l->addVectorObject(10403010, Coord(59., 32.), "Самолетик 7");
-	l->addVectorObject(10403010, Coord(58., 32.), "Самолетик 8");
+	obj->bindMetric(2, o, 1);
+
+	QTimer *t = new QTimer(this);
+	connect(t, SIGNAL(timeout()), this, SLOT(onTimer()));
+	t->start(300);
 
 	statusBar()->addPermanentWidget( pScaleLabel = new QLabel( QString("1:%0").arg(pView->scale(), 0, 'f' )));
 	statusBar()->addPermanentWidget( pCoordLabel = new QLabel());
@@ -154,4 +156,11 @@ void MainWindow::on_objectsTable_doubleClicked(const QModelIndex &index)
 	}
 
 	o->center();
+}
+
+void MainWindow::onTimer()
+{
+	CoordPlane coord = obj->coordinate();
+	coord += CoordPlane(2000, 2000);
+	((MapVectorObject*)obj)->setCoordinates( coord );
 }

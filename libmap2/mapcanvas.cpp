@@ -168,6 +168,7 @@ void MapCanvas::paintEvent(QPaintEvent *e)
 	rect.right = static_cast<long>(drawRect.right());
 
 	mapPaintAndSelectToXImage(mMapHandle, &ximage, 0, 0, &rect, mSelect, mSelectColor);
+//	mapPaintToXImage(mMapHandle, &ximage, 0, 0, &rect);
 
 	QImage img((uchar *) dataBytes, drawRect.width(), drawRect.height(), QImage::Format_RGB32);
 
@@ -180,7 +181,7 @@ void MapCanvas::paintEvent(QPaintEvent *e)
 
 	mRepaint = false;
 
-	qDebug()<<"Repaint in"<<ti.elapsed()<<"ms";
+//	qDebug()<<"Repaint in"<<ti.elapsed()<<"ms";
 }
 
 void MapCanvas::onRepaintTimer()

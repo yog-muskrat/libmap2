@@ -12,6 +12,7 @@ class MainWindow;
 
 class QLabel;
 class MapView;
+class MapObject;
 
 class MainWindow : public QMainWindow
 {
@@ -37,12 +38,15 @@ private slots:
 
 	void on_objectsTable_doubleClicked(const QModelIndex &index);
 
+	void onTimer();
+
 private:
 	Ui::MainWindow *ui;
 	QLabel *pScaleLabel;
 	QLabel *pCoordLabel;
 
 	MapView *pView;
+	MapObject *obj;
 };
 
 #endif // MAINWINDOW_H

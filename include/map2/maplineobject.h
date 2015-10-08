@@ -18,7 +18,7 @@ public:
 
 	void clear();
 
-	double length() const;
+	double length();
 
 private:
 	QList<CoordPlane> mCoords;

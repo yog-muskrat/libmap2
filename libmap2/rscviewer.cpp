@@ -55,6 +55,7 @@ void RscViewer::setRsc(QString rscName)
 
 	QString path = QTextCodec::codecForName("koi8r")->toUnicode( mapGetCommonRscPath() ) + "/" + mRscName;
 	mTmpSiteHandle = mapCreateTempSite(path.toLocal8Bit().data() );
+	mapSetBackColor(mTmpSiteHandle, -1);
 
 	mRscHandle = mapGetRscIdent(mTmpSiteHandle, mTmpSiteHandle);
 
@@ -163,7 +164,7 @@ void RscViewer::showObjectsForRscLayer(const QModelIndex &index)
 		long incode = mapGetRscObjectCodeInLayer(mRscHandle, segmentNumber, i);
 		long excode = mapGetRscObjectExcodeInLayer(mRscHandle, segmentNumber, i);
 		const char* key = mapGetRscObjectKey(mRscHandle, incode);
-		const char* name =  mapGetRscObjectName(mRscHandle, i);
+		const char* name =  mapGetRscObjectName(mRscHandle, incode);
 		long function = mapGetRscObjectFunction(mRscHandle, incode);
 		char* params = const_cast<char*>(mapGetRscObjectParameters(mRscHandle,incode ));
 		long local = mapGetRscObjectLocalInLayer(mRscHandle, segmentNumber, i);
@@ -183,7 +184,7 @@ void RscViewer::showObjectsForRscLayer(const QModelIndex &index)
 		pRscObjectsModel->appendRow( new QStandardItem( nameString ) );
 
 		QModelIndex idx = pRscObjectsModel->index( pRscObjectsModel->rowCount() - 1, 0);
-		pRscObjectsModel->setData( idx, img.scaledToWidth(64, Qt::SmoothTransformation), Qt::DecorationRole);
+		pRscObjectsModel->setData( idx, img, Qt::DecorationRole);
 		pRscObjectsModel->setData( idx, keyString, KeyRole);
 		pRscObjectsModel->setData( idx, QVariant::fromValue(excode), ExCodeRole);
 		pRscObjectsModel->setData( idx, img, ImageRole);
