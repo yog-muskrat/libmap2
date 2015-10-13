@@ -23,8 +23,6 @@ MapCanvas::MapCanvas(QWidget *parent) :
 	mZoomRectPen.setJoinStyle( Qt::RoundJoin );
 
 	setSelectionColor(QColor(Qt::green));
-
-	mapSetSelectType(STF_OBJECT);
 }
 
 MapCanvas::~MapCanvas()

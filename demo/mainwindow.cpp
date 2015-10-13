@@ -33,17 +33,6 @@ MainWindow::MainWindow(QWidget *parent) :
 	pView->setScale(50000000);
 	pView->setCenter(Coord(60., 30.));
 
-	MapLayer *l = pView->createLayer("mgk.rsc", "Слой 1");
-
-	obj = l->addVectorObject(10403010, Coord(60., 30.), "Самолетик 2");
-	MapObject * o = l->addVectorObject(10403010, Coord(61., 30.), "Самолетик 1");
-
-	obj->bindMetric(2, o, 1);
-
-	QTimer *t = new QTimer(this);
-	connect(t, SIGNAL(timeout()), this, SLOT(onTimer()));
-	t->start(300);
-
 	statusBar()->addPermanentWidget( pScaleLabel = new QLabel( QString("1:%0").arg(pView->scale(), 0, 'f' )));
 	statusBar()->addPermanentWidget( pCoordLabel = new QLabel());
 
@@ -92,6 +81,8 @@ void MainWindow::on_layersTable_clicked(const QModelIndex &index)
 	{
 		return;
 	}
+
+	pView->setActiveLayer(l);
 
 	ui->objectsTable->setModel(l);
 	ui->lblLayerName->setText( l->layerName() );

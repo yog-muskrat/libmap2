@@ -6,6 +6,7 @@
 #include "structs.h"
 #include "gis.h"
 
+class MapRuler;
 class QLabel;
 class MapLayer;
 class QToolBar;
@@ -132,9 +133,9 @@ public slots:
 	 */
 	void clearSelection();
 
-
-//	void setActiveLayer(MapLayer *layer);
-//	void setActiveLayer(int index);
+	void setActiveLayer(MapLayer *layer);
+	void setActiveLayer(int index);
+	MapLayer* activeLayer();
 
 signals:
 	/*!
@@ -250,7 +251,10 @@ private:
 
 	QList<MapObject*> mSelectedObjects;
 
-	MapLineObject *pRuler;
+	MapRuler *pRuler;
+
+	MapLayer *pActiveLayer;
+	MapObject *pTempObject;
 };
 
 Q_DECLARE_METATYPE(MapView::Tools)

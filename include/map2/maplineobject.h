@@ -18,12 +18,19 @@ public:
 
 	void clear();
 
+	/*!
+	 * \brief Возвращает протяженность линии в метрах.
+	 */
 	double length();
+
+	/*!
+	 * \brief Возвращает протяженность линии в текстовом виде.
+	 * Значение будет приведено к максимально компактному виду (м, км, тыс. км и т.д.)
+	 */
+	QString lengthText();
 
 private:
 	QList<CoordPlane> mCoords;
-
-	HOBJ mTextHandle;
 };
 
 #endif // MAPLINEOBJECT_H

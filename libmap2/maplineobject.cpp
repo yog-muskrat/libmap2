@@ -2,17 +2,11 @@
 #include "maplayer.h"
 
 #include <QDebug>
+#include <qmath.h>
 
 MapLineObject::MapLineObject(long exCode, MapLayer *layer, QList<Coord> coords) : MapObject(MO_Line, layer)
 {
 	mapRegisterObject( handle(), exCode, LOCAL_LINE);
-
-	mTextHandle = mapCreateSiteObject(layer->mapHandle(), layer->siteHandle(), IDFLOAT2, 1);
-	mapRegisterObject(mTextHandle, 1373, LOCAL_TITLE);
-	mapPutText(mTextHandle, "0", 0);
-	mapAppendPointPlane(mTextHandle, 0, 0);
-	mapCommitObject(mTextHandle);
-
 	addPoints(coords);
 }
 
@@ -20,18 +14,12 @@ void MapLineObject::addPoint(CoordPlane coord)
 {
 	mapAppendPointPlane(handle(), coord.x, coord.y);
 	mCoords << coord;
-
 	commit();
-
-	mapPutText(mTextHandle, QString("%0m").arg( length() ).toLocal8Bit().constData() , 0);
-	mapUpdatePointPlane(mTextHandle, coord.x, coord.y, 1);
-	mapCommitObject(mTextHandle);
 }
 
 void MapLineObject::addPoint(Coord coord)
 {
 	Q_ASSERT(mapLayer());
-
 	addPoint(coord.toPlane(mapLayer()->mapHandle()));
 }
 
@@ -49,10 +37,6 @@ void MapLineObject::addPoints(QList<CoordPlane> coords)
 	}
 
 	commit();
-
-	mapPutText(mTextHandle, QString("%0м").arg( length() ).toLocal8Bit().constData() , 0);
-	mapUpdatePointPlane(mTextHandle, mCoords.last().x, mCoords.last().y, 1);
-	mapCommitObject(mTextHandle);
 }
 
 void MapLineObject::addPoints(QList<Coord> coords)
@@ -83,4 +67,31 @@ void MapLineObject::clear()
 double MapLineObject::length()
 {
 	return mapPerimeter( handle() );
+}
+
+QString MapLineObject::lengthText()
+{
+	double perimetr = length();
+
+	QString s = QString::number( perimetr, 'f', 0 );
+	int len = s.length();
+
+	if(len < 4)
+	{
+		return QString("%0 м").arg( perimetr, 0, 'f', 0 );
+	}
+	else if( len < 7)
+	{
+		return QString("%0 км").arg( perimetr/1000., 0, 'f', 1 );
+	}
+	else if( len < 10)
+	{
+		return QString("%0 тыс. км").arg( perimetr/1000000., 0, 'f', 2 );
+	}
+	else if(len < 13)
+	{
+		return QString("%0 млн. км").arg( perimetr/1000000000., 0, 'f', 2 );
+	}
+
+	return QString("%0 м").arg( perimetr, 0, 'f', 0 );
 }

@@ -34,6 +34,11 @@ public:
 	void setRsc(QString rscName);
 
 	/*!
+	 * \brief Фильтрует знаки по типу локализации.
+	 */
+	void setLocalFilter(int local);
+
+	/*!
 	 * \brief Возвращает код выбранного знака.
 	 * Если знак не выбра, будет возвращен 0.
 	 */
@@ -45,7 +50,11 @@ public:
 	 */
 	QString selectedSignKey() const;
 
-	static long selectExCode(QString rscName);
+	static long selectExCode(QString rscName, int localFilter = -1);
+	static long selectVectorExCode(QString rscName);
+	static long selectLineExCode(QString rscName);
+	static long selectAreaExCode(QString rscName);
+	static long selectTextExCode(QString rscName);
 
 signals:
 	void signSelected();
@@ -57,11 +66,15 @@ private slots:
 	 */
 	void showObjectsForRscLayer(const QModelIndex &index);
 
+	void on_cbLocal_activated(int index);
+
 private:
 	/*!
 	 * \brief Заполняет список слоев классификатора.
 	 */
 	void fillRscLayers();
+
+	void hideFilter();
 
 	Ui::RscViewer *ui;
 
@@ -72,6 +85,7 @@ private:
 	QStandardItemModel *pRscLayersModel;
 	QStandardItemModel *pRscObjectsModel;
 	long mMapBitDepth;
+	int mLocalFilter;
 };
 
 #endif // RSCVIEWER_H

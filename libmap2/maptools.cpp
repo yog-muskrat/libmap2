@@ -1,5 +1,6 @@
 #include "maptools.h"
 
+#include <QLineF>
 #include <qmath.h>
 
 double MapTools::radToDegree(const double &rad)
@@ -60,4 +61,13 @@ CoordPlane MapTools::pictureToPlane(HMAP mapHnd, const QPoint &point)
 	mapPictureToPlane(mapHnd, &x, &y);
 
 	return CoordPlane(x, y);
+}
+
+
+double MapTools::bearing(const CoordPlane &pointFrom, const CoordPlane &pointTo)
+{
+	QLineF line(pointFrom.y, pointFrom.x, pointTo.y, pointTo.x);
+
+	// Необходимо прибавить 90 градусов, т.к. в Qt ноль находится на востоке, а не на севере.
+	return line.angle() + 90;
 }

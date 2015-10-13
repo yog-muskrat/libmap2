@@ -15,7 +15,8 @@ public:
 	{
 		MO_Vector,
 		MO_Line,
-		MO_Zone
+		MO_Zone,
+		MO_Text
 	};
 
 	MapObject(Type t, MapLayer *layer = 0);

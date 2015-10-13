@@ -12,7 +12,7 @@
 
 RscViewer::RscViewer(QWidget *parent) :
 	QWidget(parent),
-	ui(new Ui::RscViewer), mRscHandle(0), mTmpSiteHandle(0), mMapBitDepth(mapGetMapScreenDepth())
+	ui(new Ui::RscViewer), mRscHandle(0), mTmpSiteHandle(0), mMapBitDepth(mapGetMapScreenDepth()), mLocalFilter(-1)
 {
 	ui->setupUi(this);
 
@@ -26,6 +26,12 @@ RscViewer::RscViewer(QWidget *parent) :
 	pRscObjectsModel->setColumnCount(1);
 	pRscObjectsModel->setHeaderData(0, Qt::Horizontal, "Объекты слоя");
 	ui->objectsList->setModel(pRscObjectsModel);
+
+	ui->cbLocal->addItem("Все", -1);
+	ui->cbLocal->addItem("Векторный", static_cast<int>(LOCAL_VECTOR));
+	ui->cbLocal->addItem("Линия", static_cast<int>(LOCAL_LINE));
+	ui->cbLocal->addItem("Площадной", static_cast<int>(LOCAL_SQUARE));
+	ui->cbLocal->addItem("Подпись", static_cast<int>(LOCAL_TITLE));
 
 	connect(ui->objectsList, SIGNAL(doubleClicked(QModelIndex)), this, SIGNAL(signSelected()));
 }
@@ -68,6 +74,28 @@ void RscViewer::setRsc(QString rscName)
 	fillRscLayers();
 }
 
+void RscViewer::setLocalFilter(int local)
+{
+	if(local == mLocalFilter)
+	{
+		return;
+	}
+
+	mLocalFilter = local;
+
+	ui->cbLocal->setCurrentIndex(-1);
+	for(int i = 0; i < ui->cbLocal->count(); ++i)
+	{
+		if(ui->cbLocal->itemData(i).toInt() == i)
+		{
+			ui->cbLocal->setCurrentIndex(i);
+			break;
+		}
+	}
+
+	fillRscLayers();
+}
+
 long RscViewer::selectedSignCode() const
 {
 	QModelIndex idx = ui->objectsList->currentIndex();
@@ -90,7 +118,7 @@ QString RscViewer::selectedSignKey() const
 	return idx.data(KeyRole).toString();
 }
 
-long RscViewer::selectExCode(QString rscName)
+long RscViewer::selectExCode(QString rscName, int localFilter)
 {
 	QDialog d;
 	d.setWindowTitle("Выбор знака");
@@ -100,6 +128,11 @@ long RscViewer::selectExCode(QString rscName)
 
 	RscViewer view;
 	view.setRsc(rscName);
+	view.setLocalFilter(localFilter);
+	if(localFilter >= 0)
+	{
+		view.hideFilter();
+	}
 
 	connect(&pbOk, SIGNAL(clicked()), &d, SLOT(accept()));
 	connect(&view, SIGNAL(signSelected()), &d, SLOT(accept()));
@@ -122,6 +155,26 @@ long RscViewer::selectExCode(QString rscName)
 	}
 
 	return view.selectedSignCode();
+}
+
+long RscViewer::selectVectorExCode(QString rscName)
+{
+	return selectExCode(rscName, LOCAL_VECTOR);
+}
+
+long RscViewer::selectLineExCode(QString rscName)
+{
+	return selectExCode(rscName, LOCAL_LINE);
+}
+
+long RscViewer::selectAreaExCode(QString rscName)
+{
+	return selectExCode(rscName, LOCAL_SQUARE);
+}
+
+long RscViewer::selectTextExCode(QString rscName)
+{
+	return selectExCode(rscName, LOCAL_TITLE);
 }
 
 void RscViewer::showObjectsForRscLayer(const QModelIndex &index)
@@ -168,6 +221,12 @@ void RscViewer::showObjectsForRscLayer(const QModelIndex &index)
 		long function = mapGetRscObjectFunction(mRscHandle, incode);
 		char* params = const_cast<char*>(mapGetRscObjectParameters(mRscHandle,incode ));
 		long local = mapGetRscObjectLocalInLayer(mRscHandle, segmentNumber, i);
+
+		if(mLocalFilter >= 0 && local != mLocalFilter)
+		{
+			continue;
+		}
+
 		int colors = mapGetSiteColorsCount(mTmpSiteHandle, mTmpSiteHandle);
 		COLORREF *colorimage = new COLORREF[colors];
 		mapGetSitePalette(mTmpSiteHandle, mTmpSiteHandle, colorimage, colors);
@@ -209,4 +268,15 @@ void RscViewer::fillRscLayers()
 		pRscLayersModel->appendRow( new QStandardItem(rscLayerName) );
 		pRscLayersModel->setData( pRscLayersModel->index(i, 0), i, Qt::UserRole + 1);
 	}
+}
+
+void RscViewer::hideFilter()
+{
+	ui->lblLocal->hide();
+	ui->cbLocal->hide();
+}
+
+void RscViewer::on_cbLocal_activated(int index)
+{
+	setLocalFilter( ui->cbLocal->itemData(index).toInt() );
 }

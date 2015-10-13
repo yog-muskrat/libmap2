@@ -1,12 +1,15 @@
+#include "mapruler.h"
 #include "mapview.h"
 #include "maplayer.h"
 #include "maptools.h"
 #include "mapcanvas.h"
+#include "rscviewer.h"
 #include "mapobject.h"
-#include "maplineobject.h"
 #include "maptoolbar.h"
 #include "layersmodel.h"
 #include "mapnavigation.h"
+#include "maplineobject.h"
+#include "mapvectorobject.h"
 #include "rscselectdialog.h"
 
 #include <QDir>
@@ -15,11 +18,12 @@
 #include <QKeyEvent>
 #include <QScrollBar>
 #include <QGridLayout>
+#include <QMessageBox>
 #include <QApplication>
 
 MapView::MapView(QString sitDir, QString rscDir, QWidget *parent)
 	: QWidget(parent), pNavigation(0), pToolBar(0), mMapHandle(0), mSelect(0), mIsDragged(false), mLastLayerId(0),
-	  mRscDir(rscDir), mSitDir(sitDir),mTool(None), pRuler(0)
+	  mRscDir(rscDir), mSitDir(sitDir),mTool(None), pRuler(0), pActiveLayer(0)
 {
 	setFocusPolicy(Qt::TabFocus);
 
@@ -330,7 +334,7 @@ void MapView::setCurrentTool(MapView::Tools tool)
 
 		if(!pRuler)
 		{
-			pRuler = new MapLineObject(22500110, mTempSites["ruler"]);
+			pRuler = new MapRuler( mTempSites["ruler"] );
 		}
 	}
 	else
@@ -353,6 +357,21 @@ void MapView::clearSelection()
 	{
 		mSelectedObjects.takeFirst()->setSelected(false);
 	}
+}
+
+void MapView::setActiveLayer(MapLayer *layer)
+{
+	pActiveLayer = layer;
+}
+
+void MapView::setActiveLayer(int index)
+{
+	pActiveLayer = mLayersModel->layerAt(index);
+}
+
+MapLayer *MapView::activeLayer()
+{
+	return pActiveLayer;
 }
 
 void MapView::onScrollMap()
@@ -524,8 +543,7 @@ void MapView::processMousePressEvent(QEvent *e)
 				mDragStartPoint = mouseEvent->pos();
 
 				MapObject *obj = objects.first();
-				qDebug()<<obj->mapKey()<<obj->name();
-//				obj->setSelected();
+				obj->setSelected();
 
 				if(!mouseEvent->modifiers().testFlag( Qt::ControlModifier ))
 				{
@@ -693,7 +711,6 @@ void MapView::processMouseReleaseEvent(QEvent *e)
 		Q_ASSERT(pRuler);
 
 		pRuler->addPoint( MapTools::pictureToPlane( mapHandle(), mouseEvent->pos()+pCanvas->mapTopLeft() ) );
-		qDebug()<<"Distance="<<pRuler->length();
 	}
 }
 
@@ -705,7 +722,31 @@ void MapView::processMouseDoubleClickEvent(QEvent *e)
 		return;
 	}
 
-	setCenter(pCanvas->mapTopLeft() + mouseEvent->pos());
+	if(mTool == MapView::AddVectorObject)
+	{
+		if(!pActiveLayer)
+		{
+			QMessageBox::information(this, "Добавление объекта", "Не задан активный слой карты.", "Закрыть");
+			return;
+		}
+
+		int exCode = RscViewer::selectVectorExCode(pActiveLayer->rscName());
+
+		if(exCode <= 0)
+		{
+			return;
+		}
+
+		MapVectorObject *obj = new MapVectorObject(exCode, pActiveLayer);
+
+		QPoint pictureCoord = pCanvas->mapTopLeft() + mouseEvent->pos();
+
+		obj->setCoordinates( MapTools::pictureToPlane(mapHandle(), pictureCoord));
+	}
+	else
+	{
+		setCenter(pCanvas->mapTopLeft() + mouseEvent->pos());
+	}
 }
 
 QSize MapView::mapSizePx() const
