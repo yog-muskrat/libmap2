@@ -1,73 +1,420 @@
+#include "mapview.h"
 #include "maptools.h"
+#include "maplayer.h"
+#include "mapruler.h"
+#include "mapcanvas.h"
+#include "rscviewer.h"
+#include "maphelper.h"
+#include "mapobject.h"
+#include "maplineobject.h"
+#include "mapzoneobject.h"
+#include "mapvectorobject.h"
 
-#include <QLineF>
-#include <qmath.h>
+#include <QDebug>
+#include <QAction>
+#include <QToolBar>
+#include <QMouseEvent>
+#include <QMessageBox>
 
-double MapTools::radToDegree(const double &rad)
+MapTools::MapTools(MapView *view)
+	: QObject(view), pView(view), pToolBar(0), mTool(MapTools::None), pRuler(0), pTempObject(0), mIsDragged(false)
 {
-	return rad * 180. / M_PI;
+
 }
 
-double MapTools::degreeToRad(const double &degree)
+MapTools::~MapTools()
 {
-	return degree * M_PI / 180.;
+	if( pToolBar && pToolBar->parent() == 0)
+	{
+		pToolBar->deleteLater();
+	}
+
+	qDeleteAll(mTempSites);
 }
 
-Coord MapTools::planeToGeo(HMAP mapHnd, const CoordPlane &coordPlane)
+QToolBar *MapTools::toolBar()
 {
-	double lat = coordPlane.x;
-	double lng = coordPlane.y;
+	if(!pToolBar)
+	{
+		pToolBar = new QToolBar("Инструменты");
 
-	mapPlaneToGeo(mapHnd, &lat, &lng);
+		QActionGroup *group = new QActionGroup(this);
+		group->setExclusive(true);
 
-	lat = radToDegree(lat);
-	lng = radToDegree(lng);
+		group->addAction( addActionWithData(new QAction("Нет", this), MapTools::None) )->setChecked(true);
+		group->addAction( addActionWithData(new QAction("Переместить", this), MapTools::MoveObject) );
+		group->addAction( addActionWithData(new QAction("Удалить", this), MapTools::DeleteObject) );
+		group->addAction( addActionWithData(new QAction("Добавить вектор", this), MapTools::AddVectorObject) );
+		group->addAction( addActionWithData(new QAction("Добавить линию", this), MapTools::AddLineObject) );
+		group->addAction( addActionWithData(new QAction("Добавить зону", this), MapTools::AddZoneObject) );
+		group->addAction( addActionWithData(new QAction("Линейка", this), MapTools::Ruler) );
+		group->addAction( addActionWithData(new QAction("Приблизить", this), MapTools::RectZoom) );
 
-	return Coord(lat, lng);
+		connect(group, SIGNAL(triggered(QAction*)), this, SLOT(onActionTriggered(QAction*)));
+	}
+
+	return pToolBar;
 }
 
-CoordPlane MapTools::geoToPlane(HMAP mapHnd, const Coord &coord)
+bool MapTools::processMousePressEvent(QMouseEvent *mouseEvent)
 {
-	double x = degreeToRad( coord.lat );
-	double y = degreeToRad( coord.lng );
+	if(mouseEvent->button() == Qt::LeftButton)
+	{
+		if(mTool == MapTools::RectZoom)
+		{
+			mIsDragged = true;
+			mDragStartPoint = mouseEvent->pos();
 
-	mapGeoToPlane(mapHnd, &x, &y);
+			pView->canvas()->setZoomRect( QRect(mouseEvent->pos(), mouseEvent->pos()));
+			pView->canvas()->setCursor( QCursor(Qt::SizeFDiagCursor) );
+		}
+		else if(mTool == MapTools::None)
+		{
+			pView->canvas()->setCursor( QCursor(Qt::ClosedHandCursor) );
+		}
+		else if(mTool == MapTools::MoveObject)
+		{
+			QList<MapObject*> objects = pView->objectsAtPoint(mouseEvent->pos(), 5);
 
-	return CoordPlane(x, y);
+			if(!objects.isEmpty())
+			{
+				mIsDragged = true;
+				mDragStartPoint = mouseEvent->pos();
+
+				MapObject *obj = objects.first();
+				obj->setSelected();
+
+				if(!mouseEvent->modifiers().testFlag( Qt::ControlModifier ))
+				{
+					pView->clearSelection();
+				}
+				pView->addObjectToSelection( obj );
+			}
+			else
+			{
+				pView->clearSelection();
+			}
+		}
+		else if(mTool == MapTools::Ruler)
+		{
+			return false;
+		}
+		else if(mTool = MapTools::AddLineObject)
+		{
+			CoordPlane coord = MapHelper::pictureToPlane(pView->mapHandle(), pView->canvas()->mapTopLeft() + mouseEvent->pos() );
+			if(!pTempObject)
+			{
+				if(!pView->activeLayer())
+				{
+					return false;
+				}
+
+				int exCode = RscViewer::selectLineExCode(pView->activeLayer()->rscName());
+				if(exCode <= 0)
+				{
+					return false;
+				}
+
+				QList<CoordPlane> coords;
+				coords << coord;
+
+				pTempObject =  pView->activeLayer()->addLineObject(exCode, coords);
+			}
+			else
+			{
+				MapLineObject *o = dynamic_cast<MapLineObject*>(pTempObject);
+				if(!o)
+				{
+					return false;
+				}
+
+				o->addPoint(coord);
+				return false;
+			}
+		}
+		else if(mTool = MapTools::AddZoneObject)
+		{
+			CoordPlane coord = MapHelper::pictureToPlane(pView->mapHandle(), pView->canvas()->mapTopLeft() + mouseEvent->pos() );
+			if(!pTempObject)
+			{
+				if(!pView->activeLayer())
+				{
+					return false;
+				}
+
+				int exCode = RscViewer::selectLineExCode(pView->activeLayer()->rscName());
+				if(exCode <= 0)
+				{
+					return false;
+				}
+
+				QList<CoordPlane> coords;
+				coords << coord;
+
+				pTempObject =  pView->activeLayer()->addZoneObject(exCode, coords);
+			}
+			else
+			{
+				MapZoneObject *o = dynamic_cast<MapZoneObject*>(pTempObject);
+				if(!o)
+				{
+					return false;
+				}
+
+				o->addPoint(coord);
+				return false;
+			}
+		}
+	}
+	return true;
 }
 
-QPoint MapTools::planeToPicture(HMAP mapHnd, const CoordPlane &coord)
+bool MapTools::processMouseMoveEvent(QMouseEvent *mouseEvent)
 {
-	double x = coord.x;
-	double y = coord.y;
+	if(mIsDragged)
+	{
+		if(mTool == MapTools::RectZoom)
+		{
+			QRect rect = pView->canvas()->zoomRect();
+			if(mouseEvent->x() > rect.x())
+			{
+				rect.setRight(mouseEvent->x());
+			}
+			else
+			{
+				rect.setLeft(mouseEvent->x());
+			}
 
-	mapPlaneToPicture(mapHnd, &x, &y);
+			if(mouseEvent->y() > rect.y())
+			{
+				rect.setBottom(mouseEvent->y());
+			}
+			else
+			{
+				rect.setTop(mouseEvent->y());
+			}
+			pView->canvas()->setZoomRect(rect);
+			pView->canvas()->setCursor( QCursor(Qt::SizeFDiagCursor) );
+		}
+		else if(mTool == MapTools::None)
+		{
+			pView->canvas()->setCursor( QCursor(Qt::ClosedHandCursor) );
+		}
+		else if(mTool == MapTools::MoveObject)
+		{
+			if(!pView->selectedObjects().isEmpty())
+			{
+				CoordPlane oldCoord = MapHelper::pictureToPlane(pView->mapHandle(), mDragStartPoint);
+				CoordPlane newCoord = MapHelper::pictureToPlane(pView->mapHandle(), mouseEvent->pos());
 
-	return QPoint(x, y);
+				CoordPlane delta = oldCoord - newCoord;
+
+				foreach(MapObject *o, pView->selectedObjects())
+				{
+					o->moveBy(delta.x, delta.y);
+				}
+
+				mDragStartPoint = mouseEvent->pos();
+
+				pView->canvas()->setCursor( QCursor(Qt::ClosedHandCursor) );
+			}
+		}
+	}
+	else
+	{
+		if(mTool == MapTools::None)
+		{
+			pView->canvas()->setCursor( QCursor(Qt::OpenHandCursor) );
+		}
+		else if(mTool == MapTools::RectZoom)
+		{
+			pView->canvas()->setCursor( QCursor(Qt::CrossCursor) );
+		}
+		else if(mTool == MapTools::MoveObject)
+		{
+			if(!pView->objectsAtPoint(mouseEvent->pos(), 5).isEmpty())
+			{
+				if(mouseEvent->modifiers().testFlag( Qt::ControlModifier))
+				{
+					pView->canvas()->setCursor( QCursor(Qt::ArrowCursor) );
+				}
+				else
+				{
+					pView->canvas()->setCursor( QCursor(Qt::OpenHandCursor) );
+				}
+			}
+			else
+			{
+				pView->canvas()->setCursor( QCursor(Qt::ArrowCursor) );
+			}
+		}
+		else
+		{
+			pView->canvas()->setCursor( QCursor(Qt::ArrowCursor) );
+		}
+	}
+
+	return true;
 }
 
-QPoint MapTools::geoToPicture(HMAP mapHnd, const Coord &coord)
+bool MapTools::processMouseReleaseEvent(QMouseEvent *mouseEvent)
 {
-	CoordPlane coordPlane = geoToPlane(mapHnd, coord);
+	if(mouseEvent->button() == Qt::LeftButton)
+	{
+		if(mTool == MapTools::RectZoom)
+		{
+			pView->zoomToRect( pView->canvas()->zoomRect() );
+			pView->canvas()->setZoomRect(QRect(0,0,0,0));
+			pView->canvas()->setCursor( QCursor(Qt::CrossCursor) );
+			return false;
+		}
+		else if(mTool == MapTools::None)
+		{
+			pView->canvas()->setCursor( QCursor(Qt::OpenHandCursor) );
+		}
+		else if(mTool == MapTools::MoveObject)
+		{
+			if(pView->objectsAtPoint(mouseEvent->pos()).isEmpty(), 5)
+			{
+				pView->canvas()->setCursor( QCursor(Qt::ArrowCursor) );
+			}
+			else
+			{
+				pView->canvas()->setCursor( QCursor(Qt::OpenHandCursor) );
+			}
+			return false;
+		}
+		else if(mTool == MapTools::Ruler)
+		{
+			Q_ASSERT(pRuler);
 
-	return planeToPicture( mapHnd, coordPlane );
+			pRuler->addPoint( MapHelper::pictureToPlane( pView->mapHandle(), mouseEvent->pos()+pView->canvas()->mapTopLeft() ) );
+			return false;
+		}
+	}
+	return true;
 }
 
-CoordPlane MapTools::pictureToPlane(HMAP mapHnd, const QPoint &point)
+bool MapTools::processMouseDoubleClickEvent(QMouseEvent *mouseEvent)
 {
-	double x = point.x();
-	double y = point.y();
+	if(mTool == MapTools::AddVectorObject)
+	{
+		if(!pView)
+		{
+			QMessageBox::information(pView, "Добавление объекта", "Не задан активный слой карты.", "Закрыть");
+			return true;
+		}
 
-	mapPictureToPlane(mapHnd, &x, &y);
+		int exCode = RscViewer::selectVectorExCode(pView->activeLayer()->rscName());
 
-	return CoordPlane(x, y);
+		if(exCode <= 0)
+		{
+			return true;
+		}
+
+		MapVectorObject *obj = new MapVectorObject(exCode, pView->activeLayer());
+
+		QPoint pictureCoord = pView->canvas()->mapTopLeft() + mouseEvent->pos();
+
+		obj->setCoordinates( MapHelper::pictureToPlane(pView->mapHandle(), pictureCoord));
+		return false;
+	}
+	else if(mTool == MapTools::AddLineObject)
+	{
+		CoordPlane coord = MapHelper::pictureToPlane(pView->mapHandle(), pView->canvas()->mapTopLeft() + mouseEvent->pos() );
+
+		if(pTempObject)
+		{
+			MapLineObject *o = dynamic_cast<MapLineObject*>(pTempObject);
+			if(!o)
+			{
+				return false;
+			}
+
+			o->addPoint(coord);
+			pTempObject = 0;
+			return false;
+		}
+	}
+	else if(mTool == MapTools::AddZoneObject)
+	{
+		CoordPlane coord = MapHelper::pictureToPlane(pView->mapHandle(), pView->canvas()->mapTopLeft() + mouseEvent->pos() );
+
+		if(pTempObject)
+		{
+			MapZoneObject *o = dynamic_cast<MapZoneObject*>(pTempObject);
+			if(!o)
+			{
+				return false;
+			}
+
+			o->addPoint(coord);
+			o->closeZone();
+			pTempObject = 0;
+			return false;
+		}
+	}
+	return true;
 }
 
-
-double MapTools::bearing(const CoordPlane &pointFrom, const CoordPlane &pointTo)
+void MapTools::onActionTriggered(QAction *act)
 {
-	QLineF line(pointFrom.y, pointFrom.x, pointTo.y, pointTo.x);
+	Q_ASSERT(pView);
 
-	// Необходимо прибавить 90 градусов, т.к. в Qt ноль находится на востоке, а не на севере.
-	return line.angle() + 90;
+	if(act->isChecked())
+	{
+		MapTools::Tools tool = static_cast<MapTools::Tools>( act->data().toInt() );
+		setCurrentTool(tool);
+	}
+}
+
+void MapTools::setCurrentTool(MapTools::Tools tool)
+{
+	mTool = tool;
+
+	if(mTool == MapTools::Ruler)
+	{
+		if(!mTempSites.contains("ruler"))
+		{
+			MapLayer *l = pView->createTempLayer("mgk.rsc", "ruler_layer");
+			mTempSites["ruler"] = l;
+
+			connect(l, SIGNAL(dataChanged(QModelIndex,QModelIndex,QVector<int>)), pView->canvas(), SLOT(queueRepaint()));
+		}
+		mTempSites["ruler"]->setVisible(true);
+
+		if(!pRuler)
+		{
+			pRuler = new MapRuler( mTempSites["ruler"] );
+		}
+	}
+	else
+	{
+		if(mTempSites.contains("ruler"))
+		{
+			mTempSites["ruler"]->setVisible(false);
+		}
+
+		if(pRuler)
+		{
+			pRuler->clear();
+		}
+	}
+
+	if(pTempObject != 0)
+	{
+		pTempObject->mapLayer()->removeObject(pTempObject);
+		pTempObject = 0;
+	}
+}
+
+QAction *MapTools::addActionWithData(QAction *act, QVariant data)
+{
+	Q_ASSERT(pToolBar);
+
+	act->setData(data);
+	act->setCheckable(true);
+	pToolBar->addAction(act);
+
+	return act;
 }

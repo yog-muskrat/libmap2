@@ -9,7 +9,7 @@
 class MapLineObject : public MapObject
 {
 public:
-	MapLineObject(long exCode, MapLayer *layer = 0, QList<Coord> coords = QList<Coord>());
+	MapLineObject(long exCode, MapLayer *layer = 0, QList<CoordPlane> coords = QList<CoordPlane>());
 
 	void addPoint(CoordPlane coord);
 	void addPoint(Coord coord);

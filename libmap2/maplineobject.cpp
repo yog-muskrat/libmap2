@@ -4,7 +4,7 @@
 #include <QDebug>
 #include <qmath.h>
 
-MapLineObject::MapLineObject(long exCode, MapLayer *layer, QList<Coord> coords) : MapObject(MO_Line, layer)
+MapLineObject::MapLineObject(long exCode, MapLayer *layer, QList<CoordPlane> coords) : MapObject(MO_Line, layer)
 {
 	mapRegisterObject( handle(), exCode, LOCAL_LINE);
 	addPoints(coords);

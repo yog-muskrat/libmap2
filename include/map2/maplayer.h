@@ -65,8 +65,8 @@ public:
 
 	void addObject(MapObject *object, MapObject *parent = 0);
 	MapVectorObject* addVectorObject(long rscCode, Coord coords = Coord(), QString name = "");
-	MapLineObject* addLineObject(long rscCode, QList<Coord> coords = QList<Coord>());
-	MapZoneObject* addZoneObject(long rscCode, QList<Coord> coords = QList<Coord>());
+	MapLineObject* addLineObject(long rscCode, QList<CoordPlane> coords = QList<CoordPlane>());
+	MapZoneObject* addZoneObject(long rscCode, QList<CoordPlane> coords = QList<CoordPlane>());
 
 	void removeObject(MapObject *object);
 

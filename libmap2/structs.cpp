@@ -1,9 +1,9 @@
 #include "structs.h"
-#include "maptools.h"
+#include "maphelper.h"
 
 CoordPlane Coord::toPlane(HMAP mapHnd) const
 {
-	return MapTools::geoToPlane(mapHnd, Coord(lat, lng));
+	return MapHelper::geoToPlane(mapHnd, Coord(lat, lng));
 }
 
 
@@ -39,5 +39,5 @@ CoordPlane &CoordPlane::operator-=(const CoordPlane &other)
 
 Coord CoordPlane::toGeo(HMAP mapHnd) const
 {
-	return MapTools::planeToGeo(mapHnd, CoordPlane(x, y));
+	return MapHelper::planeToGeo(mapHnd, CoordPlane(x, y));
 }

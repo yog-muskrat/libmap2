@@ -30,13 +30,13 @@ HEADERS += mapcanvas.h \
 	../include/map2/mapobject.h \
 	../include/map2/rscselectdialog.h \
 	../include/map2/rscviewer.h \
-	../include/map2/maptools.h \
 	../include/map2/gis.h \
     ../include/map2/maplineobject.h \
     ../include/map2/mapzoneobject.h \
-    maptoolbar.h \
     ../include/map2/maptextobject.h \
-    mapruler.h
+    mapruler.h \
+    ../include/map2/maphelper.h \
+    maptools.h
 SOURCES += layersmodel.cpp \
 		   mapcanvas.cpp \
 		   maplayer.cpp \
@@ -46,13 +46,13 @@ SOURCES += layersmodel.cpp \
 		   mapview.cpp \
 	rscselectdialog.cpp \
 	rscviewer.cpp \
-	maptools.cpp \
 	structs.cpp \
     maplineobject.cpp \
     mapzoneobject.cpp \
-    maptoolbar.cpp \
     maptextobject.cpp \
-    mapruler.cpp
+    mapruler.cpp \
+    maphelper.cpp \
+    maptools.cpp
 
 FORMS += \
 	rscselectdialog.ui \

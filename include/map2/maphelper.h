@@ -1,5 +1,5 @@
-#ifndef MAPTOOLS_H
-#define MAPTOOLS_H
+#ifndef MAPHELPER_H
+#define MAPHELPER_H
 
 #include <QPoint>
 #include "structs.h"
@@ -9,7 +9,7 @@
 /*!
  * \brief Набор вспомогательных функций для работы с картой.
  */
-namespace MapTools
+namespace MapHelper
 {
 	/*!
 	 * \brief Переводит радианы в градусы.
@@ -46,7 +46,12 @@ namespace MapTools
 	 */
 	CoordPlane pictureToPlane(HMAP mapHnd, const QPoint &point);
 
+	/*!
+	 * \brief Преобразует координаты из пикселей в градусы.
+	 */
+	Coord pictureToGeo(HMAP mapHnd, const QPoint &point);
+
 	double bearing(const CoordPlane &pointFrom, const CoordPlane &pointTo);
 }
 
-#endif // MAPTOOLS_H
+#endif // MAPHELPER_H

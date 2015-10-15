@@ -1,6 +1,6 @@
 #include "mapvectorobject.h"
 #include "maplayer.h"
-#include "maptools.h"
+#include "maphelper.h"
 
 #include "qmath.h"
 #include <QDebug>

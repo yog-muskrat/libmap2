@@ -6,7 +6,6 @@
 #include "structs.h"
 #include "gis.h"
 
-class MapRuler;
 class QLabel;
 class MapLayer;
 class QToolBar;
@@ -16,6 +15,7 @@ class MapLineObject;
 class QScrollBar;
 class LayersModel;
 class MapNavigation;
+class MapTools;
 
 /*!
  * \brief Виджет для отображения карты
@@ -24,21 +24,6 @@ class MapView : public QWidget
 {
 	Q_OBJECT
 public:
-	/*!
-	 * \brief Картографические инструменты
-	 */
-	enum Tools
-	{
-		None,
-		MoveObject,
-		DeleteObject,
-		AddVectorObject,
-		AddZoneObject,
-		AddLineObject,
-		Ruler, //!< Измерение расстояний
-		RectZoom //!< Приблизить область
-	};
-
 	/*!
 	 * \brief Конструктор класса.
 	 * \param sitDir Каталог для sit-файлов создаваемых для слоев карты.
@@ -62,6 +47,7 @@ public:
 	 * \return Указатель на созданный слой.
 	 */
 	MapLayer *createLayer(QString rscName = "", QString name = "");
+	MapLayer *createTempLayer(QString rscName = "", QString name = "");
 
 	/*!
 	 * \brief Возвращает идентификатор открытой карты.
@@ -90,9 +76,14 @@ public:
 	 */
 	QList<MapObject*> objectsAtPoint(QPoint point, double radiusPx = 10);
 
+	void addObjectToSelection(MapObject *obj);
+	QList<MapObject*> selectedObjects(){return mSelectedObjects;}
+
 	HSELECT selectContext() {return mSelect;}
 
-	QToolBar * toolBar();
+	MapCanvas* canvas(){return pCanvas;}
+
+	QToolBar* toolBar();
 
 public slots:
 	/*!
@@ -122,13 +113,6 @@ public slots:
 	void setCenter(CoordPlane planeCoord);
 
 	/*!
-	 * \brief Устанавливает режим редактирования карты.
-	 * В зависимости от режима будут иначе обрабатываться действия мыши.
-	 * \param tool
-	 */
-	void setCurrentTool(MapView::Tools tool);
-
-	/*!
 	 * \brief Очищает список выделенных объектов и снимает с них признак выделения.
 	 */
 	void clearSelection();
@@ -136,6 +120,8 @@ public slots:
 	void setActiveLayer(MapLayer *layer);
 	void setActiveLayer(int index);
 	MapLayer* activeLayer();
+
+	void zoomToRect( const QRect &rect );
 
 signals:
 	/*!
@@ -224,14 +210,12 @@ private:
 	 */
 	bool checkDirs();
 
-	void zoomToRect( const QRect &rect );
-
 	QScrollBar *pHorizontalScroll;
 	QScrollBar *pVerticalScroll;
 	MapCanvas *pCanvas;
 
 	MapNavigation *pNavigation; //!< Виджет навигации.
-	QToolBar * pToolBar; //!< Панель инструментов карты.
+	MapTools * pTools; //!< Менеджер инструментов карты.
 
 	HMAP mMapHandle;
 	HSELECT mSelect;
@@ -245,18 +229,7 @@ private:
 	QString mRscDir; //!< Каталог классификаторов.
 	QString mSitDir; //!< Каталог пользовательских карт (слоев).
 
-	Tools mTool; //!< Текущий инструмент карты.
-
-	QMap<QString, MapLayer*> mTempSites;
-
 	QList<MapObject*> mSelectedObjects;
-
-	MapRuler *pRuler;
-
 	MapLayer *pActiveLayer;
-	MapObject *pTempObject;
 };
-
-Q_DECLARE_METATYPE(MapView::Tools)
-
 #endif // MAPVIEW_H

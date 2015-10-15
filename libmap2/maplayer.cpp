@@ -259,14 +259,14 @@ MapVectorObject *MapLayer::addVectorObject(long rscCode, Coord coords, QString n
 	return obj;
 }
 
-MapLineObject *MapLayer::addLineObject(long rscCode, QList<Coord> coords)
+MapLineObject *MapLayer::addLineObject(long rscCode, QList<CoordPlane> coords)
 {
 	MapLineObject *obj = new MapLineObject(rscCode, this, coords);
 	addObject(obj);
 	return obj;
 }
 
-MapZoneObject *MapLayer::addZoneObject(long rscCode, QList<Coord> coords)
+MapZoneObject *MapLayer::addZoneObject(long rscCode, QList<CoordPlane> coords)
 {
 	MapZoneObject *obj = new MapZoneObject(rscCode, coords, this);
 	addObject(obj);

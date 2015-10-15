@@ -7,7 +7,7 @@
 MapRuler::MapRuler(MapLayer *layer)
 {
 	pLine = new MapLineObject(0, layer);
-	pText = new MapTextObject(layer);
+	pText = new MapTextObject(layer, "", CoordPlane(), 1335);
 }
 
 MapRuler::~MapRuler()

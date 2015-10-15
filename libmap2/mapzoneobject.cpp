@@ -1,7 +1,65 @@
 #include "mapzoneobject.h"
 #include "maplayer.h"
 
-MapZoneObject::MapZoneObject(long exCode, QList<Coord> coords, MapLayer *layer) : MapObject(MO_Zone, layer)
+MapZoneObject::MapZoneObject(long exCode, QList<CoordPlane> coords, MapLayer *layer) : MapObject(MO_Zone, layer)
 {
+	mapRegisterObject( handle(), exCode, LOCAL_SQUARE);
+	addPoints(coords);
+}
 
+void MapZoneObject::addPoint(Coord coord)
+{
+	Q_ASSERT(mapLayer());
+	addPoint(coord.toPlane(mapLayer()->mapHandle()));
+}
+
+void MapZoneObject::addPoints(QList<CoordPlane> coords)
+{
+	if(coords.isEmpty())
+	{
+		return;
+	}
+
+	foreach(const CoordPlane &c, coords)
+	{
+		mapAppendPointPlane(handle(), c.x, c.y);
+		mCoords << c;
+	}
+
+	commit();
+}
+
+void MapZoneObject::addPoints(QList<Coord> coords)
+{
+	Q_ASSERT(mapLayer());
+
+	QList<CoordPlane> planeCoords;
+
+	foreach(const Coord &c, coords)
+	{
+		planeCoords << c.toPlane(mapLayer()->mapHandle() );
+	}
+
+	addPoints(planeCoords);
+}
+
+void MapZoneObject::clear()
+{
+	for(int i = mCoords.count(); i > 0; --i)
+	{
+		mapDeletePointPlane(handle(), i);
+	}
+	mCoords.clear();
+
+	commit();
+}
+
+double MapZoneObject::length()
+{
+	return mapPerimeter( handle() );
+}
+
+void MapZoneObject::closeZone()
+{
+	mapAbrige(handle(), 0.1);
 }
