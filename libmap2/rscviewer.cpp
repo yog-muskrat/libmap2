@@ -167,7 +167,7 @@ long RscViewer::selectLineExCode(QString rscName)
 	return selectExCode(rscName, LOCAL_LINE);
 }
 
-long RscViewer::selectAreaExCode(QString rscName)
+long RscViewer::selectZoneExCode(QString rscName)
 {
 	return selectExCode(rscName, LOCAL_SQUARE);
 }

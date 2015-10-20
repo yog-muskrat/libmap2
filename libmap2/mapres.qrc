@@ -1,0 +1,25 @@
+<RCC>
+    <qresource prefix="/">
+        <file alias="apply">img/apply.png</file>
+        <file alias="cancel">img/cancel.png</file>
+        <file alias="circle_zone">img/circle_radius.png</file>
+        <file alias="delete">img/delete.png</file>
+        <file alias="menu">img/hamburger_menu.png</file>
+        <file alias="help">img/help.png</file>
+        <file alias="list">img/list.png</file>
+        <file alias="add">img/list-add.png</file>
+        <file alias="remove">img/list-remove.png</file>
+        <file alias="map_icon">img/map.png</file>
+        <file alias="move">img/move.png</file>
+        <file alias="marker">img/object.png</file>
+        <file alias="open">img/open.png</file>
+        <file alias="polygon">img/polygon.png</file>
+        <file alias="rotate">img/rotate.png</file>
+        <file alias="rotate_dots">img/rotate_dots.png</file>
+        <file alias="save">img/save.png</file>
+        <file alias="settings">img/settings.png</file>
+        <file alias="zoom_in">img/zoom_in.png</file>
+        <file alias="zoom_out">img/zoom_out.png</file>
+        <file alias="cursor">img/cursor.png</file>
+    </qresource>
+</RCC>

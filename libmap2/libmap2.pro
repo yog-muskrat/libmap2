@@ -57,3 +57,6 @@ SOURCES += layersmodel.cpp \
 FORMS += \
 	rscselectdialog.ui \
 	rscviewer.ui
+
+RESOURCES += \
+    mapres.qrc

@@ -53,7 +53,7 @@ public:
 	static long selectExCode(QString rscName, int localFilter = -1);
 	static long selectVectorExCode(QString rscName);
 	static long selectLineExCode(QString rscName);
-	static long selectAreaExCode(QString rscName);
+	static long selectZoneExCode(QString rscName);
 	static long selectTextExCode(QString rscName);
 
 signals:

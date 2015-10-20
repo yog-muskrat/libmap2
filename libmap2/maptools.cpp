@@ -41,14 +41,14 @@ QToolBar *MapTools::toolBar()
 		QActionGroup *group = new QActionGroup(this);
 		group->setExclusive(true);
 
-		group->addAction( addActionWithData(new QAction("Нет", this), MapTools::None) )->setChecked(true);
-		group->addAction( addActionWithData(new QAction("Переместить", this), MapTools::MoveObject) );
-		group->addAction( addActionWithData(new QAction("Удалить", this), MapTools::DeleteObject) );
-		group->addAction( addActionWithData(new QAction("Добавить вектор", this), MapTools::AddVectorObject) );
+		group->addAction( addActionWithData(new QAction(QIcon(":cursor"), "Нет", this), MapTools::None) )->setChecked(true);
+		group->addAction( addActionWithData(new QAction(QIcon(":move"), "Переместить", this), MapTools::MoveObject) );
+		group->addAction( addActionWithData(new QAction(QIcon(":delete"),"Удалить", this), MapTools::DeleteObject) );
+		group->addAction( addActionWithData(new QAction(QIcon(":marker"),"Добавить вектор", this), MapTools::AddVectorObject) );
 		group->addAction( addActionWithData(new QAction("Добавить линию", this), MapTools::AddLineObject) );
-		group->addAction( addActionWithData(new QAction("Добавить зону", this), MapTools::AddZoneObject) );
+		group->addAction( addActionWithData(new QAction(QIcon(":polygon"),"Добавить зону", this), MapTools::AddZoneObject) );
 		group->addAction( addActionWithData(new QAction("Линейка", this), MapTools::Ruler) );
-		group->addAction( addActionWithData(new QAction("Приблизить", this), MapTools::RectZoom) );
+		group->addAction( addActionWithData(new QAction(QIcon(":zoom_in"),"Приблизить", this), MapTools::RectZoom) );
 
 		connect(group, SIGNAL(triggered(QAction*)), this, SLOT(onActionTriggered(QAction*)));
 	}
@@ -142,7 +142,7 @@ bool MapTools::processMousePressEvent(QMouseEvent *mouseEvent)
 					return false;
 				}
 
-				int exCode = RscViewer::selectLineExCode(pView->activeLayer()->rscName());
+				int exCode = RscViewer::selectZoneExCode(pView->activeLayer()->rscName());
 				if(exCode <= 0)
 				{
 					return false;
@@ -297,6 +297,8 @@ bool MapTools::processMouseReleaseEvent(QMouseEvent *mouseEvent)
 
 bool MapTools::processMouseDoubleClickEvent(QMouseEvent *mouseEvent)
 {
+	qDebug()<<"Dbl click";
+
 	if(mTool == MapTools::AddVectorObject)
 	{
 		if(!pView)
@@ -338,15 +340,19 @@ bool MapTools::processMouseDoubleClickEvent(QMouseEvent *mouseEvent)
 	}
 	else if(mTool == MapTools::AddZoneObject)
 	{
+		qDebug()<<"dbl click zone";
 		CoordPlane coord = MapHelper::pictureToPlane(pView->mapHandle(), pView->canvas()->mapTopLeft() + mouseEvent->pos() );
 
 		if(pTempObject)
 		{
+			qDebug()<<"dbl click zone temp";
 			MapZoneObject *o = dynamic_cast<MapZoneObject*>(pTempObject);
 			if(!o)
 			{
 				return false;
 			}
+
+			qDebug()<<"dbl almost there";
 
 			o->addPoint(coord);
 			o->closeZone();
