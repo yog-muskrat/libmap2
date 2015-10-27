@@ -80,6 +80,9 @@ void MapVectorObject::setRotation(double degree)
 	QLineF line( mCoord.toPointF(), mCoord.toPointF() + QPointF(1000, 0));
 	line.setAngle(mRotation - 90);
 
-	updateMetric(2, CoordPlane( line.p2()) );
+	updateMetric(2, CoordPlane( line.p2().y(), line.p2().x() ) );
+
+	qDebug()<<"Update metric 2 to "<<line.p2();
+
 	commit();
 }

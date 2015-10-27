@@ -4,6 +4,7 @@
 #include <QMap>
 #include <QPoint>
 #include <QObject>
+#include <QElapsedTimer>
 
 class MapView;
 class QAction;
@@ -28,6 +29,7 @@ public:
 		AddVectorObject, //!< Добавление векторного объекта.
 		AddZoneObject, //!< Добавление зоны.
 		AddLineObject, //!< Добавление линии.
+		RotateObject, //!< Вращение объекта. Только для векторных объектов.
 		Ruler, //!< Измерение расстояний.
 		RectZoom //!< Приблизить область.
 	};
@@ -57,6 +59,7 @@ private:
 	MapObject *pTempObject;
 	bool mIsDragged;
 	QPoint mDragStartPoint;
+	QElapsedTimer mClickTi;
 };
 Q_DECLARE_METATYPE(MapTools::Tools)
 

@@ -218,7 +218,6 @@ long MapObject::mapKey()
 	if(mMapKey <= 0)
 	{
 		mMapKey = mapObjectKey( handle() );
-		qDebug()<<"Handle="<<handle()<<"key="<<mMapKey;
 	}
 
 	return mMapKey;

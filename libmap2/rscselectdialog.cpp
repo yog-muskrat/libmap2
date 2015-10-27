@@ -42,7 +42,9 @@ void RscSelectDialog::fillModel()
 {
 	pModel->setRowCount(0);
 
-	QString path = QTextCodec::codecForName("koi8r")->toUnicode( mapGetCommonRscPath() );
+	QTextCodec *codec = QTextCodec::codecForName("koi8r");
+
+	QString path = codec->toUnicode( mapGetCommonRscPath() );
 
 	QDir rscDir(path);
 	if(!rscDir.exists())
@@ -55,7 +57,7 @@ void RscSelectDialog::fillModel()
 
 	foreach(const QFileInfo &fi, files)
 	{
-		HRSC rscHnd = mapOpenRsc( fi.absoluteFilePath().toLocal8Bit().data() );
+		HRSC rscHnd = mapOpenRsc( codec->fromUnicode( fi.absoluteFilePath() ).data() );
 
 		if(rscHnd <=0 )
 		{

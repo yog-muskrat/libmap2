@@ -1,7 +1,7 @@
 #include "mapzoneobject.h"
 #include "maplayer.h"
 
-#include "qdebug.h"
+#include <QDebug>
 
 MapZoneObject::MapZoneObject(long exCode, QList<CoordPlane> coords, MapLayer *layer) : MapObject(MO_Zone, layer)
 {
@@ -11,8 +11,10 @@ MapZoneObject::MapZoneObject(long exCode, QList<CoordPlane> coords, MapLayer *la
 
 void MapZoneObject::addPoint(CoordPlane coord)
 {
-	mapAppendPointPlane(handle(), coord.x, coord.y);
+	Q_ASSERT(mapLayer());
+	int i = mapAppendPointPlane(handle(), coord.x, coord.y);
 	mCoords << coord;
+	qDebug()<<"Point added!"<<i;
 	commit();
 }
 
@@ -24,6 +26,8 @@ void MapZoneObject::addPoint(Coord coord)
 
 void MapZoneObject::addPoints(QList<CoordPlane> coords)
 {
+	Q_ASSERT(mapLayer());
+
 	if(coords.isEmpty())
 	{
 		return;
@@ -71,5 +75,5 @@ double MapZoneObject::length()
 void MapZoneObject::closeZone()
 {
 	int i = mapAbrige(handle(), 0.1);
-	qDebug()<<"Zone closeing..."<<i;
+	qDebug()<<"Zone closing..."<<i;
 }

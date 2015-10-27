@@ -10,6 +10,7 @@
 #include "mapzoneobject.h"
 #include "mapvectorobject.h"
 
+#include <QtMath>
 #include <QDebug>
 #include <QAction>
 #include <QToolBar>
@@ -43,6 +44,7 @@ QToolBar *MapTools::toolBar()
 
 		group->addAction( addActionWithData(new QAction(QIcon(":cursor"), "Нет", this), MapTools::None) )->setChecked(true);
 		group->addAction( addActionWithData(new QAction(QIcon(":move"), "Переместить", this), MapTools::MoveObject) );
+		group->addAction( addActionWithData(new QAction(QIcon(":rotate"), "Повернуть", this), MapTools::RotateObject) );
 		group->addAction( addActionWithData(new QAction(QIcon(":delete"),"Удалить", this), MapTools::DeleteObject) );
 		group->addAction( addActionWithData(new QAction(QIcon(":marker"),"Добавить вектор", this), MapTools::AddVectorObject) );
 		group->addAction( addActionWithData(new QAction("Добавить линию", this), MapTools::AddLineObject) );
@@ -60,6 +62,9 @@ bool MapTools::processMousePressEvent(QMouseEvent *mouseEvent)
 {
 	if(mouseEvent->button() == Qt::LeftButton)
 	{
+		// Пока интересуют только клики левой кнопкой.
+		mClickTi.start();
+
 		if(mTool == MapTools::RectZoom)
 		{
 			mIsDragged = true;
@@ -99,14 +104,15 @@ bool MapTools::processMousePressEvent(QMouseEvent *mouseEvent)
 		{
 			return false;
 		}
-		else if(mTool = MapTools::AddLineObject)
+		else if(mTool == MapTools::AddLineObject)
 		{
 			CoordPlane coord = MapHelper::pictureToPlane(pView->mapHandle(), pView->canvas()->mapTopLeft() + mouseEvent->pos() );
 			if(!pTempObject)
 			{
 				if(!pView->activeLayer())
 				{
-					return false;
+					QMessageBox::information(pView, "Добавление линии", "Не задан активный слой карты.", "Закрыть");
+					return true;
 				}
 
 				int exCode = RscViewer::selectLineExCode(pView->activeLayer()->rscName());
@@ -132,14 +138,15 @@ bool MapTools::processMousePressEvent(QMouseEvent *mouseEvent)
 				return false;
 			}
 		}
-		else if(mTool = MapTools::AddZoneObject)
+		else if(mTool == MapTools::AddZoneObject)
 		{
 			CoordPlane coord = MapHelper::pictureToPlane(pView->mapHandle(), pView->canvas()->mapTopLeft() + mouseEvent->pos() );
 			if(!pTempObject)
 			{
 				if(!pView->activeLayer())
 				{
-					return false;
+					QMessageBox::information(pView, "Добавление зоны", "Не задан активный слой карты.", "Закрыть");
+					return true;
 				}
 
 				int exCode = RscViewer::selectZoneExCode(pView->activeLayer()->rscName());
@@ -161,9 +168,43 @@ bool MapTools::processMousePressEvent(QMouseEvent *mouseEvent)
 					return false;
 				}
 
+				qDebug()<<"add point to zone";
+
 				o->addPoint(coord);
 				return false;
 			}
+		}
+		else if(mTool == MapTools::RotateObject)
+		{
+			qDebug()<<"trying to start rotation...";
+			QList<MapObject*> objects = pView->objectsAtPoint(mouseEvent->pos(), 5);
+			if(objects.isEmpty())
+			{
+				qDebug()<<"No objects!";
+				return true;
+			}
+
+			pTempObject = 0;
+			foreach (MapObject *o, objects)
+			{
+				if(o->type() == MapObject::MO_Vector)
+				{
+					pTempObject = o;
+					break;
+				}
+			}
+
+			if(!pTempObject)
+			{
+				qDebug()<<"No vector object!";
+				return true;
+			}
+
+			mIsDragged = true;
+			mDragStartPoint = mouseEvent->pos();
+			qDebug()<<"Started!";
+
+			return false;
 		}
 	}
 	return true;
@@ -202,7 +243,7 @@ bool MapTools::processMouseMoveEvent(QMouseEvent *mouseEvent)
 		}
 		else if(mTool == MapTools::MoveObject)
 		{
-			if(!pView->selectedObjects().isEmpty())
+			if(!pView->selectedObjects().isEmpty() && mouseEvent->buttons().testFlag( Qt::LeftButton ))
 			{
 				CoordPlane oldCoord = MapHelper::pictureToPlane(pView->mapHandle(), mDragStartPoint);
 				CoordPlane newCoord = MapHelper::pictureToPlane(pView->mapHandle(), mouseEvent->pos());
@@ -217,6 +258,24 @@ bool MapTools::processMouseMoveEvent(QMouseEvent *mouseEvent)
 				mDragStartPoint = mouseEvent->pos();
 
 				pView->canvas()->setCursor( QCursor(Qt::ClosedHandCursor) );
+			}
+		}
+		else if(mTool == MapTools::RotateObject)
+		{
+			qDebug()<<"trying to rotate object...";
+			if(pTempObject)
+			{
+				QLineF line(mDragStartPoint, mouseEvent->pos());
+
+				qreal angle = fmod( (line.angle() + 90. + 360.), 360.); // +90, т.к. в Qt ноль - справа.
+				qDebug()<<"rotating to angle"<<angle;
+
+				MapVectorObject *obj = dynamic_cast<MapVectorObject*>(pTempObject);
+				if(obj)
+				{
+					obj->setRotation(angle);
+					qDebug()<<"Rotation is set!";
+				}
 			}
 		}
 	}
@@ -261,6 +320,13 @@ bool MapTools::processMouseReleaseEvent(QMouseEvent *mouseEvent)
 {
 	if(mouseEvent->button() == Qt::LeftButton)
 	{
+		bool click = false;
+		if(mClickTi.isValid() && mClickTi.elapsed() < 1000 )
+		{
+			mClickTi.invalidate();
+			click = true;
+		}
+
 		if(mTool == MapTools::RectZoom)
 		{
 			pView->zoomToRect( pView->canvas()->zoomRect() );
@@ -282,6 +348,8 @@ bool MapTools::processMouseReleaseEvent(QMouseEvent *mouseEvent)
 			{
 				pView->canvas()->setCursor( QCursor(Qt::OpenHandCursor) );
 			}
+
+			mIsDragged = false;
 			return false;
 		}
 		else if(mTool == MapTools::Ruler)
@@ -291,17 +359,26 @@ bool MapTools::processMouseReleaseEvent(QMouseEvent *mouseEvent)
 			pRuler->addPoint( MapHelper::pictureToPlane( pView->mapHandle(), mouseEvent->pos()+pView->canvas()->mapTopLeft() ) );
 			return false;
 		}
+		else if(mTool == MapTools::RotateObject)
+		{
+			qDebug()<<"tryin to stop rotation...";
+			if(pTempObject)
+			{
+				pTempObject = 0;
+				mIsDragged = false;
+				mDragStartPoint = QPoint();
+				qDebug()<<"rotate no more!";
+			}
+		}
 	}
 	return true;
 }
 
 bool MapTools::processMouseDoubleClickEvent(QMouseEvent *mouseEvent)
 {
-	qDebug()<<"Dbl click";
-
 	if(mTool == MapTools::AddVectorObject)
 	{
-		if(!pView)
+		if(!pView->activeLayer())
 		{
 			QMessageBox::information(pView, "Добавление объекта", "Не задан активный слой карты.", "Закрыть");
 			return true;

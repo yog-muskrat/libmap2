@@ -88,5 +88,21 @@
     </hint>
    </hints>
   </connection>
+  <connection>
+   <sender>listView</sender>
+   <signal>doubleClicked(QModelIndex)</signal>
+   <receiver>RscSelectDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>193</x>
+     <y>207</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>453</x>
+     <y>132</y>
+    </hint>
+   </hints>
+  </connection>
  </connections>
 </ui>

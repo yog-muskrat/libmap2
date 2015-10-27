@@ -37,7 +37,9 @@ struct CoordPlane
 	CoordPlane() : x(0), y(0) {}
 	CoordPlane(double x, double y) : x(x), y(y) {}
 	CoordPlane(const CoordPlane &other) : x(other.x), y(other.y) {}
-	CoordPlane( const QPointF &point) : x(point.x()), y( point.y()) {}
+
+
+	CoordPlane( const QPointF &point) : x(point.y()), y( point.x()) {}
 
 	QPointF toPointF(){ return QPointF(x, y); }
 
