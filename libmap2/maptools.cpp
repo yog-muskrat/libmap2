@@ -176,11 +176,9 @@ bool MapTools::processMousePressEvent(QMouseEvent *mouseEvent)
 		}
 		else if(mTool == MapTools::RotateObject)
 		{
-			qDebug()<<"trying to start rotation...";
 			QList<MapObject*> objects = pView->objectsAtPoint(mouseEvent->pos(), 5);
 			if(objects.isEmpty())
 			{
-				qDebug()<<"No objects!";
 				return true;
 			}
 
@@ -196,13 +194,11 @@ bool MapTools::processMousePressEvent(QMouseEvent *mouseEvent)
 
 			if(!pTempObject)
 			{
-				qDebug()<<"No vector object!";
 				return true;
 			}
 
 			mIsDragged = true;
 			mDragStartPoint = mouseEvent->pos();
-			qDebug()<<"Started!";
 
 			return false;
 		}
@@ -262,19 +258,17 @@ bool MapTools::processMouseMoveEvent(QMouseEvent *mouseEvent)
 		}
 		else if(mTool == MapTools::RotateObject)
 		{
-			qDebug()<<"trying to rotate object...";
 			if(pTempObject)
 			{
 				QLineF line(mDragStartPoint, mouseEvent->pos());
 
-				qreal angle = fmod( (line.angle() + 90. + 360.), 360.); // +90, т.к. в Qt ноль - справа.
-				qDebug()<<"rotating to angle"<<angle;
+				// В Qt ноль справа от начала координат, а угл измеряется против часовой стрелки.
+				qreal angle = fmod( (-line.angle() + 90. + 360.), 360.);
 
 				MapVectorObject *obj = dynamic_cast<MapVectorObject*>(pTempObject);
 				if(obj)
 				{
 					obj->setRotation(angle);
-					qDebug()<<"Rotation is set!";
 				}
 			}
 		}
@@ -361,13 +355,11 @@ bool MapTools::processMouseReleaseEvent(QMouseEvent *mouseEvent)
 		}
 		else if(mTool == MapTools::RotateObject)
 		{
-			qDebug()<<"tryin to stop rotation...";
 			if(pTempObject)
 			{
 				pTempObject = 0;
 				mIsDragged = false;
 				mDragStartPoint = QPoint();
-				qDebug()<<"rotate no more!";
 			}
 		}
 	}

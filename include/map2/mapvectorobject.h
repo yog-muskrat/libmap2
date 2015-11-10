@@ -26,7 +26,7 @@ public:
 	void setRotation(double degree);
 
 private:
-	bool mRotation;
+	double mRotation;
 	CoordPlane mCoord;
 };
 

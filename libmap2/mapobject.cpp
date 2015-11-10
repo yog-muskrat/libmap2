@@ -222,3 +222,13 @@ long MapObject::mapKey()
 
 	return mMapKey;
 }
+
+void MapObject::setParameter(QString parameter, QVariant value)
+{
+	mParameters[parameter] = value;
+}
+
+QVariant MapObject::getParameter(QString parameter)
+{
+	return mParameters[parameter];
+}

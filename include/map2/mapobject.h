@@ -69,6 +69,17 @@ public:
 
 	long mapKey();
 
+	/*!
+	 * \brief Задает значение параметра.
+	 */
+	void setParameter(QString parameter, QVariant value);
+
+	/*!
+	 * \brief Возвращает значение параметра.
+	 * \return Значение параметра или пустой QVariant, если заданного параметра у объекта нет.
+	 */
+	QVariant getParameter(QString parameter);
+
 	friend class MapLayer;
 
 private:
@@ -87,6 +98,8 @@ private:
 	void removeMetricBinding(MetricBinding binding, int targetMetric);
 
 	void removeFromMap();
+
+	QVariantHash mParameters; //!< Дополнительные параметры объекта
 
 protected:
 	/*!

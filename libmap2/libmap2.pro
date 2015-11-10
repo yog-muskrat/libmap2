@@ -16,8 +16,6 @@ greaterThan(QT_MAJOR_VERSION, 4)
   QT += widgets
 }
 
-QMAKE_CXXFLAGS += -isystem $$PWD/../include/gis
-
 LIBS += -L../lib/gis -l mapacces
 
 HEADERS += mapcanvas.h \
@@ -31,12 +29,12 @@ HEADERS += mapcanvas.h \
 	../include/map2/rscselectdialog.h \
 	../include/map2/rscviewer.h \
 	../include/map2/gis.h \
-    ../include/map2/maplineobject.h \
-    ../include/map2/mapzoneobject.h \
-    ../include/map2/maptextobject.h \
-    mapruler.h \
-    ../include/map2/maphelper.h \
-    maptools.h
+	../include/map2/maplineobject.h \
+	../include/map2/mapzoneobject.h \
+	../include/map2/maptextobject.h \
+	mapruler.h \
+	../include/map2/maphelper.h \
+	maptools.h
 SOURCES += layersmodel.cpp \
 		   mapcanvas.cpp \
 		   maplayer.cpp \
@@ -47,16 +45,16 @@ SOURCES += layersmodel.cpp \
 	rscselectdialog.cpp \
 	rscviewer.cpp \
 	structs.cpp \
-    maplineobject.cpp \
-    mapzoneobject.cpp \
-    maptextobject.cpp \
-    mapruler.cpp \
-    maphelper.cpp \
-    maptools.cpp
+	maplineobject.cpp \
+	mapzoneobject.cpp \
+	maptextobject.cpp \
+	mapruler.cpp \
+	maphelper.cpp \
+	maptools.cpp
 
 FORMS += \
 	rscselectdialog.ui \
 	rscviewer.ui
 
 RESOURCES += \
-    mapres.qrc
+	mapres.qrc
