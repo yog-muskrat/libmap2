@@ -3,19 +3,22 @@
 
 #include <QWidget>
 
-#include "structs.h"
-#include "gis.h"
+#include "mapstructs.h"
 
 class QLabel;
-class MapLayer;
 class QToolBar;
+class QScrollBar;
+
+namespace Map2
+{
+
+class MapLayer;
+class MapHelper;
 class MapCanvas;
 class MapObject;
-class MapLineObject;
-class QScrollBar;
+class MapToolBar;
 class LayersModel;
-class MapNavigation;
-class MapTools;
+class MapLineObject;
 
 /*!
  * \brief Виджет для отображения карты
@@ -46,8 +49,8 @@ public:
 	 * \param rscName Классификатор знаков.
 	 * \return Указатель на созданный слой.
 	 */
-	MapLayer *createLayer(QString rscName = "", QString name = "");
-	MapLayer *createTempLayer(QString rscName = "", QString name = "");
+	Map2::MapLayer *createLayer(QString rscName = "", QString name = "");
+	Map2::MapLayer *createTempLayer(QString rscName = "", QString name = "");
 
 	/*!
 	 * \brief Возвращает идентификатор открытой карты.
@@ -55,7 +58,7 @@ public:
 	 */
 	HMAP mapHandle() const {return mMapHandle;}
 
-	LayersModel * layersModel() {return mLayersModel; }
+	Map2::LayersModel * layersModel() {return mLayersModel; }
 
 	/*!
 	 * \brief Возвращает текущий масштаб карты.
@@ -63,36 +66,57 @@ public:
 	 */
 	double scale();
 
+	/*!
+	 * \brief Возвращает координаты центра отображаемого участка карты.
+	 */
+	Map2::Coord screenCenterCoordinate();
+
+	Map2::Coord coordinateAtPoint(const QPoint &screenCoord);
+
 	QString rscDir() const {return mRscDir;}
 	QString sitDir() const {return mSitDir;}
-
-	QWidget * detachNavigation();
-	void attachNavigation();
 
 	/*!
 	 * \brief Ищет объекты в заданной точке.
 	 * \param point Координаты точки в пикселях.
 	 * \param radiusPx Радиус поиска в пикселях.
 	 */
-	QList<MapObject*> objectsAtPoint(QPoint point, double radiusPx = 10);
+	QList<Map2::MapObject*> objectsAtPoint(QPoint point, double radiusPx = 10);
 
-	void addObjectToSelection(MapObject *obj);
-	QList<MapObject*> selectedObjects(){return mSelectedObjects;}
+	void addObjectToSelection(Map2::MapObject *obj);
+	QList<Map2::MapObject*> selectedObjects(){return mSelectedObjects;}
 
 	HSELECT selectContext() {return mSelect;}
 
-	MapCanvas* canvas(){return pCanvas;}
+	Map2::MapCanvas* canvas(){return pCanvas;}
 
 	QToolBar* toolBar();
+
+	/*!
+	 * \brief Делает снимок текущего состояния карты.
+	 * \param width Желаемая ширина изображения в пикселях.
+	 * Высота будет расчитана пропорционально.
+	 * \return
+	 */
+	QPixmap mapPreview(int width);
+
+	/*!
+	 * \brief Возвращает полный размер карты в пикселях.
+	 * \return Размер карты в пикселях.
+	 */
+	QSize mapSizePx() const;
+
+	/*!
+	 * \brief Возвращает указатель на экземпляр класса-помощника, инициализированный дескриптором текущей карты.
+	 */
+	Map2::MapHelper* helper();
 
 public slots:
 	/*!
 	 * \brief Устанавливает масштаб карты.
-	 * \param scale - Новое значение масштаба карты.
+	 * \param scale - Новое значение масштаба карты. При scale == -1 устанавливается базовый масштаб карты.
 	 */
-	void setScale(double scale);
-
-	void setNavigationVisible(bool visible = true);
+	void setScale(double scale = -1);
 
 	/*!
 	 * \brief Центрирует область отображения в заданной точке.
@@ -104,22 +128,22 @@ public slots:
 	 * \brief Перегрузка предыдущей функции.
 	 * \param geoCoord Координаты точки в градусах с десятой частью.
 	 */
-	void setCenter(Coord geoCoord);
+	void setCenter(Map2::Coord geoCoord);
 
 	/*!
 	 * \brief Перегрузка предыдущей функции.
 	 * \param planeCoord Координаты в метрах.
 	 */
-	void setCenter(CoordPlane planeCoord);
+	void setCenter(Map2::CoordPlane planeCoord);
 
 	/*!
 	 * \brief Очищает список выделенных объектов и снимает с них признак выделения.
 	 */
 	void clearSelection();
 
-	void setActiveLayer(MapLayer *layer);
+	void setActiveLayer(Map2::MapLayer *layer);
 	void setActiveLayer(int index);
-	MapLayer* activeLayer();
+	Map2::MapLayer* activeLayer();
 
 	void zoomToRect( const QRect &rect );
 
@@ -134,7 +158,17 @@ signals:
 	 * \brief Сигнал о перемещении курсора мыши.
 	 * \param coord Географические координаты точки под курсором.
 	 */
-	void coordChanged(Coord coord);
+	void coordChanged(Map2::Coord coord);
+
+	void mapCenterScrolled(Map2::Coord coord);
+
+	void mouseLeftClick(QPoint point);
+	void mouseRightClick(QPoint point);
+
+	void resized(QSize newSize);
+
+	void mapLoaded();
+
 protected:
 	bool eventFilter(QObject *obj, QEvent *e);
 	void keyPressEvent(QKeyEvent *keyEvent);
@@ -156,13 +190,11 @@ private slots:
 	 */
 	void adjustScrollValues();
 
-	void adjustNavigation();
-
 	/*!
 	 * \brief Перемещает верхний левый угол отображаемого участка карты.
 	 * \param pos - Новое положение верхнего левого угла отображаемого участка карты в пикселах.
 	 */
-	void moveMapTopLeft(QPoint pos);
+		void moveMapTopLeft(QPoint pos);
 
 private:
 	/*!
@@ -191,17 +223,10 @@ private:
 	void processMouseDoubleClickEvent(QEvent *e);
 
 	/*!
-	 * \brief Возвращает полный размер карты в пикселях.
-	 * \return Размер карты в пикселях.
-	 */
-	QSize mapSizePx() const;
-
-	/*!
 	 * \brief Прокручивает карту на указанные величины.
 	 * \param dx, dy - сдвиги карты по горизонтали и вертикали.
 	 */
 	void scrollMapTopLeft(int dx, int dy);
-	void createNavigation();
 
 	/*!
 	 * \brief Проверяет наличие директорий для классификаторов и пользовательских карт.
@@ -214,8 +239,7 @@ private:
 	QScrollBar *pVerticalScroll;
 	MapCanvas *pCanvas;
 
-	MapNavigation *pNavigation; //!< Виджет навигации.
-	MapTools * pTools; //!< Менеджер инструментов карты.
+	MapToolBar * pTools; //!< Менеджер инструментов карты.
 
 	HMAP mMapHandle;
 	HSELECT mSelect;
@@ -231,5 +255,8 @@ private:
 
 	QList<MapObject*> mSelectedObjects;
 	MapLayer *pActiveLayer;
+
+	MapHelper *pHelper;
 };
+}
 #endif // MAPVIEW_H

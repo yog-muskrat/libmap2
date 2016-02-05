@@ -4,13 +4,16 @@
 #include <QWidget>
 #include <QModelIndex>
 
-#include "gis.h"
+#include "mapstructs.h"
 
 namespace Ui {
 class RscViewer;
 }
 
 class QStandardItemModel;
+
+namespace Map2
+{
 
 class RscViewer : public QWidget
 {
@@ -40,7 +43,7 @@ public:
 
 	/*!
 	 * \brief Возвращает код выбранного знака.
-	 * Если знак не выбра, будет возвращен 0.
+	 * Если знак не выбран, будет возвращен 0.
 	 */
 	long selectedSignCode() const;
 
@@ -49,6 +52,11 @@ public:
 	 * Если ключ не выбран, будет возвращена пустая строка.
 	 */
 	QString selectedSignKey() const;
+
+	/*!
+	 * \brief Возвращает изображение выбранного знака.
+	 */
+	QImage selectedSignImage() const;
 
 	static long selectExCode(QString rscName, int localFilter = -1);
 	static long selectVectorExCode(QString rscName);
@@ -76,6 +84,8 @@ private:
 
 	void hideFilter();
 
+	int objectsCountForLayer(int layerSegmentNumber, int localType = -1);
+
 	Ui::RscViewer *ui;
 
 	QString mRscName; //!< Имя файла классификатора.
@@ -87,5 +97,5 @@ private:
 	long mMapBitDepth;
 	int mLocalFilter;
 };
-
+}
 #endif // RSCVIEWER_H

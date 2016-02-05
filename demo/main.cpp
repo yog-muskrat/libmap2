@@ -1,17 +1,12 @@
 #include "mainwindow.h"
-#include <QApplication>
 #include <QTextCodec>
+#include <QApplication>
 
 int main(int argc, char *argv[])
 {
+	QTextCodec::setCodecForCStrings( QTextCodec::codecForName("utf-8"));
+
 	QApplication a(argc, argv);
-
-#if QT_VERSION >= 0x050000
-	QTextCodec::setCodecForLocale(QTextCodec::codecForName("utf8"));
-#else
-	QTextCodec::setCodecForCStrings( QTextCodec::codecForName("utf8") );
-#endif
-
 	MainWindow w;
 	w.show();
 

@@ -1,27 +1,19 @@
-TEMPLATE = app
+include (../common.pri)
+
+QT       += core gui
+
+greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
+
 TARGET = demo
+TEMPLATE = app
+
 DESTDIR = ../bin
-
-QT += gui
-
-greaterThan(QT_MAJOR_VERSION, 4)
-{
-  QT += widgets
-}
-
-OBJECTS_DIR = obj
-RCC_DIR = obj
-UI_DIR = obj
-MOC_DIR = obj
-
-LIBS += -L../lib -L../lib/gis -lmap2 -lmapacces
 
 INCLUDEPATH += ../include
 
-# Input
-HEADERS += mainwindow.h
-FORMS += mainwindow.ui
-SOURCES += main.cpp mainwindow.cpp
+LIBS += -L../lib -lmap2
 
-RESOURCES += \
-	../res.qrc
+SOURCES += main.cpp\
+		mainwindow.cpp
+
+HEADERS  += mainwindow.h

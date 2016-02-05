@@ -1,18 +1,17 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include <QMap>
 #include <QMainWindow>
-#include "map2/structs.h"
 
-#include <QModelIndex>
-
-namespace Ui {
-class MainWindow;
+namespace Map2
+{
+class MapGroup;
+class MapEditor;
+class MapObject;
 }
 
-class QLabel;
-class MapView;
-class MapObject;
+class QPushButton;
 
 class MainWindow : public QMainWindow
 {
@@ -22,31 +21,21 @@ public:
 	explicit MainWindow(QWidget *parent = 0);
 	~MainWindow();
 
+protected:
+	virtual void showEvent(QShowEvent *e);
+	virtual void closeEvent(QCloseEvent *e);
+
 private slots:
-	void onScaleChanged(double scale);
-	void onCoordChanged(Coord coord);
+	void toggleObj(bool visible);
+	void toggleGroup(bool visible);
 
-	void on_pbAddLayer_clicked();
-
-	void on_pbRemoveLayer_clicked();
-
-	void on_layersTable_clicked(const QModelIndex &index);
-
-	void on_pbAddObject_clicked();
-
-	void on_pbRemoveObject_clicked();
-
-	void on_objectsTable_doubleClicked(const QModelIndex &index);
-
-	void onTimer();
+	void onScaleChanged();
 
 private:
-	Ui::MainWindow *ui;
-	QLabel *pScaleLabel;
-	QLabel *pCoordLabel;
-
-	MapView *pView;
-	MapObject *obj;
+	Map2::MapEditor *pMap;
+	QMap<QPushButton *, Map2::MapObject*> mObjButtons;
+	Map2::MapGroup *pStackGroup;
+	Map2::MapGroup *pFormGroup;
 };
 
 #endif // MAINWINDOW_H

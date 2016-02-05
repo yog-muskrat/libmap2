@@ -1,157 +1,160 @@
 #include "mainwindow.h"
+
+#include <QDebug>
+#include <QLayout>
+#include <QSettings>
+#include <QShortcut>
+#include <QPushButton>
+#include <QApplication>
+
 #include "map2/mapview.h"
 #include "map2/maplayer.h"
-#include "ui_mainwindow.h"
-#include "map2/layersmodel.h"
-#include "map2/mapvectorobject.h"
 #include "map2/rscviewer.h"
+#include "map2/mapeditor.h"
+#include "map2/layersmodel.h"
+#include "map2/groups/mapstackgroup.h"
+#include "map2/groups/mapformulargroup.h"
+#include "map2/objects/mapobject.h"
+#include "map2/objects/mapvectorobject.h"
 
-#include <QDesktopWidget>
-#include <QDockWidget>
-#include <QTableView>
-#include <QTimer>
-#include <QLabel>
-#include <QDebug>
-
-MainWindow::MainWindow(QWidget *parent) :
-	QMainWindow(parent),
-	ui(new Ui::MainWindow), pView(0)
+MainWindow::MainWindow(QWidget *parent)
+	: QMainWindow(parent)
 {
-	ui->setupUi(this);
+	QWidget *w = new QWidget;
 
-	pView = new MapView("./sit", "../maps/rsc", this);
-	setCentralWidget(pView);
-	pView->openMap( QApplication::applicationDirPath()+"/../maps/World5m/5mlnWorld.map");
+	QPushButton *pbObj1 = new QPushButton("Аэродром");
+	pbObj1->setCheckable(true);
+	pbObj1->setChecked(true);
 
-	ui->layersTable->setModel( pView->layersModel() );
-	ui->layersTable->setColumnWidth( LayersModel::COL_Visible, 32);
+	QPushButton *pbObj2 = new QPushButton("СФ");
+	pbObj2->setCheckable(true);
+	pbObj2->setChecked(true);
 
-	ui->navigationDockLayout->insertWidget(0, pView->detachNavigation());
+	QPushButton *pbObj3 = new QPushButton("186 ОЦ РЭБ");
+	pbObj3->setCheckable(true);
+	pbObj3->setChecked(true);
 
-	addToolBar( pView->toolBar() );
+	QPushButton *pbAll = new QPushButton("Все");
+	pbAll->setCheckable(true);
+	pbAll->setChecked(true);
 
-	pView->setScale(50000000);
-	pView->setCenter(Coord(60., 30.));
+	QHBoxLayout *btnlay = new QHBoxLayout;
+	btnlay->addWidget(pbObj1);
+	btnlay->addWidget(pbObj2);
+	btnlay->addWidget(pbObj3);
+	btnlay->addWidget(pbAll);
+	btnlay->addStretch();
 
-	statusBar()->addPermanentWidget( pScaleLabel = new QLabel( QString("1:%0").arg(pView->scale(), 0, 'f' )));
-	statusBar()->addPermanentWidget( pCoordLabel = new QLabel());
+	pMap = new Map2::MapEditor("./map/sit", "./map/rsc");
+	pMap->mapView()->openMap(qApp->applicationDirPath()+"/map/maps/World5m/5mlnWorld.map");
 
-	connect(pView, SIGNAL(coordChanged(Coord)), this, SLOT(onCoordChanged(Coord)));
-	connect(pView, SIGNAL(scaleChanged(double)), this, SLOT(onScaleChanged(double)));
+	Map2::MapLayer *layer = pMap->mapView()->createLayer("mgk.rsc", "Layer 1");
+	pMap->mapView()->setActiveLayer(layer);
 
-	QSize size = QDesktopWidget().availableGeometry().size();
-	resize( size * 0.85 );
+	Map2::MapVectorObject *obj = layer->addVectorObject(10704002, Map2::Coord(69.0571, 33.1), "Североморск 1");
+	mObjButtons[pbObj1] = obj;
+	mObjButtons[pbObj2] = layer->addVectorObject(10708001, Map2::Coord(69.0571, 33.4), "СФ");
+	mObjButtons[pbObj3] = layer->addVectorObject(10711001, Map2::Coord(69.0571, 33.7), "186 ОЦ РЭБ");
+
+	pStackGroup = new Map2::MapStackGroup(obj);
+	pStackGroup->addChild(mObjButtons[pbObj2]);
+	pStackGroup->addChild(mObjButtons[pbObj3]);
+
+	pFormGroup = new Map2::MapFormularGroup(layer->addVectorObject(10501000, Map2::Coord(69.0571, 35.7), "ПБ \"Сокол\""), Qt::red);
+	pFormGroup->addChild( layer->addVectorObject(10208010, Map2::Coord(67.0571, 35.7), "Корабль 1") );
+	pFormGroup->addChild( layer->addVectorObject(10211080, Map2::Coord(67.0571, 35.7), "Корабль 2") );
+	pFormGroup->addChild( layer->addVectorObject(10102052, Map2::Coord(67.0571, 35.7), "Корабль 3") );
+	pFormGroup->addChild( layer->addVectorObject(10102022, Map2::Coord(67.0571, 35.7), "Корабль 4") );
+	pFormGroup->addChild( layer->addVectorObject(10601000, Map2::Coord(67.0571, 35.7), "Внезапно!") );
+
+	QVBoxLayout *mainLay = new QVBoxLayout(w);
+	mainLay->addWidget(pMap);
+	mainLay->addLayout(btnlay);
+
+	setCentralWidget(w);
+
+	new QShortcut(QKeySequence::Quit, this, SLOT(close()));
+
+	connect(pbObj1, SIGNAL(toggled(bool)), this, SLOT(toggleObj(bool)));
+	connect(pbObj2, SIGNAL(toggled(bool)), this, SLOT(toggleObj(bool)));
+	connect(pbObj3, SIGNAL(toggled(bool)), this, SLOT(toggleObj(bool)));
+	connect(pbAll, SIGNAL(toggled(bool)), this, SLOT(toggleGroup(bool)));
+	connect(pMap->mapView(), SIGNAL(scaleChanged(double)), this, SLOT(onScaleChanged()));
 }
 
 MainWindow::~MainWindow()
 {
-	delete ui;
+	delete pStackGroup;
 }
 
-void MainWindow::onScaleChanged(double scale)
+void MainWindow::showEvent(QShowEvent *e)
 {
-	pScaleLabel->setText( QString("1:%0").arg(scale, 0, 'f'));
+	QSettings set("NIIPA", "map2test");
+	restoreGeometry( set.value("geometry").toByteArray() );
+
+	double scale = pMap->mapView()->scale();
+
+	pMap->mapView()->setScale( set.value("scale", scale).toDouble());
+
+	double lat = set.value("lat").toDouble();
+	double lng = set.value("lng").toDouble();
+
+	if(lat != 0 || lng != 0)
+	{
+		Map2::Coord coord(lat, lng);
+		pMap->mapView()->setCenter(coord);
+	}
+
+	QMainWindow::showEvent(e);
 }
 
-void MainWindow::onCoordChanged(Coord coord)
+void MainWindow::closeEvent(QCloseEvent *e)
 {
-	pCoordLabel->setText(coord.toString());
+	QSettings set("NIIPA", "map2test");
+	set.setValue("geometry", this->saveGeometry());
+	set.setValue("scale", pMap->mapView()->scale());
+
+	Map2::Coord coord = pMap->mapView()->screenCenterCoordinate();
+
+	set.setValue("lat", coord.lat);
+	set.setValue("lng", coord.lng);
+
+	QMainWindow::closeEvent(e);
 }
 
-void MainWindow::on_pbAddLayer_clicked()
+void MainWindow::toggleObj(bool visible)
 {
-	pView->createLayer("", "Новый слой");
+	QPushButton *pb = qobject_cast<QPushButton*>(sender());
+	Q_ASSERT(pb);
+
+	mObjButtons[pb]->setSelected(visible);
+
+	/*if(visible)
+	{
+		mObjButtons[pb]->show();
+	}
+	else
+	{
+		mObjButtons[pb]->hide();
+	}*/
 }
 
-void MainWindow::on_pbRemoveLayer_clicked()
+void MainWindow::toggleGroup(bool visible)
 {
-	QModelIndex idx = ui->layersTable->currentIndex();
-	if(!idx.isValid())
+	if(visible)
 	{
-		return;
+		pStackGroup->showChildren();
+		pFormGroup->showChildren();
 	}
-
-	pView->layersModel()->removeLayer( idx.row() );
+	else
+	{
+		pStackGroup->hideChildren();
+		pFormGroup->hideChildren();
+	}
 }
 
-void MainWindow::on_layersTable_clicked(const QModelIndex &index)
+void MainWindow::onScaleChanged()
 {
-	MapLayer *l = pView->layersModel()->layerAt(index.row() );
-	if(!l)
-	{
-		return;
-	}
-
-	pView->setActiveLayer(l);
-
-	ui->objectsTable->setModel(l);
-	ui->lblLayerName->setText( l->layerName() );
-	ui->lblRscName->setText( l->rscName() );
-}
-
-void MainWindow::on_pbAddObject_clicked()
-{
-	QModelIndex idx = ui->layersTable->currentIndex();
-	if(!idx.isValid())
-	{
-		return;
-	}
-
-	MapLayer *l = pView->layersModel()->layerAt(idx.row() );
-	if(!l)
-	{
-		return;
-	}
-
-	long code = RscViewer::selectExCode( l->rscName() );
-
-	if(code <= 0)
-	{
-		return;
-	}
-
-	MapVectorObject *obj = l->addVectorObject(code, Coord(0, 0),"loh1" );
-	obj->center();
-}
-
-void MainWindow::on_pbRemoveObject_clicked()
-{
-	QModelIndex objectIdx = ui->objectsTable->currentIndex();
-	if(!objectIdx.isValid())
-	{
-		return;
-	}
-
-	ui->objectsTable->model()->removeRow( objectIdx.row());
-}
-
-void MainWindow::on_objectsTable_doubleClicked(const QModelIndex &index)
-{
-	QModelIndex idx = ui->layersTable->currentIndex();
-	if(!idx.isValid())
-	{
-		return;
-	}
-
-	MapLayer *l = pView->layersModel()->layerAt(idx.row() );
-	if(!l)
-	{
-		return;
-	}
-
-	MapObject *o =l->objectAtIndex( index );
-
-	if(!o)
-	{
-		return;
-	}
-
-	o->center();
-}
-
-void MainWindow::onTimer()
-{
-	CoordPlane coord = obj->coordinate();
-	coord += CoordPlane(2000, 2000);
-	((MapVectorObject*)obj)->setCoordinates( coord );
+	pStackGroup->update();
+	pFormGroup->update();
 }

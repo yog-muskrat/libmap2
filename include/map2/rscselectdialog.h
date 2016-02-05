@@ -9,6 +9,7 @@ class RscSelectDialog;
 
 class QStandardItemModel;
 
+namespace Map2 {
 class RscSelectDialog : public QDialog
 {
 	Q_OBJECT
@@ -24,5 +25,5 @@ private:
 	Ui::RscSelectDialog *ui;
 	QStandardItemModel *pModel;
 };
-
+}
 #endif // RSCSELECTDIALOG_H
