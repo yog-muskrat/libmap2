@@ -119,10 +119,10 @@ QRectF MapVectorObject::sizePix() const
 	IMAGESIZE imagesize;
 	mapGetRscImageSize(hRsc, rscInCode, &imagesize);
 
-	double x = helper->mkm2pix( imagesize.DeltaH );
-	double y = helper->mkm2pix( imagesize.DeltaV );
-	double w = helper->mkm2pix( imagesize.HorizontalSize );
-	double h = helper->mkm2pix( imagesize.VerticalSize );
+	double x = helper->mkm2px( imagesize.DeltaH );
+	double y = helper->mkm2px( imagesize.DeltaV );
+	double w = helper->mkm2px( imagesize.HorizontalSize );
+	double h = helper->mkm2px( imagesize.VerticalSize );
 
 	return QRectF(x, y, w, h);
 }

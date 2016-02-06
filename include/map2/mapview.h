@@ -147,6 +147,8 @@ public slots:
 
 	void zoomToRect( const QRect &rect );
 
+	void calibrate();
+
 signals:
 	/*!
 	 * \brief Сигнал об изменении масштаба карты.

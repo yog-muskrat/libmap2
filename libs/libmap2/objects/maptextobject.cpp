@@ -71,8 +71,8 @@ QRectF MapTextObject::sizePix() const
 	int mkmHeight = mFontHeightMm * 1000 * (1 + mText.count("\n"));
 
 	QRectF rect;
-	rect.setWidth( helper->mkm2pix(mkmLength) );
-	rect.setHeight( helper->mkm2pix(mkmHeight) );
+	rect.setWidth( helper->mkm2px(mkmLength) );
+	rect.setHeight( helper->mkm2px(mkmHeight) );
 
 	return rect;
 }

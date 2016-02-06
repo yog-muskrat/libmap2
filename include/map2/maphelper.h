@@ -18,56 +18,58 @@ public:
 	/*!
 	 * \brief Переводит радианы в градусы.
 	 */
-	double radToDegree(const double &rad);
+	double radToDegree(const double &rad) const;
 
 	/*!
 	 * \brief Переводит градусы в радианы.
 	 */
-	double degreeToRad(const double &degree);
+	double degreeToRad(const double &degree) const;
 
 	/*!
 	 * \brief Преобразует координаты из метров в градусы.
 	 */
-	Coord planeToGeo(const Map2::CoordPlane &coordPlane);
+	Coord planeToGeo(const Map2::CoordPlane &coordPlane) const;
 
 	/*!
 	 * \brief Преобразует координаты из градусов в метры.
 	 */
-	CoordPlane geoToPlane(const Map2::Coord &coord);
+	CoordPlane geoToPlane(const Map2::Coord &coord) const;
 
 	/*!
 	 * \brief Преобразует координаты из метров в пиксели.
 	 */
-	QPoint planeToPicture(const Map2::CoordPlane &coord);
+	QPoint planeToPicture(const Map2::CoordPlane &coord) const;
 
 	/*!
 	 * \brief Преобразует координаты из градусов в пиксели.
 	 */
-	QPoint geoToPicture(const Map2::Coord &coord);
+	QPoint geoToPicture(const Map2::Coord &coord) const;
 
 	/*!
 	 * \brief Преобразует координаты из пикселей в метры.
 	 */
-	CoordPlane pictureToPlane(const QPoint &point);
+	CoordPlane pictureToPlane(const QPoint &point) const;
 
 	/*!
 	 * \brief Преобразует координаты из пикселей в градусы.
 	 */
-	Coord pictureToGeo(const QPoint &point);
+	Coord pictureToGeo(const QPoint &point) const;
 
-	double bearing(const Map2::CoordPlane &pointFrom, const Map2::CoordPlane &pointTo);
+	double bearing(const Map2::CoordPlane &pointFrom, const Map2::CoordPlane &pointTo) const;
 
-	Coord center(const Coord &coord1, const Coord &coord2);
+	Coord center(const Coord &coord1, const Coord &coord2) const;
 
 	/*!
 	 * \brief Преобразует микроны в пиксели
 	 */
-	double mkm2pix(double mkm);
+	double mkm2px(double mkm) const;
 
 	/*!
 	 * \brief Преобразует пиксели в микроны
 	 */
-	double pix2mkm(double pix);
+	double px2mkm(double pix) const;
+
+	void setMkmInPxRatio(double mkmInPx) {mMkmInPx = mkmInPx;}
 
 private:
 	HMAP mMapHnd;

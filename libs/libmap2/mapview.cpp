@@ -7,6 +7,7 @@
 #include "rscviewer.h"
 #include "layersmodel.h"
 #include "rscselectdialog.h"
+#include "calibrationdialog.h"
 
 #include "objects/mapobject.h"
 #include "objects/maplineobject.h"
@@ -61,9 +62,8 @@ MapView::MapView(QString sitDir, QString rscDir, QWidget *parent)
 
 	mapSetCommonRscPath( qPrintable(mRscDir) );
 
-	///TODO: Вынести в настройки.
-	mapSetScreenPrecision(4000); //dpm
-//	mapSetScreenPrecision(3750); //dpm
+	double dpm = CalibrationDialog::dpm();
+	mapSetScreenPrecision( (long)dpm );
 }
 
 MapView::~MapView()
@@ -314,6 +314,23 @@ void MapView::zoomToRect(const QRect &rect)
 
 	double newScale = scale() * selfRect.width() / pCanvas->width();
 	setScale(newScale);
+}
+
+void MapView::calibrate()
+{
+	CalibrationDialog cld(this);
+	if(!cld.exec())
+	{
+		return;
+	}
+
+	double dpm = CalibrationDialog::dpm();
+	double mkmInPx = CalibrationDialog::mkmInPx();
+
+	mapSetScreenPrecision( (long)dpm );
+	helper()->setMkmInPxRatio( mkmInPx );
+
+	canvas()->queueRepaint();
 }
 
 void MapView::setScale(double scale)

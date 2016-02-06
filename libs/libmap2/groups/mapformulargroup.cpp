@@ -230,7 +230,7 @@ void Map2::MapFormularGroup::createBorderObject()
 
 	IMGLINE parmLine;
 	memset(&parmLine, 0x0, sizeof(IMGLINE));
-	parmLine.Thick = helper->pix2mkm( mBorderWidthPx );
+	parmLine.Thick = helper->px2mkm( mBorderWidthPx );
 	parmLine.Color = RGB(mBorderColor.red(), mBorderColor.green(), mBorderColor.blue());
 
 	HMAP hMap = pParent->mapLayer()->mapHandle();

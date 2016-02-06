@@ -28,7 +28,6 @@ protected:
 private slots:
 	void toggleObj(bool visible);
 	void toggleGroup(bool visible);
-
 	void onScaleChanged();
 
 private:
