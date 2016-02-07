@@ -21,14 +21,17 @@ public:
 	LayersSettingsDialog(HMAP hmap, QWidget *parent = 0);
 	~LayersSettingsDialog();
 
+	static QList<int> hiddenLayers();
+
+	static void setHiddenLayers(HMAP hmap, QList<int> layers);
+
 public slots:
 	virtual void accept();
 
-private slots:
-	void onDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight);
-
 private:
 	void fillLayers();
+	static QString organization();
+	static QString application();
 
 	Ui::LayersSettingsDialog *ui;
 	QStandardItemModel *pModel;

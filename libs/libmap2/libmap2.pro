@@ -62,8 +62,8 @@ HEADERS += \
     ../../include/map2/groups/mapstackgroup.h \
     ../../include/map2/mapgroupsmodel.h \
     ../../include/map2/groups/mapformulargroup.h \
-    ../../include/map2/calibrationdialog.h \
-    ../../include/map2/widgets/layerssettingsdialog.h
+    ../../include/map2/widgets/layerssettingsdialog.h \
+    ../../include/map2/widgets/calibrationdialog.h
 
 SOURCES +=\
 			rscselectdialog.cpp \
@@ -99,13 +99,13 @@ SOURCES +=\
     mapgroupsmodel.cpp \
     groups/mapformulargroup.cpp \
     groups/mapgroup.cpp \
-    calibrationdialog.cpp \
-    widgets/layerssettingsdialog.cpp
+    widgets/layerssettingsdialog.cpp \
+    widgets/calibrationdialog.cpp
 
 FORMS += \
 	rscselectdialog.ui \
 	rscviewer.ui \
-    calibrationdialog.ui \
-    widgets/layerssettingsdialog.ui
+    widgets/layerssettingsdialog.ui \
+    widgets/calibrationdialog.ui
 
 RESOURCES +=

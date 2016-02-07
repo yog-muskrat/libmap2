@@ -7,13 +7,14 @@
 #include "rscviewer.h"
 #include "layersmodel.h"
 #include "rscselectdialog.h"
-#include "calibrationdialog.h"
 
 #include "objects/mapobject.h"
 #include "objects/maplineobject.h"
 #include "objects/mapvectorobject.h"
 
 #include "widgets/maptoolbar.h"
+#include "widgets/calibrationdialog.h"
+#include "widgets/layerssettingsdialog.h"
 
 #include <QDir>
 #include <QLabel>
@@ -63,6 +64,7 @@ MapView::MapView(QString sitDir, QString rscDir, QWidget *parent)
 	mapSetCommonRscPath( qPrintable(mRscDir) );
 
 	double dpm = CalibrationDialog::dpm();
+
 	mapSetScreenPrecision( (long)dpm );
 }
 
@@ -113,6 +115,9 @@ void MapView::openMap(QString mapFullPath)
 	mapSelectObject(mSelect, -1, 0);
 
 	pCanvas->setMapHandle(mMapHandle, mSelect);
+
+	QList<int> hiddenLayers = Map2::LayersSettingsDialog::hiddenLayers();
+	Map2::LayersSettingsDialog::setHiddenLayers(mapHandle(), hiddenLayers);
 
 	emit mapLoaded();
 

@@ -4,6 +4,7 @@
 #include "gis.h"
 
 #include <QDebug>
+#include <QSettings>
 #include <QTextCodec>
 #include <QStandardItemModel>
 
@@ -18,8 +19,6 @@ Map2::LayersSettingsDialog::LayersSettingsDialog(HMAP hmap, QWidget *parent) :
 	hSelect = mapCreateMapSelectContext(hMap);
 
 	fillLayers();
-
-	connect(pModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(onDataChanged(QModelIndex, QModelIndex)));
 }
 
 Map2::LayersSettingsDialog::~LayersSettingsDialog()
@@ -27,8 +26,53 @@ Map2::LayersSettingsDialog::~LayersSettingsDialog()
 	mapDeleteSelectContext(hSelect);
 }
 
+QList<int> Map2::LayersSettingsDialog::hiddenLayers()
+{
+	QString app = application();
+	QString org = organization();
+	QSettings set(org, app);
+
+	QVariantList vl = set.value("hidden_layers").toList();
+
+	QList<int> result;
+
+	foreach(const QVariant &v, vl)
+	{
+		result << v.toInt();
+	}
+
+	return result;
+}
+
+void Map2::LayersSettingsDialog::setHiddenLayers(HMAP hmap, QList<int> layers)
+{
+	HSELECT select = mapCreateMapSelectContext(hmap);
+	int count = mapGetLayerCount(hmap);
+
+	QVariantList vl;
+
+	for(int i = 0; i < count; ++i)
+	{
+		int check = layers.contains(i) ? 0 : 1;
+		mapSelectLayer(select, i, check);
+
+		if(check == 0)
+		{
+			vl << i;
+		}
+	}
+	mapSetViewSelect(hmap, select);
+
+	QString app = application();
+	QString org = organization();
+	QSettings set(org, app);
+	set.setValue("hidden_layers", vl);
+}
+
 void Map2::LayersSettingsDialog::accept()
 {
+	QVariantList vl;
+
 	for(int i = 0; i < pModel->rowCount(); ++i)
 	{
 		QStandardItem *item = pModel->item(i);
@@ -37,25 +81,21 @@ void Map2::LayersSettingsDialog::accept()
 		int check = item->data(Qt::CheckStateRole).toInt() == Qt::Checked ? 1 : 0;
 
 		mapSelectLayer(hSelect, layer, check);
+
+		if(check == 0)
+		{
+			vl << i;
+		}
 	}
 
 	mapSetViewSelect(hMap, hSelect);
+
+	QString app = application();
+	QString org = organization();
+	QSettings set(org, app);
+	set.setValue("hidden_layers", vl);
 
 	QDialog::accept();
-}
-
-void Map2::LayersSettingsDialog::onDataChanged(const QModelIndex &topLeft, const QModelIndex &bottomRight)
-{
-	for(int i = topLeft.row(); i <= bottomRight.row(); ++i )
-	{
-		QStandardItem *item = pModel->item(i);
-		int layer = item->data().toInt();
-		int check = item->data(Qt::CheckStateRole).toInt() == Qt::Checked ? 1 : 0;
-
-		mapSelectLayer(hSelect, layer, check);
-	}
-
-	mapSetViewSelect(hMap, hSelect);
 }
 
 void Map2::LayersSettingsDialog::fillLayers()
@@ -82,4 +122,26 @@ void Map2::LayersSettingsDialog::fillLayers()
 		item->setData(i); // Номер слоя
 		pModel->appendRow(item);
 	}
+}
+
+QString Map2::LayersSettingsDialog::organization()
+{
+	QString organization = qApp->organizationName();
+	if(organization.isEmpty())
+	{
+		organization = "Mudbay";
+	}
+
+	return organization;
+}
+
+QString Map2::LayersSettingsDialog::application()
+{
+	QString application = qApp->applicationName();
+	if(application.isEmpty())
+	{
+		application = "libmap2";
+	}
+
+	return application;
 }
