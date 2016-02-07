@@ -30,6 +30,8 @@ private slots:
 	void toggleGroup(bool visible);
 	void onScaleChanged();
 
+	void onEditLayers();
+
 private:
 	Map2::MapEditor *pMap;
 	QMap<QPushButton *, Map2::MapObject*> mObjButtons;

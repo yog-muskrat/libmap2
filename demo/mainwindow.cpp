@@ -16,6 +16,7 @@
 #include "map2/groups/mapformulargroup.h"
 #include "map2/objects/mapobject.h"
 #include "map2/objects/mapvectorobject.h"
+#include "map2/widgets/layerssettingsdialog.h"
 
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
@@ -39,6 +40,7 @@ MainWindow::MainWindow(QWidget *parent)
 	pbAll->setChecked(true);
 
 	QPushButton *btnCalibrate = new QPushButton("Калибровка");
+	QPushButton *btnLayers= new QPushButton("Слои");
 
 	QHBoxLayout *btnlay = new QHBoxLayout;
 	btnlay->addWidget(pbObj1);
@@ -47,6 +49,7 @@ MainWindow::MainWindow(QWidget *parent)
 	btnlay->addWidget(pbAll);
 	btnlay->addStretch();
 	btnlay->addWidget(btnCalibrate);
+	btnlay->addWidget(btnLayers);
 
 	pMap = new Map2::MapEditor("./map/sit", "./map/rsc");
 	pMap->mapView()->openMap(qApp->applicationDirPath()+"/map/maps/World5m/5mlnWorld.map");
@@ -84,6 +87,7 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(pbAll, SIGNAL(toggled(bool)), this, SLOT(toggleGroup(bool)));
 	connect(pMap->mapView(), SIGNAL(scaleChanged(double)), this, SLOT(onScaleChanged()));
 	connect(btnCalibrate, SIGNAL(clicked(bool)), pMap->mapView(), SLOT(calibrate()));
+	connect(btnLayers, SIGNAL(clicked(bool)), this, SLOT(onEditLayers()));
 }
 
 MainWindow::~MainWindow()
@@ -161,4 +165,10 @@ void MainWindow::onScaleChanged()
 {
 	pStackGroup->update();
 	pFormGroup->update();
+}
+
+void MainWindow::onEditLayers()
+{
+	Map2::LayersSettingsDialog dlg(pMap->mapView()->mapHandle(), this);
+	dlg.exec();
 }
