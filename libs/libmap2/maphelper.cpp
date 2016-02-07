@@ -7,12 +7,12 @@
 
 using namespace Map2;
 
-double MapHelper::radToDegree(const double &rad) const
+double MapHelper::radToDegree(const double &rad)
 {
 	return rad * 180. / M_PI;
 }
 
-double MapHelper::degreeToRad(const double &degree) const
+double MapHelper::degreeToRad(const double &degree)
 {
 	return degree * M_PI / 180.;
 }

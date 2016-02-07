@@ -14,7 +14,7 @@ class CalibrationDialog : public QDialog
 {
 	Q_OBJECT
 public:
-	CalibrationDialog(QWidget *parent = 0);
+	explicit CalibrationDialog(QWidget *parent = 0);
 	~CalibrationDialog();
 
 	static double mkmInPx();

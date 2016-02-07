@@ -119,11 +119,9 @@ void MapZoneObject::clearPoints()
 
 void MapZoneObject::appendPoints()
 {
-	int i = 1;
 	foreach(CoordPlane cp, mCoords)
 	{
-		++i;
-		mapAppendPointPlane(handle(), cp.x, cp.y);
+			mapAppendPointPlane(handle(), cp.x, cp.y);
 	}
 
 	commit();

@@ -181,8 +181,6 @@ void Map2::MapFormularGroup::updateBorderCoords(const QRectF newRect)
 
 	Map2::MapHelper *helper = pParent->mapLayer()->mapView()->helper();
 
-	HMAP hMap = parentObj->mapLayer()->mapHandle();
-
 	if(hObj == 0)
 	{
 		createBorderObject();

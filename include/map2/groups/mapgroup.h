@@ -34,7 +34,7 @@ public:
 		DP_RemoveChildren /// Удалить всех детей.
 	};
 
-	MapGroup(MapObject *parent = 0) : mDtorPolicy(DP_ShowChildren), mChildrenVisible(true), pParent(parent){}
+	explicit MapGroup(MapObject *parent = 0) : mDtorPolicy(DP_ShowChildren), mChildrenVisible(true), pParent(parent){}
 	virtual ~MapGroup();
 
 	virtual Map2::MapGroup::Type type() {return MG_Simple;}

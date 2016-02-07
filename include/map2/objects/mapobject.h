@@ -18,7 +18,8 @@ public:
 		MO_Vector,
 		MO_Line,
 		MO_Zone,
-		MO_Text
+		MO_Text,
+		MO_Commline
 	};
 
 	MapObject(Map2::MapObject::Type t, Map2::MapLayer *layer = 0, long rscCode = -1);

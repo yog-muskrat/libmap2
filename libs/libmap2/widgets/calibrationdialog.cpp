@@ -1,4 +1,4 @@
-#include "calibrationdialog.h"
+#include "widgets/calibrationdialog.h"
 #include "ui_calibrationdialog.h"
 
 #include <qmath.h>
@@ -199,6 +199,8 @@ void Map2::CalibrationDialog::on_dsbValue_editingFinished()
 
 void Map2::CalibrationDialog::on_cbUnits_currentIndexChanged(int index)
 {
+	Q_UNUSED(index);
+
 	int dimensionIndex = ui->cbDimension->currentIndex();
 	QString dimension = ui->cbDimension->itemData(dimensionIndex).toString();
 
@@ -235,6 +237,8 @@ void Map2::CalibrationDialog::on_cbUnits_currentIndexChanged(int index)
 
 void Map2::CalibrationDialog::on_cbDimension_currentIndexChanged(int index)
 {
+	Q_UNUSED(index);
+
 	int dimensionIndex = ui->cbDimension->currentIndex();
 	QString dimension = ui->cbDimension->itemData(dimensionIndex).toString();
 

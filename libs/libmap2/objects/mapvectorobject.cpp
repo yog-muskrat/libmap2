@@ -177,7 +177,7 @@ void MapVectorObject::setName(QString name)
 		int number = mapSemanticNumber(handle(), 33334);
 		if(number > 0)
 		{
-			number<<mapDeleteSemantic(handle(), number);
+			mapDeleteSemantic(handle(), number);
 		}
 	}
 	else

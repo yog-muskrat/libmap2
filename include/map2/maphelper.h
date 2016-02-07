@@ -18,12 +18,12 @@ public:
 	/*!
 	 * \brief Переводит радианы в градусы.
 	 */
-	double radToDegree(const double &rad) const;
+	static double radToDegree(const double &rad);
 
 	/*!
 	 * \brief Переводит градусы в радианы.
 	 */
-	double degreeToRad(const double &degree) const;
+	static double degreeToRad(const double &degree);
 
 	/*!
 	 * \brief Преобразует координаты из метров в градусы.
