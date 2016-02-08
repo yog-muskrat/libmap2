@@ -20,6 +20,15 @@ Map2::MapFormularGroup::MapFormularGroup(Map2::MapVectorObject *parent, QColor b
 {
 }
 
+Map2::MapFormularGroup::~MapFormularGroup()
+{
+	if(hObj > 0)
+	{
+		mapDeleteObject(hObj);
+		mapClearObject(hObj);
+	}
+}
+
 bool Map2::MapFormularGroup::addChild(Map2::MapObject *child)
 {
 	if(child->type() != MapObject::MO_Vector)

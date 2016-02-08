@@ -19,28 +19,57 @@ public:
 	};
 
 	MapCommlineObject(const Map2::Coord &from, const Map2::Coord &to, Map2::MapLayer * layer = 0);
+
 	~MapCommlineObject();
 
 	// MapObject interface
 	virtual void setRscCode(long rscCode) {}
 
-	QColor color() const;
+	QColor color() const
+	{
+		return mColor;
+	}
 	void setColor(const QColor &color);
 
-	Map2::Coord from() const;
+	Map2::Coord from() const
+	{
+		return mFrom;
+	}
 	void setFrom(const Map2::Coord &from);
 
-	Map2::Coord to() const;
+	Map2::Coord to() const
+	{
+		return mTo;
+	}
 	void setTo(const Map2::Coord &to);
 
-	Map2::MapCommlineObject::ArrowStyle arrowStyle() const;
+	Map2::MapCommlineObject::ArrowStyle arrowStyle() const
+	{
+		return mArrowStyle;
+	}
 	void setArrowStyle(const Map2::MapCommlineObject::ArrowStyle &arrowStyle);
 
+	double lineWidth() const
+	{
+		return mLineWidth;
+	}
+	void setLineWidth(double value);
+
 private:
+	void redraw();
+	void clearArrows();
+	void drawArc();
+
+	HMAP addArrow(CoordPlane pointCoord, double azimuth) const;
+
 	Coord mFrom;
 	Coord mTo;
 	QColor mColor;
 	ArrowStyle mArrowStyle;
+	double mLineWidth;
+
+	HOBJ hFromHandle;
+	HOBJ hToHandle;
 };
 }
 

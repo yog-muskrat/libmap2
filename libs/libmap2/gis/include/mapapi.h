@@ -2666,7 +2666,7 @@ _MAPIMP long int _MAPAPI mapObjectDirect(HOBJ info);
 
  // Запросить направление цифрования объекта
  // (OD_RIGHT,OD_LEFT,... - см. MAPTYPE.H)
- // number - номер подобъекта (для объекта - равен нулю)
+ // number - номер еекта (для объекта - равен нулю)
  // При ошибке возвращает ноль
 																 // 24/01/06
 _MAPIMP long int _MAPAPI mapSubjectDirect(HOBJ info, long int subject);

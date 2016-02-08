@@ -17,7 +17,7 @@ class MapFormularGroup : public MapGroup
 {
 public:
 	MapFormularGroup(Map2::MapVectorObject *parent, QColor borderColor = QColor(Qt::black));
-	~MapFormularGroup() {}
+	~MapFormularGroup();
 
 	virtual MapGroup::Type type() const { return MapGroup::MG_Formular; }
 
