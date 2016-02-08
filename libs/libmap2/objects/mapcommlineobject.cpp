@@ -14,7 +14,7 @@ Map2::MapCommlineObject::MapCommlineObject(const Map2::Coord &from, const Map2::
 	mTo(to),
 	mColor(Qt::blue),
 	mArrowStyle(AS_BothArrows),
-	mLineWidth(5),
+	mLineWidth(1),
 	hFromHandle(0),
 	hToHandle(0)
 {
@@ -83,10 +83,13 @@ void Map2::MapCommlineObject::redraw()
 
 	mapClearDraw( handle() );
 	clearArrows();
+
+	qDebug()<<mapPointCount(handle(), 0);
 	for(int i = 0 ; i < mapPointCount(handle(), 0); ++i)
 	{
 		mapDeletePointPlane(handle(), i+1);
 	}
+	qDebug()<<mapPointCount(handle(), 0);
 
 	IMGLINE parmLine;
 	memset(&parmLine, 0x0, sizeof(IMGLINE));
@@ -98,47 +101,110 @@ void Map2::MapCommlineObject::redraw()
 	CoordPlane from = helper->geoToPlane( mFrom );
 	CoordPlane to = helper->geoToPlane(mTo);
 
-	mapAppendPointPlane( handle(), from.x, from.y);
-	mapAppendPointPlane( handle(), to.x, to.y);
+	QList<CoordPlane> arcCoords = drawArcs();
 
-	double azimuth = helper->bearing(from, to);
+	foreach(const CoordPlane &coord, arcCoords)
+	{
+		mapAppendPointPlane(handle(), coord.x, coord.y);
+	}
 
 	if(mArrowStyle == AS_StartArrow || mArrowStyle == AS_BothArrows)
 	{
-
+		double azimuth = helper->bearing(arcCoords[0], arcCoords[1]);
 		hFromHandle = addArrow(from, -azimuth - 180);
 	}
 
 	if(mArrowStyle == AS_EndArrow || mArrowStyle == AS_BothArrows)
 	{
-
+		int count = arcCoords.count();
+		double azimuth = helper->bearing(arcCoords[count-2], arcCoords[count-1]);
 		hToHandle = addArrow(to, -azimuth );
 	}
 
 	commit();
 }
 
-void Map2::MapCommlineObject::drawArc()
+QList<Map2::CoordPlane> Map2::MapCommlineObject::drawArcs()
 {
 	Q_ASSERT( mapLayer() );
 	Map2::MapHelper *helper = mapLayer()->mapView()->helper();
 
-	QPointF fromPicture = helper->geoToPicture( mFrom );
-	QPointF toPicture = helper->geoToPicture( mTo );
-	QLineF line(fromPicture, toPicture);
-	qreal angle = line.angle();
+	QPointF from = helper->geoToPicture(mFrom);
+	QPointF to = helper->geoToPicture(mTo);
+
+	QLineF line(from, to);
+
 	qreal l = line.length();
-	qreal radius = l * 3;
+	qreal angle = line.angle();
+	line.setAngle(0);
+	qreal radius = 3 * l;
 
-	qreal base = qSqrt( qPow(radius, 2) - qPow(l/2., 2));
+	QPointF p1(from.x(), from.y() + l / 20.);
+	QPointF p2(from.x() + l, from.y() - l / 20. );
 
-	QPointF middle = line.pointAt(0.5);
+	QPolygonF polygon1 = drawArc(line.p1(), p2, radius);
 
-	QLineF line2(middle,middle);
-	line2.setLength(base);
-	line2.setAngle(angle - 90);
+	QPolygonF polygon2 = drawArc(p1, line.p2(), radius);
 
-	QPointF center =line2.p2();
+	QPolygonF polygon;
+
+	foreach(const QPointF &p, polygon1)
+	{
+		if(p.x() < line.p1().x() + l * 2. / 3.)
+		{
+			polygon << p;
+		}
+	}
+
+	foreach(const QPointF &p, polygon2)
+	{
+		if(p.x() > line.p1().x() + l / 3.)
+		{
+			polygon << p;
+		}
+	}
+
+	QTransform transform = QTransform().translate(line.p1().x(), line.p1().y()).rotate(-angle).translate(-line.p1().x(), -line.p1().y());
+	polygon = transform.map(polygon);
+
+	QList<CoordPlane> result;
+	foreach(const QPointF &p, polygon)
+	{
+		result << helper->pictureToPlane(p.toPoint());
+	}
+
+	return result;
+}
+
+QPolygonF Map2::MapCommlineObject::drawArc(QPointF from, QPointF to, qreal radius)
+{
+	QLineF line(from, to);
+
+	QPointF center = line.pointAt(0.5);
+
+	qreal length = qSqrt(qPow(radius, 2) - qPow(line.length()/2.0, 2));
+
+	QLineF radialLine(center, from);
+	radialLine.setLength(length);
+	radialLine.setAngle( line.normalVector().angle() - 180);
+
+	center = radialLine.p2();
+
+	qDebug()<< QLineF(center, from).angle()<<QLineF(center, to).angle();
+
+	qreal angleTo = QLineF(center, to).angle();
+
+	radialLine.setPoints(center, from);
+
+	QPolygonF result;
+	while(radialLine.angle() > angleTo)
+	{
+		qDebug()<<"Adding point for angle"<<radialLine.angle();
+		result << radialLine.p2();
+		radialLine.setAngle( radialLine.angle() - 1);
+	}
+	result << to;
+	return result;
 }
 
 HMAP Map2::MapCommlineObject::addArrow(Map2::CoordPlane pointCoord, double azimuth) const

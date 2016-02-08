@@ -75,11 +75,11 @@ MainWindow::MainWindow(QWidget *parent)
 	pFormGroup->addChild( layer->addVectorObject(10601000, Map2::Coord(67.0571, 35.7), "Внезапно!") );
 
 	Map2::MapCommlineObject *commLine1 = new Map2::MapCommlineObject(Map2::Coord(65., 30.), Map2::Coord(69., 40.), layer);
-	commLine1->setLineWidth(3);
-	Map2::MapCommlineObject *commLine2 = new Map2::MapCommlineObject(Map2::Coord(35., 20.), Map2::Coord(69., 70.), layer);
-	commLine2->setArrowStyle( Map2::MapCommlineObject::AS_EndArrow);
-	Map2::MapCommlineObject *commLine3 = new Map2::MapCommlineObject(Map2::Coord(0., 10.), Map2::Coord(70., 170.), layer);
-	commLine3->setColor( Qt::red );
+//	commLine1->setLineWidth(3);
+//	Map2::MapCommlineObject *commLine2 = new Map2::MapCommlineObject(Map2::Coord(35., 20.), Map2::Coord(69., 70.), layer);
+//	commLine2->setArrowStyle( Map2::MapCommlineObject::AS_EndArrow);
+//	Map2::MapCommlineObject *commLine3 = new Map2::MapCommlineObject(Map2::Coord(0., 10.), Map2::Coord(70., 170.), layer);
+//	commLine3->setColor( Qt::red );
 
 	QVBoxLayout *mainLay = new QVBoxLayout(w);
 	mainLay->addWidget(pMap);

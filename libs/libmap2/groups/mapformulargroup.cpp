@@ -110,7 +110,7 @@ void Map2::MapFormularGroup::updateChildrenDisplayCoordinates()
 		scale = 1;
 	}
 
-	qDebug()<<"Form origin="<<origin<<"scale="<<scale;
+//	qDebug()<<"Form origin="<<origin<<"scale="<<scale;
 
 	foreach(Map2::MapObject *child, mChildren)
 	{
@@ -130,7 +130,7 @@ void Map2::MapFormularGroup::updateChildrenDisplayCoordinates()
 		QRectF childRect = mvo->sizePix();
 		QRectF lblRect = lblObj->sizePix();
 
-		qDebug()<<"    FormChild "<<lblObj->text()<<"rect="<<childRect<<"label="<<lblRect;
+//		qDebug()<<"    FormChild "<<lblObj->text()<<"rect="<<childRect<<"label="<<lblRect;
 
 		QPoint childPos = origin;
 		childPos.rx() += (childRect.x() + (childRect.width() - childRect.x()))* scale;

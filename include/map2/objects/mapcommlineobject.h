@@ -4,6 +4,7 @@
 #include "map2/objects/mapobject.h"
 
 #include <QColor>
+#include <QPolygonF>
 
 namespace Map2
 {
@@ -58,7 +59,8 @@ public:
 private:
 	void redraw();
 	void clearArrows();
-	void drawArc();
+	QList<Map2::CoordPlane> drawArcs();
+	QPolygonF drawArc(QPointF from, QPointF to, qreal radius);
 
 	HMAP addArrow(CoordPlane pointCoord, double azimuth) const;
 
