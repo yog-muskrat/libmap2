@@ -11,6 +11,7 @@
 #include "map2/maplayer.h"
 #include "map2/rscviewer.h"
 #include "map2/mapeditor.h"
+#include "map2/maphelper.h"
 #include "map2/layersmodel.h"
 #include "map2/groups/mapstackgroup.h"
 #include "map2/groups/mapformulargroup.h"
@@ -74,7 +75,31 @@ MainWindow::MainWindow(QWidget *parent)
 	pFormGroup->addChild( layer->addVectorObject(10102022, Map2::Coord(67.0571, 35.7), "Корабль 4") );
 	pFormGroup->addChild( layer->addVectorObject(10601000, Map2::Coord(67.0571, 35.7), "Внезапно!") );
 
-	Map2::MapCommlineObject *commLine1 = new Map2::MapCommlineObject(Map2::Coord(65., 30.), Map2::Coord(69., 40.), layer);
+
+	QPointF center = pMap->mapView()->helper()->geoToPicture( Map2::Coord(65., 50.));
+
+	QLineF line(center, center + QPointF(1,1));
+	line.setLength(200);
+	line.setAngle(0);
+
+	QLineF line2(line.p1(), line.p2());
+	line2.setLength(800);
+
+	for(qreal angle = 0; angle < 360.; angle+=30.)
+	{
+		line.setAngle(angle);
+		line2.setP1(line.p2());
+		line2.setLength(800);
+		line2.setAngle(angle);
+
+		Map2::Coord c1 = pMap->mapView()->helper()->pictureToGeo( line2.p1().toPoint() );
+		Map2::Coord c2 = pMap->mapView()->helper()->pictureToGeo( line2.p2().toPoint() );
+
+		Map2::MapCommlineObject *commLine1 = new Map2::MapCommlineObject(c1, c2, layer);
+		commLine1->setLineWidth(5);
+	}
+
+//	Map2::MapCommlineObject *commLine1 = new Map2::MapCommlineObject(Map2::Coord(65., 30.), Map2::Coord(69., 40.), layer);
 //	commLine1->setLineWidth(3);
 //	Map2::MapCommlineObject *commLine2 = new Map2::MapCommlineObject(Map2::Coord(35., 20.), Map2::Coord(69., 70.), layer);
 //	commLine2->setArrowStyle( Map2::MapCommlineObject::AS_EndArrow);

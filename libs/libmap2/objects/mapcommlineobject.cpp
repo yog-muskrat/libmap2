@@ -14,7 +14,7 @@ Map2::MapCommlineObject::MapCommlineObject(const Map2::Coord &from, const Map2::
 	mTo(to),
 	mColor(Qt::blue),
 	mArrowStyle(AS_BothArrows),
-	mLineWidth(1),
+	mLineWidth(3),
 	hFromHandle(0),
 	hToHandle(0)
 {
@@ -72,6 +72,14 @@ void Map2::MapCommlineObject::clearArrows()
 	}
 }
 
+void Map2::MapCommlineObject::clearPoints()
+{
+	for(int i = mapPointCount(handle(), 0); i > 0; --i)
+	{
+		mapDeletePointPlane(handle(), i);
+	}
+}
+
 void Map2::MapCommlineObject::redraw()
 {
 	if(!mapLayer())
@@ -83,13 +91,7 @@ void Map2::MapCommlineObject::redraw()
 
 	mapClearDraw( handle() );
 	clearArrows();
-
-	qDebug()<<mapPointCount(handle(), 0);
-	for(int i = 0 ; i < mapPointCount(handle(), 0); ++i)
-	{
-		mapDeletePointPlane(handle(), i+1);
-	}
-	qDebug()<<mapPointCount(handle(), 0);
+	clearPoints();
 
 	IMGLINE parmLine;
 	memset(&parmLine, 0x0, sizeof(IMGLINE));
@@ -101,30 +103,41 @@ void Map2::MapCommlineObject::redraw()
 	CoordPlane from = helper->geoToPlane( mFrom );
 	CoordPlane to = helper->geoToPlane(mTo);
 
-	QList<CoordPlane> arcCoords = drawArcs();
-
-	foreach(const CoordPlane &coord, arcCoords)
-	{
-		mapAppendPointPlane(handle(), coord.x, coord.y);
-	}
+	QPolygonF arcCoords = drawArcs();
 
 	if(mArrowStyle == AS_StartArrow || mArrowStyle == AS_BothArrows)
 	{
-		double azimuth = helper->bearing(arcCoords[0], arcCoords[1]);
-		hFromHandle = addArrow(from, -azimuth - 180);
+		QLineF line(arcCoords[1], arcCoords[0]);
+		double angle = line.angle();
+		hFromHandle = addArrow(from, angle-90);
+
+		line.setLength( line.length() - mLineWidth);
+		arcCoords.replace(0, line.p2());
 	}
 
 	if(mArrowStyle == AS_EndArrow || mArrowStyle == AS_BothArrows)
 	{
 		int count = arcCoords.count();
-		double azimuth = helper->bearing(arcCoords[count-2], arcCoords[count-1]);
-		hToHandle = addArrow(to, -azimuth );
+		QLineF line(arcCoords[count-2], arcCoords[count-1]);
+
+		double angle = line.angle();
+		hToHandle = addArrow(to, angle -90);
+
+		line.setLength( line.length() - mLineWidth);
+		arcCoords.replace(count-1, line.p2());
+	}
+
+	foreach(const QPointF &coord, arcCoords)
+	{
+		CoordPlane p = helper->pictureToPlane(coord.toPoint());
+
+		mapAppendPointPlane(handle(), p.x, p.y);
 	}
 
 	commit();
 }
 
-QList<Map2::CoordPlane> Map2::MapCommlineObject::drawArcs()
+QPolygonF Map2::MapCommlineObject::drawArcs()
 {
 	Q_ASSERT( mapLayer() );
 	Map2::MapHelper *helper = mapLayer()->mapView()->helper();
@@ -142,38 +155,39 @@ QList<Map2::CoordPlane> Map2::MapCommlineObject::drawArcs()
 	QPointF p1(from.x(), from.y() + l / 20.);
 	QPointF p2(from.x() + l, from.y() - l / 20. );
 
-	QPolygonF polygon1 = drawArc(line.p1(), p2, radius);
+	QPolygonF section1;
 
-	QPolygonF polygon2 = drawArc(p1, line.p2(), radius);
+	QPolygonF section2;
 
-	QPolygonF polygon;
+	QPolygonF section3;
 
-	foreach(const QPointF &p, polygon1)
+	foreach(const QPointF &p, drawArc(line.p1(), p2, radius))
 	{
 		if(p.x() < line.p1().x() + l * 2. / 3.)
 		{
-			polygon << p;
+			section1 << p;
 		}
 	}
 
-	foreach(const QPointF &p, polygon2)
+	foreach(const QPointF &p, drawArc(p1, line.p2(), radius))
 	{
 		if(p.x() > line.p1().x() + l / 3.)
 		{
-			polygon << p;
+			section3 << p;
 		}
 	}
+
+	foreach(const QPointF &p, drawArc(section3.first(), section1.last(), radius))
+	{
+		section3.prepend(p);
+	}
+
+	QPolygonF polygon = section1 + section2 + section3;
 
 	QTransform transform = QTransform().translate(line.p1().x(), line.p1().y()).rotate(-angle).translate(-line.p1().x(), -line.p1().y());
 	polygon = transform.map(polygon);
 
-	QList<CoordPlane> result;
-	foreach(const QPointF &p, polygon)
-	{
-		result << helper->pictureToPlane(p.toPoint());
-	}
-
-	return result;
+	return polygon;
 }
 
 QPolygonF Map2::MapCommlineObject::drawArc(QPointF from, QPointF to, qreal radius)
@@ -190,8 +204,6 @@ QPolygonF Map2::MapCommlineObject::drawArc(QPointF from, QPointF to, qreal radiu
 
 	center = radialLine.p2();
 
-	qDebug()<< QLineF(center, from).angle()<<QLineF(center, to).angle();
-
 	qreal angleTo = QLineF(center, to).angle();
 
 	radialLine.setPoints(center, from);
@@ -199,7 +211,6 @@ QPolygonF Map2::MapCommlineObject::drawArc(QPointF from, QPointF to, qreal radiu
 	QPolygonF result;
 	while(radialLine.angle() > angleTo)
 	{
-		qDebug()<<"Adding point for angle"<<radialLine.angle();
 		result << radialLine.p2();
 		radialLine.setAngle( radialLine.angle() - 1);
 	}

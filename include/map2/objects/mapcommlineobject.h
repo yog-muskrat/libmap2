@@ -59,7 +59,8 @@ public:
 private:
 	void redraw();
 	void clearArrows();
-	QList<Map2::CoordPlane> drawArcs();
+	void clearPoints();
+	QPolygonF drawArcs();
 	QPolygonF drawArc(QPointF from, QPointF to, qreal radius);
 
 	HMAP addArrow(CoordPlane pointCoord, double azimuth) const;
