@@ -7,6 +7,7 @@
 #include "gis.h"
 
 #include <QLineF>
+#include <QDebug>
 
 Map2::MapSectorObject::MapSectorObject(Map2::Coord center, qreal radius, qreal azimuth, qreal angle, Map2::MapLayer *layer) :
 	Map2::MapObject( MO_Sector, layer),
@@ -31,7 +32,7 @@ Map2::MapSectorObject::~MapSectorObject()
 {
 	if(hMap > 0)
 	{
-		mapClearObject(hMap);
+		mapFreeObject(hMap);
 	}
 }
 
@@ -250,7 +251,7 @@ void Map2::MapSectorObject::redraw()
 	{
 		clearObjects();
 
-		if(!isSingleObject())
+		if(!hMap)
 		{
 			hMap = mapCreateSiteObject( mapLayer()->mapHandle(), mapLayer()->siteHandle());
 		}
@@ -273,8 +274,6 @@ void Map2::MapSectorObject::redraw()
 	{
 		QPolygonF polygon = sidesPoints + arcPoints;
 
-
-
 		foreach(const QPointF &p, polygon)
 		{
 			mapAppendPointPlane(handle(), p.x(), p.y());
@@ -284,14 +283,20 @@ void Map2::MapSectorObject::redraw()
 	}
 	else
 	{
-		foreach(const QPointF &p, sidesPoints)
+		if(!style().testFlag(NoSides))
 		{
-			mapAppendPointPlane(handle(), p.x(), p.y());
+			foreach(const QPointF &p, sidesPoints)
+			{
+				mapAppendPointPlane(handle(), p.x(), p.y());
+			}
 		}
 
-		foreach(const QPointF &p, arcPoints)
+		if(!style().testFlag(NoArc))
 		{
-			mapAppendPointPlane(hMap, p.x(), p.y());
+			foreach(const QPointF &p, arcPoints)
+			{
+				mapAppendPointPlane(hMap, p.x(), p.y());
+			}
 		}
 
 		mapCommitObject(hMap);
@@ -384,7 +389,10 @@ void Map2::MapSectorObject::clearObjects()
 {
 	Q_ASSERT(mapLayer());
 
+	///TODO: Подумать, можно ли обойтись без пересоздания объекта
 	mapDeleteObject(handle());
+	mObjHandle = mapCreateSiteObject(mapLayer()->mapHandle(), mapLayer()->siteHandle());
+	mMapKey = -1; // Обнулить ключ объекта, чтобы при следующем обращении он его заново вычитал с карты
 
 	if(hMap)
 	{

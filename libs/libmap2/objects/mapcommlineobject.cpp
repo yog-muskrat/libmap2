@@ -6,7 +6,6 @@
 #include "gis.h"
 
 #include <qmath.h>
-#include <QDebug>
 
 Map2::MapCommlineObject::MapCommlineObject(const Map2::Coord &from, const Map2::Coord &to, Map2::MapLayer *layer) :
 	MapObject(MapObject::MO_Commline, layer),

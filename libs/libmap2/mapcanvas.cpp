@@ -148,8 +148,8 @@ void MapCanvas::paintEvent(QPaintEvent *e)
 		return;
 	}
 
-	QElapsedTimer ti;
-	ti.start();
+//	QElapsedTimer ti;
+//	ti.start();
 
 	QRect drawRect;
 	drawRect.setTop( mapTopLeft().y() );

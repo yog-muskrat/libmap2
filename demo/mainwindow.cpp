@@ -113,11 +113,12 @@ MainWindow::MainWindow(QWidget *parent)
 
 
 	Map2::MapSectorObject * sector = new Map2::MapSectorObject( Map2::Coord(60., 30.), 100000, 90, 60, layer);
-	sector->setWidth(6);
-	sector->setArcColor(Qt::red);
-	sector->setSidesColor(Qt::blue);
+	sector->setStyle( Map2::MapSectorObject::ArcRsc | Map2::MapSectorObject::SidesColor );
+	sector->setSidesWidth(1);
+	sector->setSidesColor(Qt::red);
+	sector->setRscCode(12103000);
 	sector->setRadius(400000);
-	sector->setAzimuth(180);
+	sector->setAzimuth(0);
 
 	QVBoxLayout *mainLay = new QVBoxLayout(w);
 	mainLay->addWidget(pMap);
