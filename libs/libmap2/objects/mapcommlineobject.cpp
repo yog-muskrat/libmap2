@@ -23,6 +23,17 @@ Map2::MapCommlineObject::MapCommlineObject(const Map2::Coord &from, const Map2::
 
 Map2::MapCommlineObject::~MapCommlineObject()
 {
+	if(hFromHandle > 0)
+	{
+		mapClearObject(hFromHandle);
+		hFromHandle = 0;
+	}
+
+	if(hToHandle > 0)
+	{
+		mapClearObject(hToHandle);
+		hToHandle = 0;
+	}
 }
 
 void Map2::MapCommlineObject::setArrowStyle(const ArrowStyle &arrowStyle)

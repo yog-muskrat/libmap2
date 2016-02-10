@@ -9,6 +9,7 @@
 namespace Map2
 {
 class MapLayer;
+class MapGroup;
 
 class MapObject
 {
@@ -19,7 +20,8 @@ public:
 		MO_Line,
 		MO_Zone,
 		MO_Text,
-		MO_Commline
+		MO_Commline,
+		MO_Sector
 	};
 
 	MapObject(Map2::MapObject::Type t, Map2::MapLayer *layer = 0, long rscCode = -1);
@@ -89,7 +91,7 @@ public:
 	 */
 	QVariant parameter(QString parameter) const;
 
-	virtual void setRscCode(long rscCode) = 0;
+	virtual void setRscCode(long rscCode){}
 	long rscCode() const {return mRscCode;}
 
 	void hide();
@@ -97,7 +99,10 @@ public:
 	void setHidden(bool hidden);
 	bool isHiden() const {return mHidden;}
 
+	Map2::MapGroup * group(){return pGroup;}
+
 	friend class MapLayer;
+	friend class MapGroup;
 
 private:
 	struct MetricBinding
@@ -114,7 +119,9 @@ private:
 	void addMetricBinding(MetricBinding binding, int targetMetric);
 	void removeMetricBinding(MetricBinding binding, int targetMetric);
 
-	void removeFromMap();
+	virtual void removeFromMap();
+
+	void setGroup(Map2::MapGroup *group);
 
 	QVariantHash mParameters; //!< Дополнительные параметры объекта
 
@@ -145,6 +152,8 @@ protected:
 	long mRscCode;
 
 	bool mHidden;
+
+	MapGroup *pGroup;
 
 	QMap<int, MetricBinding> mMetricsBindings; //!< Метрики текущего объекта, привязанные к другим объектам.
 	QMultiMap<int, MetricBinding> mObjectsBindings; //!< Метрики других объектов, привязанные к текущему.

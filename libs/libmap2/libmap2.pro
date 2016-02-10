@@ -64,7 +64,8 @@ HEADERS += \
     ../../include/map2/groups/mapformulargroup.h \
     ../../include/map2/widgets/layerssettingsdialog.h \
     ../../include/map2/widgets/calibrationdialog.h \
-    ../../include/map2/objects/mapcommlineobject.h
+    ../../include/map2/objects/mapcommlineobject.h \
+    ../../include/map2/objects/mapsectorobject.h
 
 SOURCES +=\
 			rscselectdialog.cpp \
@@ -102,7 +103,8 @@ SOURCES +=\
     groups/mapgroup.cpp \
     widgets/layerssettingsdialog.cpp \
     widgets/calibrationdialog.cpp \
-    objects/mapcommlineobject.cpp
+    objects/mapcommlineobject.cpp \
+    objects/mapsectorobject.cpp
 
 FORMS += \
 	rscselectdialog.ui \

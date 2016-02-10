@@ -13,11 +13,15 @@
 #include "map2/mapeditor.h"
 #include "map2/maphelper.h"
 #include "map2/layersmodel.h"
+
 #include "map2/groups/mapstackgroup.h"
 #include "map2/groups/mapformulargroup.h"
+
 #include "map2/objects/mapobject.h"
 #include "map2/objects/mapvectorobject.h"
+#include "map2/objects/mapsectorobject.h"
 #include "map2/objects/mapcommlineobject.h"
+
 #include "map2/widgets/layerssettingsdialog.h"
 
 MainWindow::MainWindow(QWidget *parent)
@@ -85,26 +89,35 @@ MainWindow::MainWindow(QWidget *parent)
 	QLineF line2(line.p1(), line.p2());
 	line2.setLength(800);
 
+	qreal length = 400;
+
 	for(qreal angle = 0; angle < 360.; angle+=30.)
 	{
 		line.setAngle(angle);
 		line2.setP1(line.p2());
-		line2.setLength(800);
+		line2.setLength(length);
 		line2.setAngle(angle);
-
+		length += 100;
 		Map2::Coord c1 = pMap->mapView()->helper()->pictureToGeo( line2.p1().toPoint() );
 		Map2::Coord c2 = pMap->mapView()->helper()->pictureToGeo( line2.p2().toPoint() );
 
 		Map2::MapCommlineObject *commLine1 = new Map2::MapCommlineObject(c1, c2, layer);
 		commLine1->setLineWidth(5);
+
+		int red   = qrand() % 255;
+		int green = qrand() % 255;
+		int blue  = qrand() % 255;
+
+		commLine1->setColor( QColor(red, green, blue));
 	}
 
-//	Map2::MapCommlineObject *commLine1 = new Map2::MapCommlineObject(Map2::Coord(65., 30.), Map2::Coord(69., 40.), layer);
-//	commLine1->setLineWidth(3);
-//	Map2::MapCommlineObject *commLine2 = new Map2::MapCommlineObject(Map2::Coord(35., 20.), Map2::Coord(69., 70.), layer);
-//	commLine2->setArrowStyle( Map2::MapCommlineObject::AS_EndArrow);
-//	Map2::MapCommlineObject *commLine3 = new Map2::MapCommlineObject(Map2::Coord(0., 10.), Map2::Coord(70., 170.), layer);
-//	commLine3->setColor( Qt::red );
+
+	Map2::MapSectorObject * sector = new Map2::MapSectorObject( Map2::Coord(60., 30.), 100000, 90, 60, layer);
+	sector->setWidth(6);
+	sector->setArcColor(Qt::red);
+	sector->setSidesColor(Qt::blue);
+	sector->setRadius(400000);
+	sector->setAzimuth(180);
 
 	QVBoxLayout *mainLay = new QVBoxLayout(w);
 	mainLay->addWidget(pMap);

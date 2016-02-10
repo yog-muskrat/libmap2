@@ -27,8 +27,6 @@ public:
 	int fontHeightMm() const { return mFontHeightMm; }
 	void setFontHeightMm(int value);
 
-	virtual void setRscCode(long){}
-
 	virtual QRectF sizePix() const;
 
 private:

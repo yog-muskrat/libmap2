@@ -48,6 +48,8 @@ public:
 	bool childrenVisible() const {return mChildrenVisible;}
 	virtual int childrenCount() const {return mChildren.count();}
 	virtual bool addChild(Map2::MapObject *child);
+	Map2::MapObject * takeChild(int pos);
+	Map2::MapObject * takeChild(Map2::MapObject *child);
 
 	void setDtorPolicy(Map2::MapGroup::DtorPolicy policy) {mDtorPolicy = policy;}
 	Map2::MapGroup::DtorPolicy dtorPolicy() const {return mDtorPolicy;}

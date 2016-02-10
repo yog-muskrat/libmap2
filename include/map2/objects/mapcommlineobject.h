@@ -23,9 +23,6 @@ public:
 
 	~MapCommlineObject();
 
-	// MapObject interface
-	virtual void setRscCode(long rscCode) {}
-
 	QColor color() const
 	{
 		return mColor;

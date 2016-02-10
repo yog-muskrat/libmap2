@@ -52,6 +52,26 @@ bool Map2::MapGroup::addChild(Map2::MapObject *child)
 	}
 
 	mChildren.append(child);
+	child->setGroup(this);
 	return true;
+}
+
+Map2::MapObject *Map2::MapGroup::takeChild(int pos)
+{
+	if(pos < 0 || pos >= childrenCount())
+	{
+		return 0;
+	}
+
+	Map2::MapObject *child = mChildren.takeAt(pos);
+
+	update();
+
+	return child;
+}
+
+Map2::MapObject *Map2::MapGroup::takeChild(Map2::MapObject *child)
+{
+	return takeChild(mChildren.indexOf(child));
 }
 

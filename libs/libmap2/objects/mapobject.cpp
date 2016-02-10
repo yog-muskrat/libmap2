@@ -1,6 +1,7 @@
 #include "objects/mapobject.h"
 #include "maplayer.h"
 #include "mapview.h"
+#include "groups/mapgroup.h"
 
 #include "gis.h"
 
@@ -16,7 +17,8 @@ MapObject::MapObject(Map2::MapObject::Type t, Map2::MapLayer *layer, long rscCod
 	mMapKey(-1),
 	mSelected(false),
 	mRscCode(rscCode),
-	mHidden(false)
+	mHidden(false),
+	pGroup(0)
 {
 	mObjHandle = mapCreateSiteObject(mapLayer()->mapHandle(), mapLayer()->siteHandle(), 1, IDFLOAT2 );
 	commit();
@@ -180,6 +182,21 @@ void MapObject::removeFromMap()
 
 	mObjHandle = 0;
 	mMapKey = 0;
+}
+
+void MapObject::setGroup(MapGroup *group)
+{
+	if(pGroup == group)
+	{
+		return;
+	}
+
+	if(pGroup != 0)
+	{
+		pGroup->takeChild(this);
+	}
+
+	pGroup = group;
 }
 
 void MapObject::setName(QString name)
