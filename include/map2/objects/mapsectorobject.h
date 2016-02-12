@@ -36,7 +36,7 @@ public:
 	void setAzimuth(const qreal &value);
 
 	qreal angle() const { return mAngle;}
-	void setAngle(const qreal &value);
+	void setAngle(qreal value);
 	void setAngle(qreal from, qreal to);
 
 	Map2::MapSectorObject::SectorStyle style() const { return mStyle; }
@@ -65,18 +65,14 @@ public:
 
 private:
 	void redraw();
-	/*!
-	 * \brief Определяет, должен ли сектор выводиться одним объектом, или разделен на два
-	 */
-	bool isSingleObject() const;
 
 	QPolygonF getArcPolygon() const;
 	QPolygonF getSidesPolygon() const;
 
 	void clearObjects();
 	void updateObjectsStyles() const;
-	void updateSidesStyle() const;
-	void updateArcStyle() const;
+	void updateSides() const;
+	void updateArc() const;
 
 	void appendDraw(HMAP handle, QColor color, qreal width) const;
 	void registerObject(HMAP handle, int rscKey) const;
@@ -99,8 +95,7 @@ private:
 	int mSidesRsc;
 	int mArcRsc;
 
-	/// Если стороны и дуга рисуются разными способами, то этот дескриптор соответствует объекту дуги.
-	HMAP hMap;
+	HMAP hArc;
 
 	bool mUpdateObjects; // Признак того, что нужно пересоздать объекты (если измененяется не только метрика)
 };

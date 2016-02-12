@@ -64,7 +64,6 @@ MapView::MapView(QString sitDir, QString rscDir, QWidget *parent)
 	mapSetCommonRscPath( qPrintable(mRscDir) );
 
 	double dpm = CalibrationDialog::dpm();
-
 	mapSetScreenPrecision( (long)dpm );
 }
 
@@ -646,11 +645,9 @@ MapHelper *MapView::helper()
 {
 	if(!pHelper)
 	{
-		///TODO: Здесь и ниже - временный костыль. Переменную mMkmInPix нужно вынести в настройки
-		double mkmInPix = 475000 / 1920;
-	//	double mkmInPix = 340000 / 1280;
+		double mkmInPx = CalibrationDialog::mkmInPx();
 
-		pHelper = new MapHelper(mMapHandle, mkmInPix);
+		pHelper = new MapHelper(mMapHandle, mkmInPx);
 	}
 
 	return pHelper;

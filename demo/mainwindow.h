@@ -9,6 +9,7 @@ namespace Map2
 class MapGroup;
 class MapEditor;
 class MapObject;
+class MapSectorObject;
 }
 
 class QPushButton;
@@ -32,11 +33,16 @@ private slots:
 
 	void onEditLayers();
 
+	void onTimer();
+
 private:
 	Map2::MapEditor *pMap;
 	QMap<QPushButton *, Map2::MapObject*> mObjButtons;
 	Map2::MapGroup *pStackGroup;
 	Map2::MapGroup *pFormGroup;
+	Map2::MapSectorObject *pSector;
+
+	bool mDesc;
 };
 
 #endif // MAINWINDOW_H

@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 
 #include <QDebug>
+#include <QTimer>
 #include <QLayout>
 #include <QSettings>
 #include <QShortcut>
@@ -25,7 +26,7 @@
 #include "map2/widgets/layerssettingsdialog.h"
 
 MainWindow::MainWindow(QWidget *parent)
-	: QMainWindow(parent)
+	: QMainWindow(parent), mDesc(true)
 {
 	QWidget *w = new QWidget;
 
@@ -112,13 +113,24 @@ MainWindow::MainWindow(QWidget *parent)
 	}
 
 
-	Map2::MapSectorObject * sector = new Map2::MapSectorObject( Map2::Coord(60., 30.), 100000, 90, 60, layer);
-	sector->setStyle( Map2::MapSectorObject::ArcRsc | Map2::MapSectorObject::SidesColor );
-	sector->setSidesWidth(1);
-	sector->setSidesColor(Qt::red);
+	Map2::MapSectorObject * sector = new Map2::MapSectorObject( Map2::Coord(60., 30.), 400000, 0, 60, layer);
+	sector->setStyle( Map2::MapSectorObject::ArcRsc | Map2::MapSectorObject::NoSides );
 	sector->setRscCode(12103000);
-	sector->setRadius(400000);
-	sector->setAzimuth(0);
+
+	sector = new Map2::MapSectorObject( Map2::Coord(60., 30.), 400000, 90, 60, layer);
+	sector->setStyle( Map2::MapSectorObject::NoArc | Map2::MapSectorObject::SidesRsc );
+	sector->setRscCode(12700330);
+
+	sector = new Map2::MapSectorObject( Map2::Coord(60., 30.), 400000, 180, 60, layer);
+	sector->setStyle( Map2::MapSectorObject::ArcColor| Map2::MapSectorObject::SidesColor );
+	sector->setWidth(2);
+	sector->setColor(Qt::red);
+
+	pSector = new Map2::MapSectorObject( Map2::Coord(60., 30.), 400000, 270, 60, layer);
+	pSector->setStyle( Map2::MapSectorObject::ArcRsc | Map2::MapSectorObject::SidesColor );
+	pSector->setRscCode(12700200);
+	pSector->setSidesWidth(1);
+	pSector->setSidesColor(Qt::black);
 
 	QVBoxLayout *mainLay = new QVBoxLayout(w);
 	mainLay->addWidget(pMap);
@@ -135,6 +147,8 @@ MainWindow::MainWindow(QWidget *parent)
 	connect(pMap->mapView(), SIGNAL(scaleChanged(double)), this, SLOT(onScaleChanged()));
 	connect(btnCalibrate, SIGNAL(clicked(bool)), pMap->mapView(), SLOT(calibrate()));
 	connect(btnLayers, SIGNAL(clicked(bool)), this, SLOT(onEditLayers()));
+
+//	QTimer::singleShot(500, this, SLOT(onTimer()));
 }
 
 MainWindow::~MainWindow()
@@ -218,4 +232,35 @@ void MainWindow::onEditLayers()
 {
 	Map2::LayersSettingsDialog dlg(pMap->mapView()->mapHandle(), this);
 	dlg.exec();
+}
+
+void MainWindow::onTimer()
+{
+	qreal angle = pSector->azimuth();
+	angle+=1;
+	pSector->setAzimuth(angle);
+
+	qreal radius = pSector->radius();
+
+	if(mDesc)
+	{
+		radius -= 1000;
+
+		if(radius < 50000)
+		{
+			mDesc = false;
+		}
+	}
+	else
+	{
+		radius += 1000;
+		if(radius > 500000)
+		{
+			mDesc = true;
+		}
+	}
+
+	pSector->setRadius(radius);
+
+	QTimer::singleShot(50, this, SLOT(onTimer()));
 }

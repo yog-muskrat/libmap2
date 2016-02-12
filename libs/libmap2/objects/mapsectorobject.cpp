@@ -8,6 +8,7 @@
 
 #include <QLineF>
 #include <QDebug>
+#include <qmath.h>
 
 Map2::MapSectorObject::MapSectorObject(Map2::Coord center, qreal radius, qreal azimuth, qreal angle, Map2::MapLayer *layer) :
 	Map2::MapObject( MO_Sector, layer),
@@ -22,7 +23,7 @@ Map2::MapSectorObject::MapSectorObject(Map2::Coord center, qreal radius, qreal a
 	mArcWidth(3),
 	mSidesRsc(0),
 	mArcRsc(0),
-	hMap(0),
+	hArc(0),
 	mUpdateObjects(true)
 {
 	redraw();
@@ -30,14 +31,15 @@ Map2::MapSectorObject::MapSectorObject(Map2::Coord center, qreal radius, qreal a
 
 Map2::MapSectorObject::~MapSectorObject()
 {
-	if(hMap > 0)
+	if(hArc > 0)
 	{
-		mapFreeObject(hMap);
+		mapFreeObject(hArc);
 	}
 }
 
-void Map2::MapSectorObject::setAngle(const qreal &value)
+void Map2::MapSectorObject::setAngle(qreal value)
 {
+	value = fmod(value, 360);
 	if(mAngle == value)
 	{
 		return;
@@ -51,11 +53,14 @@ void Map2::MapSectorObject::setAngle(qreal from, qreal to)
 {
 	if(from > to)
 	{
-		to += 360;
+		to += 360.;
 	}
 
 	mAzimuth = from + (to - from)/2;
+	mAzimuth = fmod(mAzimuth, 360.);
+
 	mAngle = to - from;
+	mAngle = fmod(mAngle, 360.);
 
 	redraw();
 }
@@ -222,7 +227,7 @@ void Map2::MapSectorObject::setArcCode(long rscCode)
 
 void Map2::MapSectorObject::setAzimuth(const qreal &value)
 {
-	mAzimuth = value;
+	mAzimuth = fmod(value, 360);
 	redraw();
 }
 
@@ -251,90 +256,45 @@ void Map2::MapSectorObject::redraw()
 	{
 		clearObjects();
 
-		if(!hMap)
+		if(!hArc)
 		{
-			hMap = mapCreateSiteObject( mapLayer()->mapHandle(), mapLayer()->siteHandle());
+			hArc = mapCreateSiteObject( mapLayer()->mapHandle(), mapLayer()->siteHandle());
 		}
 
 		updateObjectsStyles();
-
 		mUpdateObjects = false;
-	}
-
-	if(style() == SectorStyle(NoSides | NoArc))
-	{
-		commit();
-		return;
 	}
 
 	QPolygonF sidesPoints = getSidesPolygon();
 	QPolygonF arcPoints = getArcPolygon();
 
-	if(isSingleObject())
+	foreach(const QPointF &p, sidesPoints)
 	{
-		QPolygonF polygon = sidesPoints + arcPoints;
-
-		foreach(const QPointF &p, polygon)
-		{
-			mapAppendPointPlane(handle(), p.x(), p.y());
-		}
-
-		commit();
-	}
-	else
-	{
-		if(!style().testFlag(NoSides))
-		{
-			foreach(const QPointF &p, sidesPoints)
-			{
-				mapAppendPointPlane(handle(), p.x(), p.y());
-			}
-		}
-
-		if(!style().testFlag(NoArc))
-		{
-			foreach(const QPointF &p, arcPoints)
-			{
-				mapAppendPointPlane(hMap, p.x(), p.y());
-			}
-		}
-
-		mapCommitObject(hMap);
-		commit();
-	}
-}
-
-bool Map2::MapSectorObject::isSingleObject() const
-{
-	///NOTE: Возможно, есть способ упростить алгоритм
-
-	if(style() == SectorStyle( NoArc | NoSides))
-	{
-		/// На "Нет" и суда нет.
-		return true;
-	}
-	else if(style() == SectorStyle( ArcColor | SidesColor))
-	{
-		/// Можно рисовать одним объектом, если совпадают цвет и толщина линий
-		return mSidesColor == mArcColor && mSidesWidth == mArcWidth;
-	}
-	else if(style() == SectorStyle( ArcRsc | SidesRsc))
-	{
-		/// Можно рисовать одним объектом, если совпадает код знака в классификаторе.
-		return mSidesRsc == mArcRsc;
+		mapAppendPointPlane(handle(), p.x(), p.y());
 	}
 
-	return false;
+	foreach(const QPointF &p, arcPoints)
+	{
+		mapAppendPointPlane(hArc, p.x(), p.y());
+	}
+
+	mapCommitObject(hArc);
+	commit();
 }
 
 QPolygonF Map2::MapSectorObject::getArcPolygon() const
 {
+	if(style().testFlag(NoArc))
+	{
+		return QPolygonF();
+	}
+
 	Q_ASSERT(mapLayer());
 	Map2::MapHelper *helper = mapLayer()->mapView()->helper();
 
 	QPointF center = helper->geoToPlane(mCenter).toPointF();
 
-	qreal lineAngle = azimuth() - angle()/2.;
+	qreal lineAngle = -(azimuth() + angle()/2.);
 
 	QLineF line(center, center+QPointF(1,1));
 	line.setLength(mRadius);
@@ -342,14 +302,13 @@ QPolygonF Map2::MapSectorObject::getArcPolygon() const
 
 	QPolygonF result;
 
-	for(qreal i = 0; i < angle(); ++i)
+	for(qreal i = angle(); i > 0; --i)
 	{
 		line.setAngle( lineAngle + i);
 		result << line.p2();
 	}
 
-	lineAngle += angle();
-	line.setAngle( lineAngle );
+	line.setAngle( -(azimuth() + angle()/2.) );
 
 	result << line.p2();
 
@@ -358,11 +317,13 @@ QPolygonF Map2::MapSectorObject::getArcPolygon() const
 
 QPolygonF Map2::MapSectorObject::getSidesPolygon() const
 {
-	if(angle() == 360)
+	if(angle() == 360 || style().testFlag(NoSides))
 	{
 		// Не рисовать радиус, если сектор представляет собой окружность.
 		return QPolygonF();
 	}
+
+	// Т.к. градусы считаются в противоположные стороны. нужно преобразовать азимут к кутишному виду
 
 	Q_ASSERT(mapLayer());
 	Map2::MapHelper *helper = mapLayer()->mapView()->helper();
@@ -376,11 +337,11 @@ QPolygonF Map2::MapSectorObject::getSidesPolygon() const
 	left.setLength(mRadius);
 	right.setLength(mRadius);
 
-	left.setAngle( azimuth() - angle()/2.);
-	right.setAngle( azimuth() + angle()/2);
+	left.setAngle( -azimuth() - angle()/2.);
+	right.setAngle( -azimuth() + angle()/2);
 
 	QPolygonF result;
-	result << right.p2() << left.p1() << left.p2();
+	result << left.p2() << left.p1() << right.p2();
 
 	return result;
 }
@@ -394,35 +355,21 @@ void Map2::MapSectorObject::clearObjects()
 	mObjHandle = mapCreateSiteObject(mapLayer()->mapHandle(), mapLayer()->siteHandle());
 	mMapKey = -1; // Обнулить ключ объекта, чтобы при следующем обращении он его заново вычитал с карты
 
-	if(hMap)
+	if(hArc)
 	{
-		mapDeleteObject(hMap);
-		mapFreeObject(hMap);
-		hMap = 0;
+		mapDeleteObject(hArc);
+		mapFreeObject(hArc);
+		hArc = 0;
 	}
 }
 
 void Map2::MapSectorObject::updateObjectsStyles() const
 {
-	if(isSingleObject())
-	{
-		if(style().testFlag(SidesColor))
-		{
-			appendDraw(handle(), mSidesColor, mSidesWidth);
-		}
-		else if(style().testFlag(SidesRsc))
-		{
-			registerObject(handle(), mSidesRsc);
-		}
-	}
-	else
-	{
-		updateSidesStyle();
-		updateArcStyle();
-	}
+	updateSides();
+	updateArc();
 }
 
-void Map2::MapSectorObject::updateSidesStyle() const
+void Map2::MapSectorObject::updateSides() const
 {
 	if(style().testFlag(SidesColor))
 	{
@@ -434,15 +381,15 @@ void Map2::MapSectorObject::updateSidesStyle() const
 	}
 }
 
-void Map2::MapSectorObject::updateArcStyle() const
+void Map2::MapSectorObject::updateArc() const
 {
 	if(style().testFlag(ArcColor))
 	{
-		appendDraw(hMap, mArcColor, mArcWidth);
+		appendDraw(hArc, mArcColor, mArcWidth);
 	}
 	else if(style().testFlag(ArcRsc))
 	{
-		registerObject(hMap, mArcRsc);
+		registerObject(hArc, mArcRsc);
 	}
 }
 
@@ -471,11 +418,11 @@ void Map2::MapSectorObject::clearMetrics()
 		mapDeletePointPlane(handle(), i);
 	}
 
-	if(hMap > 0)
+	if(hArc > 0)
 	{
-		for(int i = mapPointCount(hMap, 0); i > 0; --i)
+		for(int i = mapPointCount(hArc, 0); i > 0; --i)
 		{
-			mapDeletePointPlane(hMap, i);
+			mapDeletePointPlane(hArc, i);
 		}
 	}
 }
