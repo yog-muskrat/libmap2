@@ -8,8 +8,8 @@ using namespace Map2;
 
 MapRuler::MapRuler(Map2::MapLayer *layer)
 {
-	pLine = new MapLineObject(0, layer);
-	pText = new MapTextObject(layer);
+	pLine = new MapLineObject("", QList<Coord>(), layer);
+	pText = new MapTextObject("", Coord(), 4, QColor(Qt::black), layer);
 }
 
 MapRuler::~MapRuler()
@@ -27,7 +27,7 @@ void MapRuler::clear()
 void MapRuler::addPoint(const Map2::CoordPlane &coord)
 {
 	pLine->addPoint(coord);
-	pText->setCoordinate(coord);
+	pText->setCoordinatePlane(coord);
 	pText->setText( pLine->lengthText() );
 }
 

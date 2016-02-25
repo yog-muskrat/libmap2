@@ -46,11 +46,15 @@ public:
 	 * \brief Создает новый картографический слой, использующий заданный классификатор знаков.
 	 * Если классификатор не задан, будет вызван диалог выбора классификатора.
 	 * Слой автоматически добавляется к карте и попадает в список ее слоев.
+	 * Если параметр key не задан, то ключ будет создан автоматически с испольованием QUUID.
+	 * Если ключ задан, ноуже существует другой слой с таким же ключом, будет возвращен 0.
 	 * \param rscName Классификатор знаков.
-	 * \return Указатель на созданный слой.
+	 * \param key Ключ слоя.
+	 * \param name Имя слоя.
+	 * \param temp Признак временного слоя.
+	 * \return Указатель на созданный слой или 0 в случае ошибки.
 	 */
-	Map2::MapLayer *createLayer(QString rscName = "", QString name = "");
-	Map2::MapLayer *createTempLayer(QString rscName = "", QString name = "");
+	Map2::MapLayer *createLayer(QString rscName = "", QString key = "", QString name = "", bool temp = false);
 
 	/*!
 	 * \brief Возвращает идентификатор открытой карты.
@@ -85,8 +89,6 @@ public:
 
 	void addObjectToSelection(Map2::MapObject *obj);
 	QList<Map2::MapObject*> selectedObjects(){return mSelectedObjects;}
-
-	HSELECT selectContext() {return mSelect;}
 
 	Map2::MapCanvas* canvas(){return pCanvas;}
 
@@ -167,6 +169,8 @@ signals:
 	void mouseLeftClick(QPoint point);
 	void mouseRightClick(QPoint point);
 
+	void toolTipRequest(QPoint point, Map2::MapObject*topObject);
+
 	void resized(QSize newSize);
 
 	void mapLoaded();
@@ -244,7 +248,6 @@ private:
 	MapToolBar * pTools; //!< Менеджер инструментов карты.
 
 	HMAP mMapHandle;
-	HSELECT mSelect;
 	bool mIsDragged;
 	QPoint mDragStartPoint;
 

@@ -25,8 +25,8 @@ ObjectsWidget::ObjectsWidget(QWidget *parent) : QWidget(parent)
 	pTableView->setSelectionBehavior( QTableView::SelectRows );
 	pTableView->setModel( pProxyModel );
 
-	pbAdd = new QPushButton(QIcon(":plus"), "");
-	pbRemove = new QPushButton(QIcon(":minus"), "");
+	pbAdd = new QPushButton(QIcon(":map2/plus"), "");
+	pbRemove = new QPushButton(QIcon(":map2/minus"), "");
 	pbRemove->setEnabled(false);
 	pbEdit = new QPushButton(QIcon(":edit"), "");
 	pbEdit->setEnabled(false);
@@ -145,7 +145,7 @@ void ObjectsWidget::onObjectDoubleClicked(const QModelIndex &index)
 	MapObject *obj = pLayerModel->objectAtIndex( pProxyModel->mapToSource( index) );
 	Q_ASSERT(obj);
 
-	obj->center();
+	obj->centerOnObject();
 	onEdit();
 }
 

@@ -41,7 +41,7 @@ bool Map2::MapFormularGroup::addChild(Map2::MapObject *child)
 		return false;
 	}
 
-	mInitialCoordinates[child] = child->coordinate();
+	mInitialCoordinates[child] = child->coordinatePlane();
 	updateChildrenDisplayCoordinates();
 	return true;
 }
@@ -99,7 +99,7 @@ void Map2::MapFormularGroup::updateChildrenDisplayCoordinates()
 
 	HMAP hMap = pParent->mapLayer()->mapHandle();
 
-	QPoint origin = helper->planeToPicture(parentObj->coordinatesPlane()) + mOffset + QPoint(mPaddingPx, -mPaddingPx);
+	QPoint origin = helper->planeToPicture(parentObj->coordinatePlane()) + mOffset + QPoint(mPaddingPx, -mPaddingPx);
 
 	QRectF frameRect( origin.x() - mPaddingPx, origin.y() + mPaddingPx, 0, 0 );
 
@@ -121,7 +121,7 @@ void Map2::MapFormularGroup::updateChildrenDisplayCoordinates()
 		{
 			QString name = mvo->name();
 
-			mObjectsLabels[mvo] = new MapTextObject(mvo->mapLayer(), name, mvo->coordinate());
+			mObjectsLabels[mvo] = new MapTextObject(name, mvo->coordinatePlane(), 4, QColor(Qt::black), mvo->mapLayer());
 			mvo->setName("");
 		}
 
@@ -145,7 +145,7 @@ void Map2::MapFormularGroup::updateChildrenDisplayCoordinates()
 		lblPos.ry()-= childRect.height()*scale - childRect.y()*scale;
 
 		Map2::CoordPlane lblCoord = helper->pictureToPlane(lblPos);
-		lblObj->setCoordinate(lblCoord);
+		lblObj->setCoordinatePlane(lblCoord);
 
 		origin.ry() -= mSpacingPx + childRect.height()*scale;
 
@@ -216,7 +216,7 @@ void Map2::MapFormularGroup::updateBorderCoords(const QRectF newRect)
 	}
 
 	QList<Map2::CoordPlane> coords;
-	coords << parentObj->coordinatesPlane();
+	coords << parentObj->coordinatePlane();
 
 	foreach(const QPointF &point, screenPoints)
 	{

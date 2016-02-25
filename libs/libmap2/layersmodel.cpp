@@ -33,6 +33,7 @@ int LayersModel::addLayer(Map2::MapLayer *layer)
 		connect(layer, SIGNAL(lockToggled(bool)), this, SLOT(onLayerUpdated()));
 		connect(layer, SIGNAL(dataChanged(QModelIndex,QModelIndex)), this, SLOT(onLayerUpdated()));
 		connect(layer, SIGNAL(rowsRemoved(QModelIndex, int, int)), this, SLOT(onLayerUpdated()));
+		connect(layer, SIGNAL(rowsInserted(QModelIndex, int, int)), this, SLOT(onLayerUpdated()));
 
 		endInsertRows();
 	}
@@ -59,7 +60,12 @@ void LayersModel::removeLayer(int row)
 	endRemoveRows();
 }
 
-Map2::MapLayer *LayersModel::layerAt(int row)
+int LayersModel::layerIndex(MapLayer *l) const
+{
+	return mLayers.indexOf(l);
+}
+
+Map2::MapLayer *LayersModel::layerAt(int row) const
 {
 	if(row < 0 || row >= rowCount())
 	{
@@ -69,13 +75,26 @@ Map2::MapLayer *LayersModel::layerAt(int row)
 	return mLayers[row];
 }
 
-Map2::MapLayer *LayersModel::layerByHandle(HSITE handle)
+Map2::MapLayer *LayersModel::layerByHandle(HSITE handle) const
 {
 	foreach(MapLayer *l, mLayers)
 	{
 		if(l->siteHandle() == handle)
 		{
 			return l;
+		}
+	}
+
+	return 0;
+}
+
+MapLayer *LayersModel::layerByKey(QString key) const
+{
+	foreach(MapLayer *layer , mLayers)
+	{
+		if(layer->layerKey() == key)
+		{
+			return layer;
 		}
 	}
 
@@ -155,7 +174,7 @@ QVariant LayersModel::decorationRole(const QModelIndex &index) const
 	}
 	else if(index.column() == COL_Locked)
 	{
-		return l->isLocked() ? QIcon(":lock") : QIcon(":unlock");
+		return l->isLocked() ? QIcon(":map2/locked") : QIcon(":map2/unlocked");
 	}
 
 	return QVariant();

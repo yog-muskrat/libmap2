@@ -2,85 +2,123 @@
 #include "maplayer.h"
 #include "maphelper.h"
 #include "mapview.h"
+#include "rscviewer.h"
 
 #include "gis.h"
 
 #include <QDebug>
 #include <qmath.h>
+#include <QTextCodec>
 
 using namespace Map2;
 
-MapLineObject::MapLineObject(long rscCode, Map2::MapLayer *layer, const QList<CoordPlane> &coords) :
-	MapObject(MO_Line, layer, rscCode)
+MapLineObject::MapLineObject(const QString &rscKey, const QList<Coord> &coords, Map2::MapLayer *layer) :
+	MapObject(MO_Line, layer), mCoords(coords), mRscKey(rscKey), hObj(0)
 {
-	mapRegisterObject( handle(), mRscCode, LOCAL_LINE);
+
+}
+
+MapLineObject::MapLineObject(const QString &rscKey, const QList<CoordPlane> &coords, MapLayer *layer) :
+	MapObject(MO_Line, layer), mRscKey(rscKey), hObj(0)
+{
 	addPoints(coords);
-	///TODO: Разобраться, почему без нижеследующего вызова функции commit() объекты отображаются на карте через раз.
-	commit();
 }
 
 void MapLineObject::addPoint(const Map2::CoordPlane &coord)
 {
-	mapAppendPointPlane(handle(), coord.x, coord.y);
-	mCoords << coord;
-	commit();
-}
-
-void MapLineObject::addPoint(const Map2::Coord &coord)
-{
-	Q_ASSERT(mapLayer());
-
-	Map2::MapHelper *helper = mapLayer()->mapView()->helper();
-
-	addPoint(helper->geoToPlane(coord));
-}
-
-void MapLineObject::addPoints(const QList<Map2::CoordPlane> &coords)
-{
-	if(coords.isEmpty())
+	if(!mapLayer())
 	{
 		return;
 	}
 
+	Map2::MapHelper *helper = mapLayer()->mapView()->helper();
+	addPoint(helper->planeToGeo(coord));
+}
+
+void MapLineObject::addPoint(const Map2::Coord &coord)
+{
+	mCoords << coord;
+
+	if(!mapLayer())
+	{
+		return;
+	}
+
+	Q_ASSERT(hObj);
+
+	Map2::MapHelper *helper = mapLayer()->mapView()->helper();
+
+	CoordPlane cp = helper->geoToPlane(coord);
+
+	mapAppendPointPlane(hObj, cp.x, cp.y);
+	commit();
+}
+
+void MapLineObject::addPoints(const QList<Map2::CoordPlane> &coords)
+{
+	if(!mapLayer())
+	{
+		return;
+	}
+
+	Map2::MapHelper *helper = mapLayer()->mapView()->helper();
+
+	QList<Coord> coordsGeo;
+
 	foreach(const CoordPlane &c, coords)
 	{
-		mapAppendPointPlane(handle(), c.x, c.y);
-		mCoords << c;
+		coordsGeo << helper->planeToGeo(c);
+	}
+
+	addPoints(coordsGeo);
+}
+
+void MapLineObject::addPoints(const QList<Map2::Coord> &coords)
+{
+	mCoords += coords;
+
+	if(!mapLayer())
+	{
+		return;
+	}
+
+	Q_ASSERT(hObj);
+
+	Map2::MapHelper *helper = mapLayer()->mapView()->helper();
+
+	foreach(const Coord &c, coords)
+	{
+		CoordPlane cp = helper->geoToPlane(c);
+		mapAppendPointPlane(hObj, cp.x, cp.y);
 	}
 
 	commit();
 }
 
-void MapLineObject::addPoints(const QList<Map2::Coord> &coords)
-{
-	Q_ASSERT(mapLayer());
-
-	Map2::MapHelper *helper = mapLayer()->mapView()->helper();
-
-	QList<CoordPlane> planeCoords;
-
-	foreach(const Coord &c, coords)
-	{
-		planeCoords << helper->geoToPlane( c );
-	}
-
-	addPoints(planeCoords);
-}
-
 void MapLineObject::clear()
 {
-	for(int i = mCoords.count(); i > 0; --i)
-	{
-		mapDeletePointPlane(handle(), i);
-	}
 	mCoords.clear();
+
+	if(!helper())
+	{
+		return;
+	}
+
+	helper()->clearMetrics(hObj);
 
 	commit();
 }
 
 double MapLineObject::length() const
 {
-	return mapPerimeter( handle() );
+	if(!mapLayer())
+	{
+		return 0;
+	}
+
+	Q_ASSERT(hObj);
+
+	return mapPerimeter( hObj );
 }
 
 QString MapLineObject::lengthText() const
@@ -110,19 +148,102 @@ QString MapLineObject::lengthText() const
 	return QString("%0 м").arg( perimetr, 0, 'f', 0 );
 }
 
-void MapLineObject::setRscCode(long rscCode)
+void MapLineObject::setRscKey(const QString &rscKey)
 {
-	if(mRscCode == rscCode)
+	if(mRscKey == rscKey)
 	{
 		return;
 	}
 
-	mRscCode = rscCode;
+	mRscKey = rscKey;
 
-	mapDeleteObject( handle() );
-	commit();
+	refresh();
+}
 
-	mObjHandle = mapCreateSiteObject(mapLayer()->mapHandle(), mapLayer()->siteHandle(), 1, IDFLOAT2 );
-	mapRegisterObject(handle(), mRscCode, LOCAL_LINE);
+QPolygonF MapLineObject::planePolygon() const
+{
+	if(!mapLayer())
+	{
+		return QPolygonF();
+	}
+
+	return helper()->metricsToPlanePolygon(hObj);
+}
+
+QPolygonF MapLineObject::picturePolygon() const
+{
+	if(!mapLayer())
+	{
+		return QPolygonF();
+	}
+
+	return helper()->metricsToPicturePolygon(hObj);
+}
+
+void MapLineObject::repaint()
+{
+	if(!mapLayer())
+	{
+		return;
+	}
+
+	removeFromMap();
+
+	hObj = mapCreateSiteObject(mapLayer()->mapHandle(), mapLayer()->siteHandle());
+	mapRegisterObjectByKey( hObj, RscViewer::codec()->fromUnicode(mRscKey).data());
 	addPoints(mCoords);
+}
+
+Coord Map2::MapLineObject::coordinateGeo() const
+{
+	if(mCoords.isEmpty())
+	{
+		return Coord();
+	}
+
+	if(!mapLayer())
+	{
+		return mCoords.first();
+	}
+
+	MapHelper *helper = mapLayer()->mapView()->helper();
+
+	QPointF centerPoint = picturePolygon().boundingRect().center();
+
+	return helper->pictureToGeo(centerPoint.toPoint());
+}
+
+void Map2::MapLineObject::moveBy(double dxPlane, double dyPlane)
+{
+	if(!mapLayer())
+	{
+		qDebug()<<"*** LINE OBJECT: Невозможно обработать прямоугольную координату, пока объект не добавлен в слой";
+		return;
+	}
+
+	for(int i = 0; i< mCoords.count(); ++i)
+	{
+		CoordPlane cp = helper()->geoToPlane( mCoords[i] );
+		cp += CoordPlane(dxPlane, dyPlane);
+
+		mCoords[i] = helper()->planeToGeo(cp);
+
+		mapUpdatePointPlane(hObj, cp.x, cp.y, i+1);
+	}
+
+	commit();
+}
+
+QRectF Map2::MapLineObject::sizePix() const
+{
+	QRectF rect = picturePolygon().boundingRect();
+	rect.setX(0);
+	rect.setY(0);
+
+	return rect;
+}
+
+QList<HOBJ*> MapLineObject::mapHandles()
+{
+	return QList<HOBJ*>() << &hObj;
 }

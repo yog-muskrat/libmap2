@@ -23,40 +23,22 @@ public:
 
 	~MapCommlineObject();
 
-	QColor color() const
-	{
-		return mColor;
-	}
+	QColor color() const { return mColor; }
 	void setColor(const QColor &color);
 
-	Map2::Coord from() const
-	{
-		return mFrom;
-	}
+	Map2::Coord from() const { return mFrom; }
 	void setFrom(const Map2::Coord &from);
 
-	Map2::Coord to() const
-	{
-		return mTo;
-	}
+	Map2::Coord to() const { return mTo; }
 	void setTo(const Map2::Coord &to);
 
-	Map2::MapCommlineObject::ArrowStyle arrowStyle() const
-	{
-		return mArrowStyle;
-	}
+	Map2::MapCommlineObject::ArrowStyle arrowStyle() const { return mArrowStyle; }
 	void setArrowStyle(const Map2::MapCommlineObject::ArrowStyle &arrowStyle);
 
-	double lineWidth() const
-	{
-		return mLineWidth;
-	}
+	double lineWidth() const { return mLineWidth; }
 	void setLineWidth(double value);
 
 private:
-	void redraw();
-	void clearArrows();
-	void clearPoints();
 	QPolygonF drawArcs();
 	QPolygonF drawArc(QPointF from, QPointF to, qreal radius);
 
@@ -68,8 +50,19 @@ private:
 	ArrowStyle mArrowStyle;
 	double mLineWidth;
 
-	HOBJ hFromHandle;
+	HOBJ hBody;
 	HOBJ hToHandle;
+	HOBJ hFromHandle;
+
+	// MapObject interface
+public:
+	virtual Coord coordinateGeo() const { return mFrom; }
+	virtual void moveBy(double dxPlane, double dyPlane);
+	virtual QList<HOBJ*> mapHandles();
+
+protected:
+	virtual void repaint();
+
 };
 }
 

@@ -36,8 +36,8 @@ bool MapLineObjectAction::processMouseClickEvent(QMouseEvent *mouseEvent)
 				return true;
 			}
 
-			int exCode = RscViewer::selectLineExCode(pView->activeLayer()->rscName());
-			if(exCode <= 0)
+			QString key = RscViewer::selectLineKey(pView->activeLayer()->rscName());
+			if(key.isEmpty())
 			{
 				return false;
 			}
@@ -45,7 +45,7 @@ bool MapLineObjectAction::processMouseClickEvent(QMouseEvent *mouseEvent)
 			QList<CoordPlane> coords;
 			coords << coord;
 
-			pObject = pView->activeLayer()->addLineObject(exCode, coords);
+			pObject = pView->activeLayer()->addLineObject(key, coords);
 		}
 		else
 		{

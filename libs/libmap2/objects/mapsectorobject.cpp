@@ -3,12 +3,16 @@
 #include "maplayer.h"
 #include "mapview.h"
 #include "maphelper.h"
+#include "rscviewer.h"
 
 #include "gis.h"
 
 #include <QLineF>
 #include <QDebug>
 #include <qmath.h>
+#include <QTextCodec>
+
+using namespace Map2;
 
 Map2::MapSectorObject::MapSectorObject(Map2::Coord center, qreal radius, qreal azimuth, qreal angle, Map2::MapLayer *layer) :
 	Map2::MapObject( MO_Sector, layer),
@@ -21,12 +25,11 @@ Map2::MapSectorObject::MapSectorObject(Map2::Coord center, qreal radius, qreal a
 	mArcColor(Qt::black),
 	mSidesWidth(3),
 	mArcWidth(3),
-	mSidesRsc(0),
-	mArcRsc(0),
+	hSides(0),
 	hArc(0),
 	mUpdateObjects(true)
 {
-	redraw();
+
 }
 
 Map2::MapSectorObject::~MapSectorObject()
@@ -46,7 +49,7 @@ void Map2::MapSectorObject::setAngle(qreal value)
 	}
 
 	mAngle = value;
-	redraw();
+	refresh();
 }
 
 void Map2::MapSectorObject::setAngle(qreal from, qreal to)
@@ -62,7 +65,7 @@ void Map2::MapSectorObject::setAngle(qreal from, qreal to)
 	mAngle = to - from;
 	mAngle = fmod(mAngle, 360.);
 
-	redraw();
+	refresh();
 }
 
 void Map2::MapSectorObject::setStyle(const Map2::MapSectorObject::SectorStyle &value)
@@ -75,7 +78,7 @@ void Map2::MapSectorObject::setStyle(const Map2::MapSectorObject::SectorStyle &v
 	mStyle = value;
 
 	mUpdateObjects = true;
-	redraw();
+	refresh();
 }
 
 void Map2::MapSectorObject::setColor(QColor color)
@@ -92,7 +95,7 @@ void Map2::MapSectorObject::setColor(QColor color)
 	if(mStyle.testFlag(SidesColor) || mStyle.testFlag(ArcColor))
 	{
 		mUpdateObjects = true;
-		redraw();
+		refresh();
 	}
 }
 
@@ -107,7 +110,7 @@ void Map2::MapSectorObject::setSidesColor(QColor color)
 	if(mStyle.testFlag(SidesColor))
 	{
 		mUpdateObjects = true;
-		redraw();
+		refresh();
 	}
 }
 
@@ -123,7 +126,7 @@ void Map2::MapSectorObject::setArcColor(QColor color)
 	if(mStyle.testFlag(ArcColor))
 	{
 		mUpdateObjects = true;
-		redraw();
+		refresh();
 	}
 }
 
@@ -140,7 +143,7 @@ void Map2::MapSectorObject::setWidth(qreal width)
 	if(mStyle.testFlag(SidesColor) || mStyle.testFlag(ArcColor))
 	{
 		mUpdateObjects = true;
-		redraw();
+		refresh();
 	}
 }
 
@@ -156,7 +159,7 @@ void Map2::MapSectorObject::setSidesWidth(qreal width)
 	if(mStyle.testFlag(SidesColor))
 	{
 		mUpdateObjects = true;
-		redraw();
+		refresh();
 	}
 }
 
@@ -172,96 +175,107 @@ void Map2::MapSectorObject::setArcWidth(qreal width)
 	if(mStyle.testFlag(ArcColor))
 	{
 		mUpdateObjects = true;
-		redraw();
+		refresh();
 	}
 }
 
-void Map2::MapSectorObject::setRscCode(long rscCode)
+void Map2::MapSectorObject::setRscKey(QString rscKey)
 {
-	if(mSidesRsc== rscCode && mArcRsc == rscCode)
+	if(mSidesRscKey== rscKey && mArcRscKey == rscKey)
 	{
 		return;
 	}
 
-	mSidesRsc = rscCode;
-	mArcRsc = rscCode;
+	mSidesRscKey = rscKey;
+	mArcRscKey = rscKey;
 
 	if(mStyle.testFlag(SidesRsc) || mStyle.testFlag(ArcRsc))
 	{
 		mUpdateObjects = true;
-		redraw();
+		refresh();
 	}
 }
 
-void Map2::MapSectorObject::setSidesCode(long rscCode)
+void Map2::MapSectorObject::setSidesRscKey(QString rscKey)
 {
-	if(mSidesRsc== rscCode)
+	if(mSidesRscKey== rscKey)
 	{
 		return;
 	}
 
-	mSidesRsc = rscCode;
+	mSidesRscKey = rscKey;
 
 	if(mStyle.testFlag(SidesRsc))
 	{
 		mUpdateObjects = true;
-		redraw();
+		refresh();
 	}
 }
 
-void Map2::MapSectorObject::setArcCode(long rscCode)
+void Map2::MapSectorObject::setArcRscKey(QString rscKey)
 {
-	if(mArcRsc == rscCode)
+	if(mArcRscKey == rscKey)
 	{
 		return;
 	}
 
-	mArcRsc = rscCode;
+	mArcRscKey = rscKey;
 
 	if(mStyle.testFlag(ArcRsc))
 	{
 		mUpdateObjects = true;
-		redraw();
+		refresh();
 	}
 }
 
 void Map2::MapSectorObject::setAzimuth(const qreal &value)
 {
 	mAzimuth = fmod(value, 360);
-	redraw();
+	refresh();
 }
 
 void Map2::MapSectorObject::setRadius(const qreal &meters)
 {
 	mRadius = meters;
-	redraw();
+	refresh();
 }
 
 void Map2::MapSectorObject::setCenter(const Map2::Coord &value)
 {
 	mCenter = value;
-	redraw();
+	refresh();
 }
 
-void Map2::MapSectorObject::redraw()
+void MapSectorObject::setCenter(const CoordPlane &value)
+{
+	if(!helper())
+	{
+		return;
+	}
+
+	setCenter( helper()->planeToGeo(value) );
+}
+
+void Map2::MapSectorObject::repaint()
 {
 	if(!mapLayer())
 	{
 		return;
 	}
 
-	clearMetrics();
+	helper()->clearMetrics(hSides);
+	helper()->clearMetrics(hArc);
 
 	if(mUpdateObjects)
 	{
-		clearObjects();
+		removeFromMap();
 
-		if(!hArc)
-		{
-			hArc = mapCreateSiteObject( mapLayer()->mapHandle(), mapLayer()->siteHandle());
-		}
+		hSides = mapCreateSiteObject( mapLayer()->mapHandle(), mapLayer()->siteHandle());
+		hArc = mapCreateSiteObject( mapLayer()->mapHandle(), mapLayer()->siteHandle());
 
-		updateObjectsStyles();
+		updateSides();
+		updateArc();
+
 		mUpdateObjects = false;
 	}
 
@@ -270,7 +284,7 @@ void Map2::MapSectorObject::redraw()
 
 	foreach(const QPointF &p, sidesPoints)
 	{
-		mapAppendPointPlane(handle(), p.x(), p.y());
+		mapAppendPointPlane(hSides, p.x(), p.y());
 	}
 
 	foreach(const QPointF &p, arcPoints)
@@ -278,7 +292,6 @@ void Map2::MapSectorObject::redraw()
 		mapAppendPointPlane(hArc, p.x(), p.y());
 	}
 
-	mapCommitObject(hArc);
 	commit();
 }
 
@@ -346,38 +359,15 @@ QPolygonF Map2::MapSectorObject::getSidesPolygon() const
 	return result;
 }
 
-void Map2::MapSectorObject::clearObjects()
-{
-	Q_ASSERT(mapLayer());
-
-	///TODO: Подумать, можно ли обойтись без пересоздания объекта
-	mapDeleteObject(handle());
-	mObjHandle = mapCreateSiteObject(mapLayer()->mapHandle(), mapLayer()->siteHandle());
-	mMapKey = -1; // Обнулить ключ объекта, чтобы при следующем обращении он его заново вычитал с карты
-
-	if(hArc)
-	{
-		mapDeleteObject(hArc);
-		mapFreeObject(hArc);
-		hArc = 0;
-	}
-}
-
-void Map2::MapSectorObject::updateObjectsStyles() const
-{
-	updateSides();
-	updateArc();
-}
-
 void Map2::MapSectorObject::updateSides() const
 {
 	if(style().testFlag(SidesColor))
 	{
-		appendDraw(handle(), mSidesColor, mSidesWidth);
+		appendDraw(hSides, mSidesColor, mSidesWidth);
 	}
 	else if(style().testFlag(SidesRsc))
 	{
-		registerObject(handle(), mSidesRsc);
+		registerObject(hSides, mSidesRscKey);
 	}
 }
 
@@ -389,7 +379,7 @@ void Map2::MapSectorObject::updateArc() const
 	}
 	else if(style().testFlag(ArcRsc))
 	{
-		registerObject(hArc, mArcRsc);
+		registerObject(hArc, mArcRscKey);
 	}
 }
 
@@ -406,23 +396,37 @@ void Map2::MapSectorObject::appendDraw(HMAP handle, QColor color, qreal width) c
 	mapAppendDraw(handle, IMG_LINE, (char*)&parmLine);
 }
 
-void Map2::MapSectorObject::registerObject(HMAP handle, int rscKey) const
+void Map2::MapSectorObject::registerObject(HMAP handle, QString rscKey) const
 {
-	mapRegisterObject(handle, rscKey, LOCAL_LINE);
+	QTextCodec *tc = RscViewer::codec();
+	mapRegisterObjectByKey(handle, tc->fromUnicode(rscKey).data());
 }
 
-void Map2::MapSectorObject::clearMetrics()
+void Map2::MapSectorObject::moveBy(double dxPlane, double dyPlane)
 {
-	for(int i = mapPointCount(handle(), 0); i > 0; --i)
+	if(!mapLayer())
 	{
-		mapDeletePointPlane(handle(), i);
+		return;
 	}
 
-	if(hArc > 0)
+	CoordPlane cp = coordinatePlane();
+
+	cp += CoordPlane(dxPlane, dyPlane);
+
+	setCenter( cp );
+}
+
+QRectF Map2::MapSectorObject::sizePix() const
+{
+	if(!mapLayer())
 	{
-		for(int i = mapPointCount(hArc, 0); i > 0; --i)
-		{
-			mapDeletePointPlane(hArc, i);
-		}
+		return QRectF();
 	}
+
+	return QRectF();
+}
+
+QList<HOBJ*> MapSectorObject::mapHandles()
+{
+	return QList<HOBJ*>() << &hSides << &hArc;
 }

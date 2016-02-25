@@ -81,6 +81,27 @@ Coord MapHelper::pictureToGeo(const QPoint &point) const
 	return planeToGeo(coordPlane );
 }
 
+qreal MapHelper::distance(Coord c1, Coord c2) const
+{
+	CoordPlane cp1 = geoToPlane(c1);
+	CoordPlane cp2 = geoToPlane(c2);
+
+	return distance(cp1, cp2);
+}
+
+qreal MapHelper::distance(CoordPlane c1, CoordPlane c2) const
+{
+	DOUBLEPOINT from;
+	from.x = c1.x;
+	from.y = c1.y;
+
+	DOUBLEPOINT to;
+	to.x = c2.x;
+	to.y = c2.y;
+
+	return mapDistance(&from, &to);
+}
+
 Coord MapHelper::center(const Coord &coord1, const Coord &coord2) const
 {
 	CoordPlane coordPlane1 = geoToPlane(coord1);
@@ -101,4 +122,147 @@ double MapHelper::mkm2px(double mkm) const
 double MapHelper::px2mkm(double pix) const
 {
 	return pix * mMkmInPx;
+}
+
+bool MapHelper::clearMetrics(HOBJ hObj) const
+{
+	if(hObj <= 0)
+	{
+		return false;
+	}
+
+	for(int i = mapPointCount(hObj, 0); i > 0; --i)
+	{
+		mapDeletePointPlane(hObj, i);
+	}
+}
+
+void MapHelper::clearHandle(HOBJ *hObj)
+{
+	if(! hObj || *hObj <=0)
+	{
+		return;
+	}
+
+	HOBJ h = *hObj;
+
+	mapFreeObject(h);
+	*hObj = 0;
+}
+
+bool MapHelper::commitByOrder(HOBJ hObj)
+{
+	if(hObj <= 0)
+	{
+		return false;
+	}
+
+	return mapCommitObjectByOrder(hObj) !=0;
+}
+
+bool MapHelper::removeObject(HOBJ hObj)
+{
+	if(hObj <= 0)
+	{
+		return false;
+	}
+
+	return mapDeleteObject(hObj) != 0;
+}
+
+bool MapHelper::commitObject(HOBJ hObj)
+{
+	if(hObj <= 0)
+	{
+		return false;
+	}
+
+	return mapCommitObject(hObj) != 0;
+}
+
+long MapHelper::objectMapKey(HOBJ hObj) const
+{
+	if(hObj <= 0)
+	{
+		return 0;
+	}
+
+	return mapObjectKey(hObj);
+}
+
+void MapHelper::setSelected(HOBJ hObj, QColor c) const
+{
+	if(hObj <= 0)
+	{
+		return;
+	}
+
+	QString color = QString::number( RGB(c.red(), c.green(), c.blue()) );
+
+	mapAppendSemantic(hObj, 31002, color.toLocal8Bit().data(), 255);
+}
+
+void MapHelper::addObjectToSelection(HSELECT select, HOBJ hObj) const
+{
+	if(hObj <=0 )
+	{
+		return;
+	}
+
+	int list = mapGetListNumber( hObj );
+	int key = mapObjectKey( hObj );
+
+	mapInvertSample(select);
+	mapSelectSampleByList(select, list, key);
+	mapInvertSample(select);
+}
+
+void MapHelper::removeObjectFromSelection(HSELECT select, HOBJ hObj) const
+{
+	if(hObj <=0 )
+	{
+		return;
+	}
+
+	int list = mapGetListNumber( hObj );
+	int key = mapObjectKey( hObj );
+
+	mapSelectSampleByList(select, list, key);
+}
+
+QPolygonF MapHelper::metricsToPlanePolygon(HOBJ hObj) const
+{
+	QPolygonF polygon;
+
+	if(hObj <= 0)
+	{
+		return polygon;
+	}
+
+	for(int i = mapPointCount(hObj, 0); i > 0; --i)
+	{
+		double x = mapXPlane(hObj, i);
+		double y = mapXPlane(hObj, i);
+
+		polygon << QPointF(x, y);
+	}
+
+	return polygon;
+}
+
+QPolygonF MapHelper::metricsToPicturePolygon(HOBJ hObj) const
+{
+	QPolygonF planePolygon = metricsToPlanePolygon(hObj);
+	QPolygonF picturePolygon;
+
+	foreach(QPointF plane, planePolygon)
+	{
+		double x = plane.x();
+		double y = plane.y();
+		mapPlaneToPicture(hObj, &x, &y);
+
+		picturePolygon << QPointF(x, y);
+	}
+
+	return picturePolygon;
 }

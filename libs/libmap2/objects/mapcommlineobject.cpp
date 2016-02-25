@@ -6,6 +6,9 @@
 #include "gis.h"
 
 #include <qmath.h>
+#include <QDebug>
+
+using namespace Map2;
 
 Map2::MapCommlineObject::MapCommlineObject(const Map2::Coord &from, const Map2::Coord &to, Map2::MapLayer *layer) :
 	MapObject(MapObject::MO_Commline, layer),
@@ -14,104 +17,68 @@ Map2::MapCommlineObject::MapCommlineObject(const Map2::Coord &from, const Map2::
 	mColor(Qt::blue),
 	mArrowStyle(AS_BothArrows),
 	mLineWidth(3),
-	hFromHandle(0),
-	hToHandle(0)
+	hBody(0),
+	hToHandle(0),
+	hFromHandle(0)
 {
-	redraw();
+
 }
 
 Map2::MapCommlineObject::~MapCommlineObject()
 {
-	if(hFromHandle > 0)
-	{
-		mapClearObject(hFromHandle);
-		hFromHandle = 0;
-	}
-
-	if(hToHandle > 0)
-	{
-		mapClearObject(hToHandle);
-		hToHandle = 0;
-	}
+	clearHandles();
 }
 
 void Map2::MapCommlineObject::setArrowStyle(const ArrowStyle &arrowStyle)
 {
 	mArrowStyle = arrowStyle;
-	redraw();
+	refresh();
 }
 
 void Map2::MapCommlineObject::setLineWidth(double value)
 {
 	mLineWidth = value;
-	redraw();
+	refresh();
 }
 
 void Map2::MapCommlineObject::setTo(const Map2::Coord &to)
 {
 	mTo = to;
-	redraw();
+	refresh();
 }
 
 void Map2::MapCommlineObject::setFrom(const Map2::Coord &from)
 {
 	mFrom = from;
-	redraw();
+	refresh();
 }
 
 void Map2::MapCommlineObject::setColor(const QColor &color)
 {
 	mColor = color;
-	redraw();
+	refresh();
 }
 
-void Map2::MapCommlineObject::clearArrows()
-{
-	if(hFromHandle > 0)
-	{
-		mapDeleteObject(hFromHandle);
-		mapClearObject(hFromHandle);
-		hFromHandle = 0;
-	}
-
-	if(hToHandle > 0)
-	{
-		mapDeleteObject(hToHandle);
-		mapClearObject(hToHandle);
-		hToHandle = 0;
-	}
-}
-
-void Map2::MapCommlineObject::clearPoints()
-{
-	for(int i = mapPointCount(handle(), 0); i > 0; --i)
-	{
-		mapDeletePointPlane(handle(), i);
-	}
-}
-
-void Map2::MapCommlineObject::redraw()
+void Map2::MapCommlineObject::repaint()
 {
 	if(!mapLayer())
 	{
 		return;
 	}
 
-	Map2::MapHelper *helper = mapLayer()->mapView()->helper();
+	removeFromMap();
 
-	mapClearDraw( handle() );
-	clearArrows();
-	clearPoints();
+	hBody = mapCreateSiteObject(mapLayer()->mapHandle(), mapLayer()->siteHandle());
 
 	IMGLINE parmLine;
 	memset(&parmLine, 0x0, sizeof(IMGLINE));
-	parmLine.Thick = (ulong)helper->px2mkm( mLineWidth );
+	parmLine.Thick = (ulong)helper()->px2mkm( mLineWidth );
 	parmLine.Color = RGB(mColor.red(), mColor.green(), mColor.blue());
 
-	mapAppendDraw(handle(), IMG_LINE, (char*)&parmLine);
+	mapAppendDraw(hBody, IMG_LINE, (char*)&parmLine);
 
-	CoordPlane from = helper->geoToPlane( mFrom );
-	CoordPlane to = helper->geoToPlane(mTo);
+	CoordPlane from = helper()->geoToPlane( mFrom );
+	CoordPlane to = helper()->geoToPlane(mTo);
 
 	QPolygonF arcCoords = drawArcs();
 
@@ -139,9 +106,9 @@ void Map2::MapCommlineObject::redraw()
 
 	foreach(const QPointF &coord, arcCoords)
 	{
-		CoordPlane p = helper->pictureToPlane(coord.toPoint());
+		CoordPlane p = helper()->pictureToPlane(coord.toPoint());
 
-		mapAppendPointPlane(handle(), p.x, p.y);
+		mapAppendPointPlane(hBody, p.x, p.y);
 	}
 
 	commit();
@@ -252,13 +219,13 @@ HMAP Map2::MapCommlineObject::addArrow(Map2::CoordPlane pointCoord, double azimu
 	arrowRightPoint.setY( arrowPoint.y() + arrowLength );
 	arrowRightPoint.setX(arrowPoint.x() + qTan(helper->degreeToRad(10))*arrowLength );
 
-	HMAP hmap = mapCreateSiteObject(mapLayer()->mapHandle(), mapLayer()->siteHandle());
+	HMAP hobj = mapCreateSiteObject(mapLayer()->mapHandle(), mapLayer()->siteHandle());
 
 	IMGSQUARE parmLine;
 	memset(&parmLine, 0x0, sizeof(IMGSQUARE));
 	parmLine.Color = RGB(mColor.red(), mColor.green(), mColor.blue());
 
-	mapAppendDraw(hmap, IMG_SQUARE, (char*)&parmLine);
+	mapAppendDraw(hobj, IMG_SQUARE, (char*)&parmLine);
 
 	QList<CoordPlane> result;
 	result << helper->pictureToPlane( arrowPoint.toPoint() );
@@ -268,7 +235,7 @@ HMAP Map2::MapCommlineObject::addArrow(Map2::CoordPlane pointCoord, double azimu
 
 	foreach(const CoordPlane &coord, result)
 	{
-		mapAppendPointPlane(hmap, coord.x, coord.y);
+		mapAppendPointPlane(hobj, coord.x, coord.y);
 	}
 
 	DOUBLEPOINT rotatePoint;
@@ -277,9 +244,33 @@ HMAP Map2::MapCommlineObject::addArrow(Map2::CoordPlane pointCoord, double azimu
 
 	double azimuthRad = helper->degreeToRad(azimuth);
 
-	mapRotateObject(hmap, &rotatePoint, &azimuthRad);
+	mapRotateObject(hobj, &rotatePoint, &azimuthRad);
 
-	mapCommitObject(hmap);
+	helper->commitObject( hobj );
 
-	return hmap;
+	return hobj;
+}
+
+void Map2::MapCommlineObject::moveBy(double dxPlane, double dyPlane)
+{
+	if(!mapLayer())
+	{
+		qDebug()<<"*** ЛИНИЯ СВЯЗИ: Невозможно обработать прямоугольную координату, пока объект не добавлен на карту.";
+		return;
+	}
+
+	MapHelper *helper = mapLayer()->mapView()->helper();
+
+	CoordPlane cpFrom = helper->geoToPlane(mFrom) + CoordPlane(dxPlane, dyPlane);
+	CoordPlane cpTo = helper->geoToPlane(mTo) + CoordPlane(dxPlane, dyPlane);
+
+	mFrom = helper->planeToGeo(cpFrom);
+	mTo = helper->planeToGeo(cpTo);
+
+	refresh();
+}
+
+QList<HOBJ*> Map2::MapCommlineObject::mapHandles()
+{
+	return QList<HOBJ*>() << &hFromHandle << &hToHandle << &hBody;
 }

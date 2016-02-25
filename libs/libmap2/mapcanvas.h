@@ -18,7 +18,7 @@ public:
 	~MapCanvas();
 
 	HMAP mapHandle() const { return mMapHandle; }
-	void setMapHandle(const HMAP &hnd, const HSELECT &select);
+	void setMapHandle(const HMAP &hnd);
 	QPixmap mapPreview(int width);
 	QPoint mapTopLeft() const {return mMapTopLeft;}
 
@@ -29,8 +29,6 @@ public slots:
 	void setMapTopLeft(const QPoint &point);
 	void setScale(double scale);
 	double scale() const;
-
-	void setSelectionColor(const QColor &color);
 
 	/*!
 	 * \brief Выставляет флаг перерисовки.
@@ -52,9 +50,6 @@ private:
 
 	QRect mZoomRect; //!< Прямоугольник для интсрумента "Приблизить область".
 	QPen mZoomRectPen;
-
-	COLORREF mSelectColor;
-	HSELECT mSelect;
 };
 }
 #endif // MAPCANVAS_H

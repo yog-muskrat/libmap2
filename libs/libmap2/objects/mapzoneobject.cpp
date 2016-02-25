@@ -2,127 +2,215 @@
 #include "mapview.h"
 #include "maplayer.h"
 #include "maphelper.h"
+#include "rscviewer.h"
 
 #include "gis.h"
 
 #include <QDebug>
+#include <QTextCodec>
 
 using namespace Map2;
 
-MapZoneObject::MapZoneObject(long rscCode, QList<Map2::CoordPlane> coords, Map2::MapLayer *layer)
-	: MapObject(MO_Zone, layer, rscCode)
+MapZoneObject::MapZoneObject(const QString &rscKey, QList<Map2::CoordPlane> coords, Map2::MapLayer *layer)
+	: MapObject(MO_Zone, layer), mRscKey(rscKey), hObj(0)
 {
-	mapRegisterObject( handle(), mRscCode, LOCAL_SQUARE);
 	addPoints(coords);
 }
 
-void MapZoneObject::addPoint(Map2::CoordPlane coord)
+MapZoneObject::MapZoneObject(const QString &rscKey, QList<Coord> coords, MapLayer *layer)
+	: MapObject(MO_Zone, layer), mCoords(coords), mRscKey(rscKey), hObj(0)
 {
-	Q_ASSERT(mapLayer());
-	mapAppendPointPlane(handle(), coord.x, coord.y);
 
-	clearPoints();
-
-	mCoords << coord;
-
-	appendPoints();
 }
 
 void MapZoneObject::addPoint(Map2::Coord coord)
 {
-	Q_ASSERT(mapLayer());
+	mCoords << coord;
 
-	Map2::MapHelper *helper = mapLayer()->mapView()->helper();
-
-	addPoint( helper->geoToPlane( coord ) );
-}
-
-void MapZoneObject::addPoints(QList<Map2::CoordPlane> coords)
-{
-	Q_ASSERT(mapLayer());
-
-	if(coords.isEmpty())
+	if(!mapLayer())
 	{
 		return;
 	}
 
-	clearPoints();
+	updateMetrics();
+	commit();
+}
 
-	foreach(const CoordPlane &c, coords)
+void MapZoneObject::addPoint(Map2::CoordPlane coord)
+{
+	if(!mapLayer())
 	{
-		mCoords << c;
+		qDebug()<<"*** ZONE OBJECT: Невозможно обработать прямоугольную координату, пока объект не добавлен на карту.";
+		return;
 	}
 
-	appendPoints();
-
-	commit();
+	Map2::MapHelper *helper = mapLayer()->mapView()->helper();
+	addPoint( helper->planeToGeo( coord ) );
 }
 
 void MapZoneObject::addPoints(QList<Map2::Coord> coords)
 {
-	Q_ASSERT(mapLayer());
-
-	Map2::MapHelper *helper = mapLayer()->mapView()->helper();
-
-	QList<CoordPlane> planeCoords;
-
 	foreach(const Coord &c, coords)
 	{
-		planeCoords <<  helper->geoToPlane( c );
+		mCoords << c;
 	}
 
-	addPoints(planeCoords);
-}
-
-void MapZoneObject::clear()
-{
-	clearPoints();
-	mCoords.clear();
-}
-
-double MapZoneObject::length() const
-{
-	return mapPerimeter( handle() );
-}
-
-void MapZoneObject::closeZone() const
-{
-	mapAbrige(handle(), 0.1);
-}
-
-void MapZoneObject::setRscCode(long rscCode)
-{
-	if(mRscCode == rscCode)
+	if(!mapLayer())
 	{
 		return;
 	}
 
-	mRscCode = rscCode;
-
-	mapDeleteObject( handle() );
-	commit();
-
-	mObjHandle = mapCreateSiteObject(mapLayer()->mapHandle(), mapLayer()->siteHandle(), 1, IDFLOAT2 );
-
-	mapRegisterObject( handle(), mRscCode, LOCAL_SQUARE);
-	addPoints(mCoords);
-}
-
-void MapZoneObject::clearPoints()
-{
-	for(int i = mapPointCount( handle(), 0); i >0 ; --i)
-	{
-		mapDeletePointPlane(handle(), i);
-	}
+	updateMetrics();
 	commit();
 }
 
-void MapZoneObject::appendPoints()
+void MapZoneObject::addPoints(QList<Map2::CoordPlane> coords)
 {
-	foreach(CoordPlane cp, mCoords)
+	if(!mapLayer())
 	{
-			mapAppendPointPlane(handle(), cp.x, cp.y);
+		qDebug()<<"*** ZONE OBJECT: Невозможно обработать прямоугольную координату, пока объект не добавлен на карту.";
+		return;
+	}
+
+	Map2::MapHelper *helper = mapLayer()->mapView()->helper();
+
+	QList<Coord> geoCoords;
+
+	foreach(const CoordPlane &c, coords)
+	{
+		geoCoords <<  helper->planeToGeo( c );
+	}
+
+	addPoints(geoCoords);
+}
+
+double MapZoneObject::length() const
+{
+	if(!mapLayer())
+	{
+		return -1;
+	}
+
+	return mapPerimeter( hObj );
+}
+
+void MapZoneObject::closeZone() const
+{
+	if(!mapLayer())
+	{
+		return;
+	}
+
+	mapAbrige(hObj, 0.1);
+}
+
+void MapZoneObject::setRscKey(const QString &rscKey)
+{
+	if(mRscKey == rscKey)
+	{
+		return;
+	}
+
+	mRscKey = rscKey;
+
+	refresh();
+}
+
+QPolygonF MapZoneObject::toPicturePolygon() const
+{
+	if(!helper())
+	{
+		return QPolygonF();
+	}
+
+	return helper()->metricsToPicturePolygon( hObj );
+}
+
+QPolygonF MapZoneObject::toPlanePolygon() const
+{
+	if(!helper())
+	{
+		return QPolygonF();
+	}
+
+	return helper()->metricsToPlanePolygon( hObj );
+}
+
+void MapZoneObject::repaint()
+{
+	if(!mapLayer())
+	{
+		return;
+	}
+
+	removeFromMap();
+
+	if(mRscKey.isEmpty())
+	{
+		return;
+	}
+
+	hObj = mapCreateSiteObject(mapLayer()->mapHandle(), mapLayer()->siteHandle());
+	mapRegisterObjectByKey( hObj, RscViewer::codec()->fromUnicode(mRscKey).data());
+
+	updateMetrics();
+
+	commit();
+}
+
+void MapZoneObject::updateMetrics()
+{
+	Q_ASSERT(mapLayer());
+
+	helper()->clearMetrics(hObj);
+
+	foreach(Coord c, mCoords)
+	{
+		Map2::CoordPlane cp = helper()->geoToPlane(c);
+		mapAppendPointPlane(hObj, cp.x, cp.y);
+	}
+}
+
+Coord Map2::MapZoneObject::coordinateGeo() const
+{
+	if(!mapLayer())
+	{
+		return Coord();
+	}
+
+	QPointF polygonCenter = toPlanePolygon().boundingRect().center();
+
+	return helper()->planeToGeo( CoordPlane(polygonCenter) );
+}
+
+void Map2::MapZoneObject::moveBy(double dxPlane, double dyPlane)
+{
+	if(!mapLayer())
+	{
+		return;
+	}
+
+	DOUBLEPOINT dp;
+	dp.x = dxPlane;
+	dp.y = dyPlane;
+
+	mapRelocateObjectPlane(hObj, &dp);
+
+	mCoords.clear();
+
+	for(int i = 0; i < mapPointCount(hObj, 0); ++i)
+	{
+		double x = mapXPlane(hObj, i+1);
+		double y = mapYPlane(hObj, i+1);
+
+		CoordPlane cp(x, y);
+		mCoords << helper()->planeToGeo(cp);
 	}
 
 	commit();
+}
+
+QList<HOBJ *> Map2::MapZoneObject::mapHandles()
+{
+	QList<HOBJ*>() << &hObj;
 }

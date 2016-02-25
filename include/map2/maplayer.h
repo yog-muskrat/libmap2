@@ -41,17 +41,24 @@ public:
 	bool isLocked(){ return mLocked; }
 	void setLocked(bool locked = true);
 
+	bool isTemporary() const {return mTemp;}
+
 	QString layerName() const {return mLayerName;}
 	void setLayerName(const QString &value);
 
+	QString layerKey() const {return mLayerKey;}
+	void setLayerKey(const QString &value);
+
 	Map2::MapObject *takeObjectAt(QModelIndex index);
 	Map2::MapObject *takeObject(Map2::MapObject *obj);
+
+	Map2::MapObject *objectByParameter(const QString &parameter, const QVariant &value) const;
 
 	/*!
 	 * \brief Возвращает объект по его уникальному номеру на карте.
 	 * \param number Уникальный номер объекта карты.
 	 */
-	Map2::MapObject *objectByMapKey(long mapIndex);
+	Map2::MapObject *objectByHandle(HMAP hMap);
 
 	/*!
 	 * \brief Удаляет файлы слоя.
@@ -69,15 +76,16 @@ public:
 	 */
 	MapView *mapView() { return pMapView; }
 
-	void addObject(Map2::MapObject *object, Map2::MapObject *parent = 0);
-	Map2::MapVectorObject* addVectorObject(long rscCode, Map2::Coord coords = Coord(), QString name = "");
-	Map2::MapLineObject* addLineObject(long rscCode, const QList<CoordPlane> &coords = QList<Map2::CoordPlane>());
-	Map2::MapZoneObject* addZoneObject(long rscCode, QList<Map2::CoordPlane> coords = QList<Map2::CoordPlane>());
+	void addObject(Map2::MapObject *object);
+	Map2::MapVectorObject* addVectorObject(const QString &rscKey, Map2::Coord coords = Coord(), QString name = "");
+	Map2::MapLineObject* addLineObject(const QString &rscKey, const QList<CoordPlane> &coords = QList<Map2::CoordPlane>());
+	Map2::MapZoneObject* addZoneObject(const QString &rscKey, QList<Map2::CoordPlane> coords = QList<Map2::CoordPlane>());
+	Map2::MapZoneObject* addZoneObject(const QString &rscKey, QList<Map2::Coord> coords = QList<Map2::Coord>());
 
 	void removeObject(MapObject *object);
 
 	Map2::MapObject * objectAtIndex(const QModelIndex &index) const;
-	Map2::MapObject * objectAtIndex(const int &row) const;
+	Map2::MapObject * objectAtIndex(int row) const;
 
 	QModelIndex objectIndex(Map2::MapObject *object) const;
 
@@ -99,11 +107,12 @@ public slots:
 
 signals:
 	void layerNameChanged(QString newName);
+	void layerKeyChanged(QString newName);
 	void visibilityToggled(bool visible);
 	void lockToggled(bool locked);
 
 private:
-	explicit MapLayer(quint16 id, QString rscName, MapView *parent, bool temp = false);
+	explicit MapLayer( const QString &rscName, const QString &key, const QString &name, MapView *parent, bool temp = false);
 	QVariant displayRole(const QModelIndex &idx) const;
 	QVariant editRole(const QModelIndex &idx) const;
 	QVariant decorationRole(const QModelIndex &idx) const;
@@ -113,18 +122,19 @@ private:
 	MapView *pMapView;
 
 	QList<MapObject*> mObjects;
-	QHash<quint16, MapObject*> mObjectsHash;
+	QHash<quint16, MapObject*> mObjectsHash; ///TODO: Не забыть про сию задумку.
 
 	HSITE mSiteHandle;
 	HSELECT mSelectHandle;
 	QString mRscName;
 	QString mLayerName;
+	QString mLayerKey;
 	QString mFileName;
 
-	quint16 mLastInternalId;
 	bool mVisible;
 	bool mValid;
 	bool mLocked;
+	bool mTemp;
 };
 }
 #endif // MAPLAYER_H

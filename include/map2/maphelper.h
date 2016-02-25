@@ -1,7 +1,10 @@
 #ifndef MAPHELPER_H
 #define MAPHELPER_H
 
+#include <QColor>
 #include <QPoint>
+#include <QPolygonF>
+
 #include "mapstructs.h"
 
 namespace Map2
@@ -55,6 +58,12 @@ public:
 	 */
 	Coord pictureToGeo(const QPoint &point) const;
 
+	/*!
+	 * \brief Возвращает расстояние между двумя точками в метрах
+	 */
+	qreal distance(Map2::Coord c1, Map2::Coord c2) const;
+	qreal distance(Map2::CoordPlane c1, Map2::CoordPlane c2) const;
+
 	double bearing(const Map2::CoordPlane &pointFrom, const Map2::CoordPlane &pointTo) const;
 
 	Coord center(const Coord &coord1, const Coord &coord2) const;
@@ -70,6 +79,19 @@ public:
 	double px2mkm(double pix) const;
 
 	void setMkmInPxRatio(double mkmInPx) {mMkmInPx = mkmInPx;}
+
+	bool clearMetrics(HOBJ hObj) const;
+	void clearHandle(HOBJ *hObj);
+	bool commitByOrder(HOBJ hObj);
+	bool removeObject(HOBJ hObj);
+	bool commitObject(HOBJ hObj);
+	long objectMapKey(HOBJ hObj) const;
+	void setSelected(HOBJ hObj, QColor c = QColor(Qt::yellow) ) const;
+	void addObjectToSelection(HSELECT select, HOBJ obj) const;
+	void removeObjectFromSelection(HSELECT select, HOBJ hObj) const;
+
+	QPolygonF metricsToPlanePolygon(HOBJ hObj) const;
+	QPolygonF metricsToPicturePolygon(HOBJ hObj) const;
 
 private:
 	HMAP mMapHnd;

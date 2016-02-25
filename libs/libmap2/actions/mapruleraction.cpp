@@ -10,7 +10,7 @@ using namespace Map2;
 
 MapRulerAction::MapRulerAction(Map2::MapView *view) : MapAction(view)
 {
-	pLayer = pView->createTempLayer("mgk.rsc", "ruler_layer");
+	pLayer = pView->createLayer("mgk.rsc", "", "ruler_layer", true);
 	QObject::connect(pLayer, SIGNAL(dataChanged(QModelIndex,QModelIndex)), pView->canvas(), SLOT(queueRepaint()));
 	pLayer->setVisible(true);
 	pRuler = new MapRuler( pLayer );

@@ -24,7 +24,9 @@ public:
 	{
 		ExCodeRole = Qt::UserRole + 1,
 		KeyRole,
-		ImageRole
+		ImageRole,
+		LocalRole,
+		LayerRole
 	};
 
 	explicit RscViewer(QWidget *parent = 0);
@@ -58,11 +60,14 @@ public:
 	 */
 	QImage selectedSignImage() const;
 
-	static long selectExCode(QString rscName, int localFilter = -1);
-	static long selectVectorExCode(QString rscName);
-	static long selectLineExCode(QString rscName);
-	static long selectZoneExCode(QString rscName);
-	static long selectTextExCode(QString rscName);
+	static QString selectKey(const QString &rscName, int localFilter = -1);
+	static QString selectVectorKey(const QString &rscName);
+	static QString selectLineKey(const QString &rscName);
+	static QString selectZoneKey(const QString &rscName);
+	static QString selectTextKey(const QString &rscName);
+	static QImage image(const QString &rscName, const QString &key, const QSize &size = QSize(64, 64));
+
+	static QTextCodec *codec();
 
 signals:
 	void signSelected();
@@ -75,6 +80,8 @@ private slots:
 	void showObjectsForRscLayer(const QModelIndex &index);
 
 	void on_cbLocal_activated(int index);
+
+	void on_objectsList_clicked(const QModelIndex &index);
 
 private:
 	/*!

@@ -1,26 +1,26 @@
 #ifndef MAPZONEOBJECT_H
 #define MAPZONEOBJECT_H
 
-#include "mapstructs.h"
-#include "mapobject.h"
+#include "map2/mapstructs.h"
+#include "map2/objects/mapobject.h"
 
 #include <QList>
+#include <QPolygon>
 
 namespace Map2 {
 
 class MapZoneObject : public MapObject
 {
 public:
-	MapZoneObject(long rscCode, QList<Map2::CoordPlane> coords = QList<Map2::CoordPlane>(), Map2::MapLayer *layer = 0);
+	MapZoneObject(const QString &rscKey, QList<Map2::CoordPlane> coords = QList<Map2::CoordPlane>(), Map2::MapLayer *layer = 0);
+	MapZoneObject(const QString &rscKey, QList<Map2::Coord> coords = QList<Map2::Coord>(), Map2::MapLayer *layer = 0);
 
 	void addPoint(Map2::CoordPlane coord);
 	void addPoint(Map2::Coord coord);
 	void addPoints(QList<Map2::CoordPlane> coords);
 	void addPoints(QList<Map2::Coord> coords);
 
-	QList<Map2::CoordPlane> points() const {return mCoords;}
-
-	void clear();
+	QList<Map2::Coord> points() const {return mCoords;}
 
 	/*!
 	 * \brief Возвращает протяженность линии в метрах.
@@ -33,13 +33,26 @@ public:
 	 */
 	void closeZone() const;
 
-	virtual void setRscCode(long rscCode);
+	void setRscKey(const QString &rscKey);
+
+	QPolygonF toPicturePolygon() const;
+	QPolygonF toPlanePolygon() const;
 
 private:
-	void clearPoints();
-	void appendPoints();
+	void updateMetrics();
 
-	QList<CoordPlane> mCoords;
+	QList<Coord> mCoords;
+	QString mRscKey;
+	HOBJ hObj;
+
+	// MapObject interface
+public:
+	virtual Coord coordinateGeo() const;
+	virtual void moveBy(double dxPlane, double dyPlane);
+
+protected:
+	virtual void repaint();
+	virtual QList<HOBJ *> mapHandles();
 };
 }
 #endif // MAPZONEOBJECT_H

@@ -1,120 +1,72 @@
 #include "objects/mapvectorobject.h"
+#include "mapview.h"
 #include "maplayer.h"
 #include "maphelper.h"
-#include "mapview.h"
+#include "rscviewer.h"
 
 #include "gis.h"
 
-#include <qmath.h>
+#include <QRect>
 #include <QDebug>
 #include <QLineF>
-#include <QRect>
+#include <qmath.h>
 #include <QTextCodec>
 
 using namespace Map2;
 
-MapVectorObject::MapVectorObject(long code, Map2::MapLayer *layer)
-	: MapObject(MO_Vector, layer, code), mRotation(0)
+
+MapVectorObject::MapVectorObject(const QString &rscKey, MapLayer *layer) :
+	MapObject(MO_Vector, layer),
+	mRscKey(rscKey),
+	mRotation(0),
+	hObj(0)
 {
-	mapAppendPointPlane(handle(), 0, 0);
-	mapAppendPointPlane(handle(), 0, 0);
-	mapRegisterObject(handle(), rscCode(), LOCAL_VECTOR);
-	commit();
 }
 
 void MapVectorObject::setCoordinates(Map2::Coord coord)
 {
-	if(!mapLayer())
+	if(mCoordinate == coord)
 	{
-		qDebug()<<"*** MapVectorObject: Невозможно обработать координату, пока объект не добавлен в слой";
 		return;
 	}
 
-	Map2::MapHelper *helper = mapLayer()->mapView()->helper();
+	mCoordinate = coord;
 
-	setCoordinates( helper->geoToPlane( coord ) );
+	if(!mapLayer())
+	{
+		return;
+	}
+
+	CoordPlane cp = helper()->geoToPlane(mCoordinate);
+
+	mapUpdatePointPlane(hObj, cp.x, cp.y, 1);
+
+	setRotation( rotation() );
 }
 
 void MapVectorObject::setCoordinates(Map2::CoordPlane coord)
 {
-	if(coordinatesPlane() == coord)
+	if(!mapLayer())
 	{
+		qDebug()<<"*** MAPOBJECT: Невозможно задать прямоугольные координаты, пока объект не добавлен на карту.";
 		return;
 	}
 
-	updateMetric(1, coord);
-	setRotation( rotation() );
-}
-
-Map2::Coord MapVectorObject::coordinatesGeo() const
-{
-	if(!mapLayer())
-	{
-		qDebug()<<"*** MapVectorObject: Невозможно обработать координату, пока объект не добавлен в слой";
-		return Map2::Coord();
-	}
-
 	Map2::MapHelper *helper = mapLayer()->mapView()->helper();
-
-	return helper->planeToGeo( coordinatesPlane() );
-}
-
-Map2::CoordPlane MapVectorObject::coordinatesPlane() const
-{
-	double x = mapXPlane( handle(), 1);
-	double y = mapYPlane( handle(), 1);
-
-	return CoordPlane(x, y);
-}
-
-double MapVectorObject::planeX() const
-{
-	return coordinatesPlane().x;
-}
-
-double MapVectorObject::planeY() const
-{
-	return coordinatesPlane().y;
-}
-
-double MapVectorObject::lat() const
-{
-	if(!mapLayer())
-	{
-		qDebug()<<"*** MapVectorObject: Невозможно обработать координату, пока объект не добавлен в слой";
-		return 0;
-	}
-
-	Map2::MapHelper *helper = mapLayer()->mapView()->helper();
-
-	return helper->planeToGeo( coordinatesPlane() ).lat;
-}
-
-double MapVectorObject::lng() const
-{
-	if(!mapLayer())
-	{
-		qDebug()<<"*** MapVectorObject: Невозможно обработать координату, пока объект не добавлен в слой";
-		return 0;
-	}
-
-	Map2::MapHelper *helper = mapLayer()->mapView()->helper();
-
-	return helper->planeToGeo( coordinatesPlane() ).lng;
+	setCoordinates( helper->planeToGeo( coord ) );
 }
 
 QRectF MapVectorObject::sizePix() const
 {
 	if(!mapLayer())
 	{
-		qDebug()<<"*** MapVectorObject: Невозможно расчитать развер, пока объект не добавлен в слой";
 		return QRect();
 	}
 
 	Map2::MapHelper *helper = mapLayer()->mapView()->helper();
 
 	HRSC hRsc = mapGetRscIdent(mapLayer()->mapHandle(), mapLayer()->siteHandle());
-	int rscInCode = mapGetRscObjectCodeByNumber(hRsc, rscCode(), LOCAL_VECTOR);
+	int rscInCode = mapGetRscObjectKeyIncode(hRsc, RscViewer::codec()->fromUnicode(mRscKey).data());
 
 	IMAGESIZE imagesize;
 	mapGetRscImageSize(hRsc, rscInCode, &imagesize);
@@ -131,59 +83,93 @@ void MapVectorObject::setRotation(double degree)
 {
 	mRotation = degree;
 
-	QPointF firstPoint = coordinatesPlane().toPointF();
+	QPointF firstPoint = coordinatePlane().toPointF();
 
 	QLineF line( firstPoint.y(), firstPoint.x(), firstPoint.y() + 100, firstPoint.x() );
 	qreal lineAngle = fmod(-mRotation + 90. + 360., 360.);
 	line.setAngle( -lineAngle );
-	updateMetric(2, CoordPlane( line.p2().y(), line.p2().x() ) );
+
+	CoordPlane cp(line.p2().y(), line.p2().x() );
+	mapUpdatePointPlane(hObj, cp.x, cp.y, 2);
 
 	commit();
 }
 
-void MapVectorObject::setRscCode(long code)
+void MapVectorObject::setRscKey(const QString &key)
 {
-	if(mRscCode == code || code <= 0)
+	if(mRscKey == key)
 	{
 		return;
 	}
 
-	mRscCode = code;
-
-	CoordPlane coord = coordinatesPlane();
-
-	mapDeleteObject( handle() );
-	mapCommitObject( handle() );
-	mapFreeObject( handle() );
-
-	mObjHandle = mapCreateSiteObject(mapLayer()->mapHandle(), mapLayer()->siteHandle(), 1, IDFLOAT2 );
-	mapAppendPointPlane(handle(), 0, 0);
-	mapAppendPointPlane(handle(), 0, 0);
-	mapRegisterObject(handle(), rscCode(), LOCAL_VECTOR);
-	setCoordinates( coord );
+	mRscKey = key;
+	refresh();
 }
 
 void MapVectorObject::setName(QString name)
 {
-	if(name == mName)
+	if(!mapLayer())
 	{
+		MapObject::setName(name);
 		return;
 	}
 
-	MapObject::setName(name);
+	mName = name;
 
 	if(name.isEmpty())
 	{
-		int number = mapSemanticNumber(handle(), 33334);
+		int number = mapSemanticNumber(hObj, 33334);
 		if(number > 0)
 		{
-			mapDeleteSemantic(handle(), number);
+			mapDeleteSemantic(hObj, number);
 		}
 	}
 	else
 	{
-		QTextCodec *tc = QTextCodec::codecForName("koi8-r");
-		mapAppendSemantic( handle(), 33334, tc->fromUnicode(name).data(), 100);
+		QTextCodec *tc = RscViewer::codec();
+		mapAppendSemantic( hObj, 33334, tc->fromUnicode(name).data(), 100);
 	}
 	commit();
+}
+
+void MapVectorObject::repaint()
+{
+	if(!mapLayer())
+	{
+		return;
+	}
+
+	removeFromMap();
+
+	if(mRscKey.isEmpty())
+	{
+		return;
+	}
+
+	hObj = mapCreateSiteObject(mapLayer()->mapHandle(), mapLayer()->siteHandle());
+	CoordPlane coord = coordinatePlane();
+
+	mapAppendPointPlane(hObj, coord.x, coord.y);
+	mapAppendPointPlane(hObj, coord.x, coord.y);
+	mapRegisterObjectByKey(hObj, RscViewer::codec()->fromUnicode(mRscKey).data());
+
+	setRotation(mRotation);
+}
+
+void Map2::MapVectorObject::moveBy(double dxPlane, double dyPlane)
+{
+	if(!mapLayer())
+	{
+		return;
+	}
+
+	CoordPlane cp = coordinatePlane();
+	cp += CoordPlane(dxPlane, dyPlane);
+
+	setCoordinates(cp);
+}
+
+QList<HOBJ *> Map2::MapVectorObject::mapHandles()
+{
+	return QList<HOBJ*>() << &hObj;
 }

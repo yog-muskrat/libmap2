@@ -6,6 +6,7 @@
 #include <QDebug>
 #include <QDialog>
 #include <QLayout>
+#include <QSettings>
 #include <QFileInfo>
 #include <QTextCodec>
 #include <QPushButton>
@@ -136,7 +137,7 @@ QImage RscViewer::selectedSignImage() const
 	return idx.data(ImageRole).value<QImage>();
 }
 
-long RscViewer::selectExCode(QString rscName, int localFilter)
+QString RscViewer::selectKey(const QString &rscName, int localFilter)
 {
 	QDialog d;
 	d.setWindowTitle("Выбор знака");
@@ -167,40 +168,54 @@ long RscViewer::selectExCode(QString rscName, int localFilter)
 
 	main->addLayout(btnlay);
 
-	d.resize(800, 600);
+	QSettings set(qApp->organizationName(), qApp->applicationName());
 
-	if(!d.exec())
+	d.restoreGeometry( set.value("rscviewer_geometry").toByteArray() );
+
+	bool ok = d.exec();
+
+	set.setValue("rscviewer_geometry", d.saveGeometry() );
+
+	if(!ok)
 	{
 		return 0;
 	}
 
-	return view.selectedSignCode();
+	return view.selectedSignKey();
 }
 
-long RscViewer::selectVectorExCode(QString rscName)
+QString RscViewer::selectVectorKey(const QString &rscName)
 {
-	return selectExCode(rscName, LOCAL_VECTOR);
+	return selectKey(rscName, LOCAL_VECTOR);
 }
 
-long RscViewer::selectLineExCode(QString rscName)
+QString RscViewer::selectLineKey(const QString &rscName)
 {
-	return selectExCode(rscName, LOCAL_LINE);
+	return selectKey(rscName, LOCAL_LINE);
 }
 
-long RscViewer::selectZoneExCode(QString rscName)
+QString RscViewer::selectZoneKey(const QString &rscName)
 {
-	return selectExCode(rscName, LOCAL_SQUARE);
+	return selectKey(rscName, LOCAL_SQUARE);
 }
 
-long RscViewer::selectTextExCode(QString rscName)
+QString RscViewer::selectTextKey(const QString &rscName)
 {
-	return selectExCode(rscName, LOCAL_TITLE);
+	return selectKey(rscName, LOCAL_TITLE);
+}
+
+QImage RscViewer::image(const QString &rscName, const QString &key, const QSize &size)
+{
+	return QImage(size, QImage::Format_ARGB32);
+}
+
+QTextCodec *RscViewer::codec()
+{
+	return QTextCodec::codecForName("koi8r");
 }
 
 void RscViewer::showObjectsForRscLayer(const QModelIndex &index)
 {
-	QTextCodec *codec = QTextCodec::codecForName("koi8r");
-
 	pRscObjectsModel->setRowCount(0);
 
 	int segmentNumber = index.data(Qt::UserRole+1).toInt();
@@ -257,8 +272,8 @@ void RscViewer::showObjectsForRscLayer(const QModelIndex &index)
 
 		delete[] colorimage;
 
-		QString keyString = codec->toUnicode( key );
-		QString nameString = codec->toUnicode( name );
+		QString keyString = codec()->toUnicode( key );
+		QString nameString = codec()->toUnicode( name );
 
 		QImage img = QImage((uchar *) dataBytes, iconSize.width(), iconSize.height(), QImage::Format_RGB32).copy();
 
@@ -269,6 +284,8 @@ void RscViewer::showObjectsForRscLayer(const QModelIndex &index)
 		pRscObjectsModel->setData( idx, keyString, KeyRole);
 		pRscObjectsModel->setData( idx, QVariant::fromValue(excode), ExCodeRole);
 		pRscObjectsModel->setData( idx, img, ImageRole);
+		pRscObjectsModel->setData( idx, QVariant::fromValue(local), LocalRole);
+		pRscObjectsModel->setData( idx, index.data(), LayerRole);
 
 		pRscObjectsModel->setData( idx, tooltip.arg(nameString, keyString).arg(excode), Qt::ToolTipRole);
 	}
@@ -328,4 +345,18 @@ int RscViewer::objectsCountForLayer(int layerSegmentNumber, int localType)
 void RscViewer::on_cbLocal_activated(int index)
 {
 	setLocalFilter( ui->cbLocal->itemData(index).toInt() );
+}
+
+void Map2::RscViewer::on_objectsList_clicked(const QModelIndex &index)
+{
+	if(!index.isValid())
+	{
+		return;
+	}
+
+	ui->lblIcon->setPixmap( QPixmap::fromImage( index.data(ImageRole).value<QImage>()));
+	ui->lblKey->setText(index.data(KeyRole).toString());
+	ui->lblKod->setText( index.data(ExCodeRole).toString());
+	ui->lblLocal->setText(index.data(LocalRole).toString());
+	ui->lblLayer->setText(index.data(LayerRole).toString());
 }

@@ -10,18 +10,15 @@
 
 using namespace Map2;
 
-MapTextObject::MapTextObject(Map2::MapLayer *layer, QString text, Map2::CoordPlane coord, int fontHeightMm, QColor color)
-	: MapObject(MO_Text, layer), mText(text), mCoord(coord), mFontHeightMm(fontHeightMm), mColor(color)
+MapTextObject::MapTextObject(QString text, Map2::CoordPlane coord, int fontHeightMm, QColor color, MapLayer *layer)
+	: MapObject(MO_Text, layer), mText(text),  mFontHeightMm(fontHeightMm), mColor(color), hObj(0)
 {
-	mapRegisterDrawObject(handle(), 0, LOCAL_TITLE);
-	updateDraw();
-	mapAppendPointPlane(handle(), coord.x, coord.y);
-	commit();
+	setCoordinatePlane(coord);
+}
 
-	if(!text.isEmpty())
-	{
-		setText(text);
-	}
+MapTextObject::MapTextObject(QString text, Map2::Coord coord, int fontHeightMm, QColor color, MapLayer *layer)
+	: MapObject(MO_Text, layer), mText(text), mCoord(coord), mFontHeightMm(fontHeightMm), mColor(color), hObj(0)
+{
 }
 QString MapTextObject::text() const
 {
@@ -34,16 +31,33 @@ void MapTextObject::setText(const QString &text)
 
 	QTextCodec *tc = QTextCodec::codecForName("koi8-r");
 
-	mapPutText(handle(), tc->fromUnicode(mText).constData(), 0);
-	mapPutTextHorizontalAlign(handle(), FA_LEFT | FA_TOP, 0);
+	mapPutText(hObj, tc->fromUnicode(mText).constData(), 0);
+	mapPutTextHorizontalAlign(hObj, FA_LEFT | FA_TOP, 0);
 	commit();
 }
 
-void MapTextObject::setCoordinate(const Map2::CoordPlane &coord)
+void MapTextObject::setCoordinatePlane(const Map2::CoordPlane &coord)
+{
+	if(!helper())
+	{
+		return;
+	}
+
+	setCoordinateGeo( helper()->planeToGeo(coord));
+}
+
+void MapTextObject::setCoordinateGeo(const Coord &coord)
 {
 	mCoord = coord;
 
-	mapUpdatePointPlane(handle(), coord.x, coord.y, 1);
+	if(!helper())
+	{
+		return;
+	}
+
+	CoordPlane cp = helper()->geoToPlane(coord);
+
+	mapUpdatePointPlane(hObj, cp.x, cp.y, 1);
 	commit();
 }
 
@@ -63,11 +77,14 @@ void MapTextObject::setFontHeightMm(int value)
 
 QRectF MapTextObject::sizePix() const
 {
-	Q_ASSERT(mapLayer());
+	if(!mapLayer())
+	{
+		return QRectF();
+	}
 
 	Map2::MapHelper *helper = mapLayer()->mapView()->helper();
 
-	int mkmLength = mapGetTextLengthMkm(handle(), 0);
+	int mkmLength = mapGetTextLengthMkm(hObj, 0);
 	int mkmHeight = mFontHeightMm * 1000 * (1 + mText.count("\n"));
 
 	QRectF rect;
@@ -77,9 +94,32 @@ QRectF MapTextObject::sizePix() const
 	return rect;
 }
 
+void MapTextObject::repaint()
+{
+	if(!mapLayer())
+	{
+		return;
+	}
+
+	removeFromMap();
+
+	hObj = mapCreateSiteObject(mapLayer()->mapHandle(), mapLayer()->siteHandle());
+	mapRegisterDrawObject(hObj, 0, LOCAL_TITLE);
+	updateDraw();
+	CoordPlane cp = helper()->geoToPlane(mCoord);
+
+	mapAppendPointPlane(hObj, cp.x, cp.y);
+	commit();
+
+	if(!mText.isEmpty())
+	{
+		setText(mText);
+	}
+}
+
 void MapTextObject::updateDraw()
 {
-	mapClearDraw(handle());
+	mapClearDraw(hObj);
 
 	IMGTRUETEXT trueText;
 	trueText.Text.Color = RGB(mColor.red(), mColor.green(), mColor.blue());
@@ -91,5 +131,24 @@ void MapTextObject::updateDraw()
 	trueText.Text.Italic = 0;
 	trueText.Text.Underline = 0;
 
-	mapAppendDraw(handle(), IMG_TRUETEXT, (char*)&trueText);
+	mapAppendDraw(hObj, IMG_TRUETEXT, (char*)&trueText);
+}
+
+void Map2::MapTextObject::moveBy(double dxPlane, double dyPlane)
+{
+	if(!helper())
+	{
+		return;
+	}
+
+	CoordPlane cp = helper()->geoToPlane(mCoord);
+
+	cp += CoordPlane(dxPlane, dyPlane);
+
+	setCoordinatePlane(cp);
+}
+
+QList<HOBJ *> Map2::MapTextObject::mapHandles()
+{
+	return QList<HOBJ*>() << &hObj;
 }

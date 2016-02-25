@@ -32,10 +32,10 @@ LayersWidget::LayersWidget(QWidget *parent) : QWidget(parent), pMapView(0)
 	pTableView->setSelectionBehavior( QTableView::SelectRows );
 	pTableView->verticalHeader()->hide();
 
-	pbAdd = new QPushButton( QIcon(":plus"), "");
+	pbAdd = new QPushButton( QIcon(":map2/plus"), "");
 	pbAdd->setToolTip("Добавить слой");
 
-	pbRemove = new QPushButton( QIcon(":minus"), "");
+	pbRemove = new QPushButton( QIcon(":map2/minus"), "");
 	pbRemove->setToolTip("Удалить слой");
 	pbRemove->setEnabled(false);
 
@@ -45,7 +45,7 @@ LayersWidget::LayersWidget(QWidget *parent) : QWidget(parent), pMapView(0)
 	pbVisibility->setEnabled(false);
 	pbVisibility->setToolTip("Видимость слоя");
 
-	pbLock = new QPushButton( QIcon(":lock"), "");
+	pbLock = new QPushButton( QIcon(":map2/locked"), "");
 	pbLock->setCheckable(true);
 	pbLock->setChecked(false);
 	pbLock->setEnabled(false);
@@ -141,8 +141,10 @@ void LayersWidget::onAdd()
 		return;
 	}
 
-	MapLayer *l = pMapView->createLayer(dlg.selectedRsc(), name);
-	int row = pMapView->layersModel()->addLayer(l);
+	MapLayer *l = pMapView->createLayer(dlg.selectedRsc(), "", name);
+	int row = pMapView->layersModel()->layerIndex(l);
+
+	Q_ASSERT(l);
 
 	pTableView->selectRow(row);
 	onLayerClicked(pTableView->currentIndex());
@@ -199,5 +201,5 @@ void LayersWidget::onToggleLock(const bool &locked)
 	MapLayer *l = pMapView->layersModel()->layerAt( idx.row() );
 	l->setLocked(locked);
 
-	pbLock->setIcon( QIcon( (locked ? ":lock" : ":unlock" ) ) );
+	pbLock->setIcon( QIcon( (locked ? ":map2/locked" : ":map2/unlocked" ) ) );
 }

@@ -1,6 +1,7 @@
 #include "objects/mapobject.h"
 #include "maplayer.h"
 #include "mapview.h"
+#include "maphelper.h"
 #include "groups/mapgroup.h"
 
 #include "gis.h"
@@ -10,37 +11,28 @@
 
 using namespace Map2;
 
-MapObject::MapObject(Map2::MapObject::Type t, Map2::MapLayer *layer, long rscCode):
+MapObject::MapObject(Map2::MapObject::Type t, Map2::MapLayer *layer):
 	mType(t),
-	mObjHandle(-1),
 	pLayer(layer),
-	mMapKey(-1),
-	mSelected(false),
-	mRscCode(rscCode),
 	mHidden(false),
+	mSelected(false),
 	pGroup(0)
 {
-	mObjHandle = mapCreateSiteObject(mapLayer()->mapHandle(), mapLayer()->siteHandle(), 1, IDFLOAT2 );
-	commit();
-
-	layer->addObject(this);
+	refresh();
 }
 
 MapObject::~MapObject()
 {
-	if(handle() >0 )
+	if(mapLayer())
 	{
-		unbindMetrics();
-		mapCommitObject(handle());
-		mapFreeObject(handle());
-		mObjHandle = 0;
+		clearHandles();
 	}
+
+	///TODO: Вероятно, стоит удалять объект из группы, если он в таковую входит.
 }
 
 void MapObject::remove()
 {
-	Q_ASSERT(handle() > 0);
-
 	if(mapLayer())
 	{
 		mapLayer()->removeObject(this);
@@ -51,72 +43,73 @@ void MapObject::remove()
 	}
 }
 
-void MapObject::center()
+void MapObject::centerOnObject() const
 {
-	Q_ASSERT(handle() > 0 && mapLayer() );
+	if(!mapLayer())
+	{
+		return;
+	}
 
-	mapLayer()->mapView()->setCenter( coordinate() );
+	mapLayer()->mapView()->setCenter( coordinatePlane() );
 }
 
 void MapObject::setSelected(bool b)
 {
 	mSelected = b;
 
-	if(!mapLayer())
+	if(!helper())
 	{
 		return;
 	}
 
-	if(b)
+	if(mSelected)
 	{
-		QColor c(Qt::yellow);
-		QString color = QString::number( RGB(c.red(), c.green(), c.blue()) );
-		qDebug()<<"Add semantic"<<mapAppendSemantic(handle(), 31002, color.toLocal8Bit().data(), 255);
+		foreach(HOBJ *hObj, mapHandles())
+		{
+			helper()->setSelected(*hObj);
+		}
+
+		commit();
 	}
 	else
 	{
-		mapAppendSemantic(handle(), 31002, 0, 255);
-		mapRedefineObject(handle());
+		refresh();
 	}
-
-	HSELECT hselect = mapLayer()->mapView()->selectContext();
-
-	mapSelectObject(hselect, mapKey(), (mSelected ? 1 : 0) );
-
-	commit();
 }
 
-CoordPlane MapObject::coordinate() {
-	double x = mapXPlane( handle() );
-	double y = mapYPlane( handle() );
-
-	return CoordPlane(x, y);
-}
-
-void MapObject::moveBy(double dxPlane, double dyPlane)
+CoordPlane MapObject::coordinatePlane() const
 {
-	for(int  i = 1; i <= mapPointCount(handle(), 0); i++)
+	if(!mapLayer())
 	{
-		double x = mapXPlane(handle(), i) - dxPlane;
-		double y = mapYPlane(handle(), i) - dyPlane;
-		updateMetric(i, CoordPlane(x, y));
+		qDebug()<<"*** MAP OBJECT: Невозможно обработать прямоугольную координату, пока объект не добавлен на карту";
+		return CoordPlane();
 	}
-	commit();
+
+	MapHelper *helper = mapLayer()->mapView()->helper();
+
+	return helper->geoToPlane( coordinateGeo() );
+}
+
+void MapObject::bringToFront()
+{
+	if(!mapLayer())
+	{
+		return;
+	}
+	refresh();
 }
 
 QString MapObject::typeName() const
 {
-	if(mType == MO_Vector)
+	switch(mType)
 	{
-		return "Одиночный";
-	}
-	else if(mType == MO_Line)
-	{
-		return "Линия";
-	}
-	else if(mType == MO_Zone)
-	{
-		return "Зона";
+	case Map2::MapObject::MO_Vector: return "Одиночный";
+	case Map2::MapObject::MO_Line: return "Линия";
+	case Map2::MapObject::MO_Zone: return "Зона";
+	case Map2::MapObject::MO_Text: return "Текст";
+	case Map2::MapObject::MO_Commline: return "Линия связи";
+	case Map2::MapObject::MO_Sector: return "Сектор";
+	default: break;
 	}
 
 	return "";
@@ -129,59 +122,82 @@ void MapObject::setMapLayer(Map2::MapLayer *layer)
 		return;
 	}
 
-	if(pLayer)
-	{
-		pLayer->takeObject(this);
-	}
-
 	pLayer = layer;
-	pLayer->addObject( this );
-	mapChangeObjectMap(handle(), layer->mapHandle(), layer->siteHandle());
-	commit();
-	mMapKey = 0;
+	refresh();
 }
 
 void MapObject::commit()
 {
-	mapCommitObject(handle());
-
 	if(mapLayer())
 	{
+
+		foreach(HOBJ *hObj, mapHandles())
+		{
+			helper()->commitObject(*hObj);
+		}
+
 		mapLayer()->objectChangedNotify(this);
 	}
 }
 
-void MapObject::addMetricBinding(MetricBinding binding, int targetMetric)
+MapHelper *MapObject::helper() const
 {
-	if(mObjectsBindings.contains(targetMetric, binding))
+	if(!mapLayer())
+	{
+		return 0;
+	}
+
+	return mapLayer()->mapView()->helper();
+}
+
+void MapObject::clearHandles()
+{
+	if(!helper())
 	{
 		return;
 	}
 
-	mObjectsBindings.insertMulti(targetMetric, binding);
-
-	double x = mapXPlane( handle(), targetMetric);
-	double y = mapYPlane( handle(), targetMetric);
-
-	updateMetric(targetMetric, CoordPlane(x,y));
-}
-
-void MapObject::removeMetricBinding(MetricBinding binding, int targetMetric)
-{
-	mObjectsBindings.remove(targetMetric, binding);
+	foreach(HOBJ *hObj, mapHandles())
+	{
+		helper()->clearHandle(hObj);
+	}
 }
 
 void MapObject::removeFromMap()
 {
-	Q_ASSERT(handle() > 0);
+	if(!helper())
+	{
+		return;
+	}
 
-	unbindMetrics();
-	mapDeleteObject( handle() );
-	mapCommitObject( handle() );
-	mapFreeObject( handle() );
+	foreach(HOBJ *hObj, mapHandles())
+	{
+		helper()->removeObject(*hObj);
+	}
 
-	mObjHandle = 0;
-	mMapKey = 0;
+	clearHandles();
+}
+
+void MapObject::refresh()
+{
+	repaint();
+
+	if(!mName.isEmpty())
+	{
+		setName(mName);
+	}
+
+	if(mSelected)
+	{
+		setSelected(true);
+	}
+
+	if(mHidden)
+	{
+		setHidden(true);
+	}
+
+	///TODO: Необходимо так же обновить семантики объекта, если они были заданы
 }
 
 void MapObject::setGroup(MapGroup *group)
@@ -203,83 +219,44 @@ void MapObject::setName(QString name)
 {
 	mName = name;
 
-	pLayer->objectChangedNotify(this);
-}
-
-void MapObject::bindMetric(int metricNumber, MapObject *targetObject, int targetMetricNumber)
-{
-	unbindMetric(metricNumber);
-
-	MetricBinding mb;
-	mb.object = targetObject;
-	mb.metricNumber = targetMetricNumber;
-
-	targetObject->addMetricBinding(MetricBinding(this, metricNumber), targetMetricNumber);
-	mMetricsBindings[metricNumber] = mb;
-}
-
-void MapObject::unbindMetric(int metricNumber)
-{
-	if(mMetricsBindings.contains(metricNumber))
+	if(mapLayer())
 	{
-		MetricBinding mb = mMetricsBindings.take( metricNumber );
-		mb.object->removeMetricBinding( MetricBinding(this, metricNumber), mb.metricNumber);
+		pLayer->objectChangedNotify(this);
 	}
 }
 
-void MapObject::unbindMetrics()
+bool MapObject::containsObject(HOBJ hObj)
 {
-	foreach(int i, mMetricsBindings.keys())
+	if(!helper())
 	{
-		MetricBinding &mb = mMetricsBindings[i];
-		if(!mb.object || !mb.object->handle())
+		return false;
+	}
+
+	/// Предполагается, что объекты не могут находится на разных картах,
+	/// поэтому используется идентификатор карты текущего слоя
+
+	if( mapGetObjectSiteIdent(mapLayer()->mapHandle(), hObj) != mapLayer()->siteHandle())
+	{
+		return false;
+	}
+
+	long key = helper()->objectMapKey( hObj );
+
+	if(key <=0 )
+	{
+		return false;
+	}
+
+	foreach(HOBJ *hobj, mapHandles())
+	{
+		long selfKey = mapObjectKey(*hobj);
+		if(key == selfKey)
 		{
-			continue;
+			return true;
 		}
-
-		mb.object->removeMetricBinding( MetricBinding(this, i), mb.metricNumber);
 	}
 
-	mMetricsBindings.clear();
-}
-
-void MapObject::updateMetric(int metricNumber, CoordPlane coord)
-{
-	if(!mMetricsBindings.contains(metricNumber))
-	{
-		mapUpdatePointPlane(handle(), coord.x, coord.y, metricNumber);
-	}
-
-	foreach(const MetricBinding &mb, mObjectsBindings.values(metricNumber))
-	{
-		mb.object->updateBindedMetric(mb.metricNumber, coord);
-	}
-}
-
-void MapObject::updateBindedMetric(int metricNumber, CoordPlane coord)
-{
-	if(!handle())
-	{
-		return;
-	}
-	mapUpdatePointPlane(handle(), coord.x, coord.y, metricNumber);
-
-	foreach(const MetricBinding &mb, mObjectsBindings.values(metricNumber))
-	{
-		mb.object->updateBindedMetric(mb.metricNumber, coord);
-	}
-
-	commit();
-}
-
-long MapObject::mapKey()
-{
-	if(mMapKey <= 0)
-	{
-		mMapKey = mapObjectKey( handle() );
-	}
-
-	return mMapKey;
+	return false;
 }
 
 void MapObject::setParameter(QString parameter, QVariant value)
@@ -304,34 +281,24 @@ void MapObject::show()
 
 void MapObject::setHidden(bool hidden)
 {
-	if(mHidden == hidden)
-	{
-		return;
-	}
-
 	mHidden = hidden;
 
-	if(!mapLayer())
+	if(!helper())
 	{
 		return;
 	}
 
-	HSELECT select = mapLayer()->selectHandle();
-	int list = mapGetListNumber( handle() );
-	int key = mapKey();
-
-	if(mHidden)
+	foreach(HOBJ *hObj, mapHandles())
 	{
-		mapInvertSample(select);
-		mapSelectSampleByList(select, list, key);
-		mapInvertSample(select);
+		if(hidden)
+		{
+			helper()->removeObjectFromSelection(mapLayer()->selectHandle(), *hObj);
+		}
+		else
+		{
+			helper()->addObjectToSelection(mapLayer()->selectHandle(), *hObj);
+		}
 	}
-	else
-	{
-		mapSelectSampleByList(select, list, key);
-	}
-
-	mapSetSiteViewSelect(mapLayer()->mapHandle(), mapLayer()->siteHandle(), select);
 
 	mapLayer()->objectChangedNotify(this);
 }

@@ -23,14 +23,14 @@ bool MapVectorObjectAction::processMouseDblClickEvent(QMouseEvent *mouseEvent)
 		return true;
 	}
 
-	int exCode = RscViewer::selectVectorExCode(pView->activeLayer()->rscName());
+	QString key = RscViewer::selectVectorKey(pView->activeLayer()->rscName());
 
-	if(exCode <= 0)
+	if(key.isEmpty())
 	{
 		return true;
 	}
 
-	MapVectorObject *obj = new MapVectorObject(exCode, pView->activeLayer());
+	MapVectorObject *obj = new MapVectorObject(key, pView->activeLayer());
 
 	QPoint pictureCoord = pView->canvas()->mapTopLeft() + mouseEvent->pos();
 	obj->setCoordinates( pView->helper()->pictureToPlane(pictureCoord) );

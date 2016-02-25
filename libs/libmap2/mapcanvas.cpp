@@ -13,8 +13,7 @@ MapCanvas::MapCanvas(QWidget *parent) :
 	mMapHandle(-1),
 	mMapBitDepth(mapGetMapScreenDepth()),
 	mMapTopLeft(QPoint(0,0)),
-	mRepaint(false),
-	mSelect(0)
+	mRepaint(false)
 {
 	connect(&mRepaintTi, SIGNAL(timeout()), this, SLOT(onRepaintTimer()));
 	mRepaintTi.start(150);
@@ -23,8 +22,6 @@ MapCanvas::MapCanvas(QWidget *parent) :
 	mZoomRectPen.setWidth(2);
 	mZoomRectPen.setCapStyle(Qt::RoundCap);
 	mZoomRectPen.setJoinStyle( Qt::RoundJoin );
-
-	setSelectionColor(QColor(Qt::green));
 }
 
 MapCanvas::~MapCanvas()
@@ -32,10 +29,9 @@ MapCanvas::~MapCanvas()
 
 }
 
-void MapCanvas::setMapHandle(const HMAP &hnd, const HSELECT &select)
+void MapCanvas::setMapHandle(const HMAP &hnd)
 {
 	mMapHandle = hnd;
-	mSelect = select;
 
 	mRepaint = true;
 }
@@ -130,11 +126,6 @@ double MapCanvas::scale() const
 	return mapGetShowScale( mapHandle() );
 }
 
-void MapCanvas::setSelectionColor(const QColor &color)
-{
-	mSelectColor = RGB(color.red(), color.green(), color.blue());
-}
-
 void MapCanvas::queueRepaint()
 {
 	mRepaint = true;
@@ -142,7 +133,7 @@ void MapCanvas::queueRepaint()
 
 void MapCanvas::paintEvent(QPaintEvent *e)
 {
-	if(mapHandle() <= 0 || mSelect <= 0)
+	if(mapHandle() <= 0 )
 	{
 		QWidget::paintEvent(e);
 		return;
@@ -177,8 +168,7 @@ void MapCanvas::paintEvent(QPaintEvent *e)
 	rect.bottom = static_cast<long>(drawRect.bottom());
 	rect.right = static_cast<long>(drawRect.right());
 
-	mapPaintAndSelectToXImage(mapHandle(), &ximage, 0, 0, &rect, mSelect, mSelectColor);
-//	mapPaintToXImage(mMapHandle, &ximage, 0, 0, &rect);
+	mapPaintToXImage(mMapHandle, &ximage, 0, 0, &rect);
 
 	QImage img((uchar *) dataBytes, drawRect.width(), drawRect.height(), QImage::Format_RGB32);
 

@@ -17,6 +17,7 @@
 #include "widgets/layerssettingsdialog.h"
 
 #include <QDir>
+#include <QUuid>
 #include <QLabel>
 #include <QDebug>
 #include <QKeyEvent>
@@ -28,7 +29,7 @@
 using namespace Map2;
 
 MapView::MapView(QString sitDir, QString rscDir, QWidget *parent)
-	: QWidget(parent), pTools(0), mMapHandle(0), mSelect(0), mIsDragged(false), mLastLayerId(0),
+	: QWidget(parent), pTools(0), mMapHandle(0), mIsDragged(false), mLastLayerId(0),
 	  mRscDir(rscDir), mSitDir(sitDir), pActiveLayer(0), pHelper(0)
 {
 	setFocusPolicy(Qt::TabFocus);
@@ -77,11 +78,6 @@ MapView::~MapView()
 
 	mLayersModel->deleteLater();
 
-	if(mSelect > 0)
-	{
-		mapDeleteSelectContext(mSelect);
-	}
-
 	if(mMapHandle > 0)
 	{
 		mapCloseData( mMapHandle );
@@ -90,12 +86,6 @@ MapView::~MapView()
 
 void MapView::openMap(QString mapFullPath)
 {
-	if(mSelect > 0)
-	{
-		mapDeleteSelectContext(mSelect);
-		mSelect = 0;
-	}
-
 	if(mMapHandle > 0)
 	{
 		mapCloseData(mMapHandle);
@@ -110,10 +100,7 @@ void MapView::openMap(QString mapFullPath)
 
 	mapSetBackColor(mMapHandle, QColor(255,255,255).rgb());
 
-	mSelect = mapCreateMapSelectContext(mMapHandle);
-	mapSelectObject(mSelect, -1, 0);
-
-	pCanvas->setMapHandle(mMapHandle, mSelect);
+	pCanvas->setMapHandle(mMapHandle);
 
 	QList<int> hiddenLayers = Map2::LayersSettingsDialog::hiddenLayers();
 	Map2::LayersSettingsDialog::setHiddenLayers(mapHandle(), hiddenLayers);
@@ -124,7 +111,7 @@ void MapView::openMap(QString mapFullPath)
 	adjustScrollValues();
 }
 
-Map2::MapLayer *MapView::createLayer(QString rscName, QString name)
+Map2::MapLayer *MapView::createLayer(QString rscName, QString key, QString name, bool temp)
 {
 	if(rscName.isEmpty())
 	{
@@ -138,34 +125,25 @@ Map2::MapLayer *MapView::createLayer(QString rscName, QString name)
 		rscName = dlg.selectedRsc();
 	}
 
-	mLastLayerId++;
-	MapLayer *ml = new MapLayer(mLastLayerId, rscName, this);
+	if(key.isEmpty())
+	{
+		key = QUuid::createUuid().toString();
+	}
+
+	if(mLayersModel->layerByKey(key) != 0)
+	{
+		return 0;
+	}
+
 	if(name.isEmpty())
 	{
-		name = QString("Layer %0").arg(mLastLayerId);
-	}
-	ml->setLayerName(name);
-	mLayersModel->addLayer( ml );
-	return ml;
-}
-
-Map2::MapLayer *MapView::createTempLayer(QString rscName, QString name)
-{
-	if(rscName.isEmpty())
-	{
-		RscSelectDialog dlg;
-		if(!dlg.exec() || dlg.selectedRsc().isEmpty())
-		{
-			qDebug()<<"*** СОЗДАНИЕ СЛОЯ: Не выбран классификатор.";
-			return 0;
-		}
-
-		rscName = dlg.selectedRsc();
+		name = "Новый слой";
 	}
 
-	MapLayer *l = new MapLayer(-1, rscName, this, true);
-	l->setLayerName(name);
-	return l;
+	Map2::MapLayer *layer = new Map2::MapLayer(rscName, key, name, this, temp);
+	mLayersModel->addLayer( layer );
+
+	return layer;
 }
 
 double MapView::scale()
@@ -205,12 +183,10 @@ QList<Map2::MapObject *> MapView::objectsAtPoint(QPoint point, double radiusPx)
 	while(found)
 	{
 		HSITE site = mapGetObjectSiteIdent(mMapHandle, found);
-		long key = mapObjectKey(found);
-
 		MapLayer *l = mLayersModel->layerByHandle( site);
 		if(l && !l->isLocked())
 		{
-			MapObject *obj = l->objectByMapKey(key);
+			MapObject *obj = l->objectByHandle(found);
 			if(obj)
 			{
 				result << obj;
@@ -562,13 +538,9 @@ void MapView::processMouseMoveEvent(QEvent *e)
 	Q_ASSERT(mouseEvent);
 
 	QList<MapObject*> objs = objectsAtPoint(mouseEvent->pos(), 5);
-	if(objs.isEmpty())
+	if(!objs.isEmpty())
 	{
-		pCanvas->setToolTip("");
-	}
-	else
-	{
-		pCanvas->setToolTip(objs.first()->name());
+		emit toolTipRequest(mouseEvent->pos(), objs.first());
 	}
 
 	if(pTools && !pTools->processMouseMoveEvent(mouseEvent))

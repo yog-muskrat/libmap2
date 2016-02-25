@@ -25,7 +25,7 @@ bool Map2::MapStackGroup::addChild(Map2::MapObject *child)
 		return false;
 	}
 
-	mInitialCoordinates[child] = child->coordinate();
+	mInitialCoordinates[child] = child->coordinatePlane();
 	updateChildrenDisplayCoordinates();
 
 	updateChildrenDisplayCoordinates();
@@ -46,7 +46,7 @@ void Map2::MapStackGroup::updateChildrenDisplayCoordinates()
 
 	Map2::MapHelper *helper = pParent->mapLayer()->mapView()->helper();
 
-	QPoint picturePos = helper->geoToPicture(parentObj->coordinatesGeo());
+	QPoint picturePos = helper->geoToPicture(parentObj->coordinateGeo());
 
 	///TODO: Это тут временно. Нужно перенести, скорее всего, в MapView.
 	double scale = mapGetMapScale(hMap) / parent()->mapLayer()->mapView()->scale();

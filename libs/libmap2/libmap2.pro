@@ -1,12 +1,12 @@
 include (../../common.pri)
 
-GISLIBPATH = ../../../gis/lib
-GISINCLUDEPATH = gis/include
+GISLIBPATH = /home/yog/qtprojects/gis/lib
+GISINCLUDEPATH = /home/yog/qtprojects/gis/include
 
-defined(ASTRA){
-	message( "Building libmap2 for AStra Linux" )
-	GISLIBPATH = /usr/GIS_core-9.20.0/lib
-	GISINCLUDEPATH = /usr/GIS_core-9.20.0/include
+contains(DEFINES, MSVS_5){
+	GISLIBPATH = /usr/local/GISCore/lib
+	GISINCLUDEPATH = /usr/local/GISCore/include
+	message("Using GIS libs in /usr/local/GISCore")
 }
 
 TEMPLATE = lib
@@ -22,7 +22,6 @@ QT += gui
 greaterThan(QT_MAJOR_VERSION, 4){
   QT += widgets
 }
-
 
 LIBS += -L$$GISLIBPATH -lmapacces
 
@@ -52,20 +51,20 @@ HEADERS += \
 	../../include/map2/widgets/maptoolbar.h \
 	../../include/map2/widgets/mapnavigation.h \
 	../../include/map2/widgets/mapinfowidget.h \
-    ../../include/map2/objects/maplineobject.h \
-    ../../include/map2/objects/mapobject.h \
-    ../../include/map2/objects/maptextobject.h \
-    ../../include/map2/objects/mapvectorobject.h \
-    ../../include/map2/objects/mapzoneobject.h \
-    mapruler.h \
-    ../../include/map2/groups/mapgroup.h \
-    ../../include/map2/groups/mapstackgroup.h \
-    ../../include/map2/mapgroupsmodel.h \
-    ../../include/map2/groups/mapformulargroup.h \
-    ../../include/map2/widgets/layerssettingsdialog.h \
-    ../../include/map2/widgets/calibrationdialog.h \
-    ../../include/map2/objects/mapcommlineobject.h \
-    ../../include/map2/objects/mapsectorobject.h
+	../../include/map2/objects/maplineobject.h \
+	../../include/map2/objects/mapobject.h \
+	../../include/map2/objects/maptextobject.h \
+	../../include/map2/objects/mapvectorobject.h \
+	../../include/map2/objects/mapzoneobject.h \
+	mapruler.h \
+	../../include/map2/groups/mapgroup.h \
+	../../include/map2/groups/mapstackgroup.h \
+	../../include/map2/mapgroupsmodel.h \
+	../../include/map2/groups/mapformulargroup.h \
+	../../include/map2/widgets/layerssettingsdialog.h \
+	../../include/map2/widgets/calibrationdialog.h \
+	../../include/map2/objects/mapcommlineobject.h \
+	../../include/map2/objects/mapsectorobject.h
 
 SOURCES +=\
 			rscselectdialog.cpp \
@@ -91,25 +90,26 @@ SOURCES +=\
 	widgets/maptoolbar.cpp \
 	widgets/mapnavigation.cpp \
 	widgets/mapinfowidget.cpp \
-    objects/maplineobject.cpp \
-    objects/mapobject.cpp \
-    objects/maptextobject.cpp \
-    objects/mapvectorobject.cpp \
-    objects/mapzoneobject.cpp \
-    mapruler.cpp \
-    groups/mapstackgroup.cpp \
-    mapgroupsmodel.cpp \
-    groups/mapformulargroup.cpp \
-    groups/mapgroup.cpp \
-    widgets/layerssettingsdialog.cpp \
-    widgets/calibrationdialog.cpp \
-    objects/mapcommlineobject.cpp \
-    objects/mapsectorobject.cpp
+	objects/maplineobject.cpp \
+	objects/mapobject.cpp \
+	objects/maptextobject.cpp \
+	objects/mapvectorobject.cpp \
+	objects/mapzoneobject.cpp \
+	mapruler.cpp \
+	groups/mapstackgroup.cpp \
+	mapgroupsmodel.cpp \
+	groups/mapformulargroup.cpp \
+	groups/mapgroup.cpp \
+	widgets/layerssettingsdialog.cpp \
+	widgets/calibrationdialog.cpp \
+	objects/mapcommlineobject.cpp \
+	objects/mapsectorobject.cpp
 
 FORMS += \
 	rscselectdialog.ui \
 	rscviewer.ui \
-    widgets/layerssettingsdialog.ui \
-    widgets/calibrationdialog.ui
+	widgets/layerssettingsdialog.ui \
+	widgets/calibrationdialog.ui
 
-RESOURCES +=
+RESOURCES += \
+	map2res.qrc

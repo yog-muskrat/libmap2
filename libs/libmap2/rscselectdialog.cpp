@@ -2,6 +2,7 @@
 #include "ui_rscselectdialog.h"
 
 #include "gis.h"
+#include "rscviewer.h"
 
 #include <QDir>
 #include <QDebug>
@@ -17,10 +18,11 @@ RscSelectDialog::RscSelectDialog(QWidget *parent) :
 	ui->setupUi(this);
 
 	pModel = new QStandardItemModel(this);
-	pModel->setColumnCount(1);
+	pModel->setColumnCount(2);
 	pModel->setHeaderData(0, Qt::Horizontal, "Файл");
+	pModel->setHeaderData(1, Qt::Horizontal, "Название");
 
-	ui->listView->setModel( pModel );
+	ui->tableView->setModel( pModel );
 
 	fillModel();
 }
@@ -32,12 +34,12 @@ RscSelectDialog::~RscSelectDialog()
 
 QString RscSelectDialog::selectedRsc() const
 {
-	if(!ui->listView->currentIndex().isValid())
+	if(!ui->tableView->currentIndex().isValid())
 	{
 		return "";
 	}
 
-	return pModel->index( ui->listView->currentIndex().row(), 0).data().toString();
+	return pModel->index( ui->tableView->currentIndex().row(), 0).data().toString();
 }
 
 void RscSelectDialog::fillModel()
@@ -67,7 +69,16 @@ void RscSelectDialog::fillModel()
 			continue;
 		}
 
-		pModel->appendRow(new QStandardItem(fi.fileName()));
+		RSCCREATE rscCreate;
+		PALETTE256 palette;
+
+		mapGetRscDescribe(rscHnd, &rscCreate, &palette);
+
+		QTextCodec *tc = RscViewer::codec();
+
+		QString name = tc->toUnicode( QByteArray(rscCreate.Name) );
+
+		pModel->appendRow( QList<QStandardItem*>() << new QStandardItem(fi.fileName()) << new QStandardItem(name) );
 
 		mapCloseRsc(rscHnd);
 	}

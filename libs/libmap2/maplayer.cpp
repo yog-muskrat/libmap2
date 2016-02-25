@@ -17,42 +17,51 @@
 
 using namespace Map2;
 
-MapLayer::MapLayer(quint16 id, QString rscName, Map2::MapView *parent, bool temp) : QAbstractTableModel(parent),
-	pMapView(parent), mSiteHandle(-1), mRscName(rscName), mLastInternalId(0), mVisible(true), mValid(false), mLocked(false)
+MapLayer::MapLayer(const QString &rscName, const QString &key, const QString &name, Map2::MapView *parent, bool temp) :
+	QAbstractTableModel(parent),
+	pMapView(parent),
+	mSiteHandle(-1),
+	mRscName(rscName),
+	mLayerName(name),
+	mLayerKey(key),
+	mVisible(true),
+	mValid(false),
+	mLocked(false),
+	mTemp(temp)
 {
-	MAPREGISTER mapreg;
-	LISTREGISTER listreg;
-
-	mapGetMapInfo(pMapView->mapHandle(), 1, &mapreg, &listreg);
-
-	CREATESITE cs;
-	memset((void*)&cs,0,sizeof(cs));
-	cs.Length = sizeof( CREATESITE );
-
-	cs.MaterialProjection = mapreg.MaterialProjection;
-	cs.MapType = mapreg.MapType;
-	cs.Scale = mapreg.Scale;
-	strncpy(cs.MapName, mapreg.Name, 32);
-	cs.AxisMeridian = mapreg.AxisMeridian;
-	cs.FirstMainParallel = mapreg.FirstMainParallel;
-	cs.SecondMainParallel = mapreg.SecondMainParallel;
-	cs.MainPointParallel = mapreg.MainPointParallel;
-
-	mFileName = QString("layer_%0").arg(id);
+	mFileName = key;
 	QString sitname = QString("%0/%1.sit").arg(pMapView->sitDir()).arg(mFileName);
 	QString rscname = QString("%0/%1").arg(pMapView->rscDir(), rscName);
+
+	qDebug()<<"Sit filename is" << sitname;
 	if(!QFile::exists(rscname))
 	{
 		qDebug()<<"Ошибка классификатора";
 		return;
 	}
 
-	if(temp)
+	if(mTemp)
 	{
 		mSiteHandle = mapCreateAndAppendTempSite(pMapView->mapHandle(), qPrintable(rscname));
 	}
 	else
 	{
+		MAPREGISTER mapreg;
+		LISTREGISTER listreg;
+		CREATESITE cs;
+
+		mapGetMapInfo(pMapView->mapHandle(), 1, &mapreg, &listreg);
+		memset((void*)&cs,0,sizeof(cs));
+		strncpy(cs.MapName, mapreg.Name, 32);
+
+		cs.Length = sizeof( CREATESITE );
+		cs.MaterialProjection = mapreg.MaterialProjection;
+		cs.MapType = mapreg.MapType;
+		cs.Scale = mapreg.Scale;
+		cs.AxisMeridian = mapreg.AxisMeridian;
+		cs.FirstMainParallel = mapreg.FirstMainParallel;
+		cs.SecondMainParallel = mapreg.SecondMainParallel;
+		cs.MainPointParallel = mapreg.MainPointParallel;
 		mSiteHandle = mapCreateAndAppendSite(pMapView->mapHandle(), qPrintable(sitname), qPrintable(rscname), &cs);
 	}
 
@@ -95,7 +104,7 @@ QVariant MapLayer::displayRole(const QModelIndex &idx) const
 	}
 	else if(idx.column() == COL_Coord)
 	{
-		return obj->coordinate().toString();
+		return obj->coordinatePlane().toString();
 	}
 	else if(idx.column() == COL_Type)
 	{
@@ -112,7 +121,7 @@ QVariant MapLayer::editRole(const QModelIndex &idx) const
 
 	if(idx.column() == COL_Coord)
 	{
-		return QVariant::fromValue( obj->coordinate() );
+		return QVariant::fromValue( obj->coordinatePlane() );
 	}
 	else if(idx.column() == COL_Name)
 	{
@@ -217,6 +226,12 @@ void MapLayer::setLayerName(const QString &value)
 	}
 }
 
+void MapLayer::setLayerKey(const QString &value)
+{
+	mLayerKey = value;
+	emit layerKeyChanged(mLayerKey);
+}
+
 Map2::MapObject *MapLayer::takeObjectAt(QModelIndex index)
 {
 	if(!index.isValid() || index.row() >= rowCount())
@@ -226,6 +241,7 @@ Map2::MapObject *MapLayer::takeObjectAt(QModelIndex index)
 
 	beginRemoveColumns(QModelIndex(), index.row(), index.row());
 	MapObject *obj = mObjects.takeAt( index.row() );
+	obj->setMapLayer(0);
 	endRemoveRows();
 	return obj;
 }
@@ -240,11 +256,24 @@ Map2::MapObject *MapLayer::takeObject(Map2::MapObject *obj)
 	return takeObjectAt( index(mObjects.indexOf(obj), 0) );
 }
 
-Map2::MapObject *MapLayer::objectByMapKey(long mapKey)
+MapObject *MapLayer::objectByParameter(const QString &parameter, const QVariant &value) const
 {
 	foreach(MapObject *obj, mObjects)
 	{
-		if(obj->mapKey() == mapKey)
+		if(obj->parameter(parameter) == value)
+		{
+			return obj;
+		}
+	}
+
+	return 0;
+}
+
+Map2::MapObject *MapLayer::objectByHandle(HMAP hMap)
+{
+	foreach(MapObject *obj, mObjects)
+	{
+		if(obj->containsObject(hMap))
 		{
 			return obj;
 		}
@@ -284,9 +313,8 @@ QString MapLayer::rscName() const
 	return QTextCodec::codecForName("koi8r")->toUnicode( mapGetRscName(rsc) );
 }
 
-void MapLayer::addObject(Map2::MapObject *object, Map2::MapObject *parent)
+void MapLayer::addObject(Map2::MapObject *object)
 {
-	Q_UNUSED(parent);
 	int row = mObjects.count();
 
 	if(mObjects.contains(object) )
@@ -295,30 +323,43 @@ void MapLayer::addObject(Map2::MapObject *object, Map2::MapObject *parent)
 	}
 
 	beginInsertRows(QModelIndex(), row, row);
+
+	if(object->mapLayer() != 0)
+	{
+		object->mapLayer()->takeObject(object);
+	}
+
 	object->setMapLayer( this );
 	mObjects << object;
 	endInsertRows();
 }
 
-Map2::MapVectorObject *MapLayer::addVectorObject(long rscCode, Map2::Coord coords, QString name)
+Map2::MapVectorObject *MapLayer::addVectorObject(const QString &rscKey, Map2::Coord coords, QString name)
 {
-	MapVectorObject *obj = new MapVectorObject(rscCode, this);
+	MapVectorObject *obj = new MapVectorObject(rscKey);
 	addObject(obj);
 	obj->setCoordinates(coords);
 	obj->setName(name);
 	return obj;
 }
 
-Map2::MapLineObject *MapLayer::addLineObject(long rscCode, const QList<Map2::CoordPlane> &coords)
+Map2::MapLineObject *MapLayer::addLineObject(const QString &rscKey, const QList<Map2::CoordPlane> &coords)
 {
-	MapLineObject *obj = new MapLineObject(rscCode, this, coords);
+	MapLineObject *obj = new MapLineObject(rscKey, coords);
 	addObject(obj);
 	return obj;
 }
 
-Map2::MapZoneObject *MapLayer::addZoneObject(long rscCode, QList<Map2::CoordPlane> coords)
+Map2::MapZoneObject *MapLayer::addZoneObject(const QString &rscKey, QList<Map2::CoordPlane> coords)
 {
-	MapZoneObject *obj = new MapZoneObject(rscCode, coords, this);
+	MapZoneObject *obj = new MapZoneObject(rscKey, coords);
+	addObject(obj);
+	return obj;
+}
+
+MapZoneObject *MapLayer::addZoneObject(const QString &rscKey, QList<Coord> coords)
+{
+	MapZoneObject *obj = new MapZoneObject(rscKey, coords);
 	addObject(obj);
 	return obj;
 }
@@ -339,7 +380,7 @@ Map2::MapObject *MapLayer::objectAtIndex(const QModelIndex &index) const
 	return objectAtIndex(index.row());
 }
 
-Map2::MapObject *MapLayer::objectAtIndex(const int &row) const
+Map2::MapObject *MapLayer::objectAtIndex(int row) const
 {
 	if(row < 0 || row >= mObjects.count())
 	{

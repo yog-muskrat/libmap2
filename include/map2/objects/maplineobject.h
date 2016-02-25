@@ -5,6 +5,7 @@
 #include "mapstructs.h"
 
 #include <QList>
+#include <QPolygonF>
 
 namespace Map2
 {
@@ -12,13 +13,13 @@ namespace Map2
 class MapLineObject : public MapObject
 {
 public:
-	MapLineObject(long rscCode, Map2::MapLayer *layer = 0, const QList<Map2::CoordPlane> &coords = QList<CoordPlane>());
+	MapLineObject(const QString &rscKey, const QList<Map2::Coord> &coords = QList<Coord>(), Map2::MapLayer *layer = 0);
+	MapLineObject(const QString &rscKey, const QList<Map2::CoordPlane> &coords = QList<CoordPlane>(), Map2::MapLayer *layer = 0);
 
 	void addPoint(const CoordPlane &coord);
 	void addPoint(const Coord &coord);
 	void addPoints(const QList<CoordPlane> &coords);
 	void addPoints(const QList<Coord> &coords);
-
 	void clear();
 
 	/*!
@@ -32,10 +33,28 @@ public:
 	 */
 	QString lengthText() const;
 
-	virtual void setRscCode(long rscCode);
+	void setRscKey(const QString &rscKey);
+
+	/*!
+	 * \brief Возвращает полигон, точки которого соответствуют прямоугольным координатам объекта.
+	 */
+	QPolygonF planePolygon() const;
+	QPolygonF picturePolygon() const;
 
 private:
-	QList<CoordPlane> mCoords;
+	QList<Coord> mCoords;
+	QString mRscKey;
+	HOBJ hObj;
+
+	// MapObject interface
+public:
+	virtual Coord coordinateGeo() const;
+	virtual void moveBy(double dxPlane, double dyPlane);
+	virtual QRectF sizePix() const;
+
+protected:
+	virtual void repaint();
+	virtual QList<HOBJ*> mapHandles();
 };
 }
 #endif // MAPLINEOBJECT_H

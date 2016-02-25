@@ -5,7 +5,7 @@
 #include <QWidget>
 #include <QIdentityProxyModel>
 
-#include "mapstructs.h"
+#include "map2/mapstructs.h"
 
 class QTableView;
 class QPushButton;

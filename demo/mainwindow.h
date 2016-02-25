@@ -27,22 +27,14 @@ protected:
 	virtual void closeEvent(QCloseEvent *e);
 
 private slots:
-	void toggleObj(bool visible);
-	void toggleGroup(bool visible);
 	void onScaleChanged();
-
 	void onEditLayers();
 
-	void onTimer();
+	void onLeftClick(QPoint point);
+	void onRightClick(QPoint point);
 
 private:
 	Map2::MapEditor *pMap;
-	QMap<QPushButton *, Map2::MapObject*> mObjButtons;
-	Map2::MapGroup *pStackGroup;
-	Map2::MapGroup *pFormGroup;
-	Map2::MapSectorObject *pSector;
-
-	bool mDesc;
 };
 
 #endif // MAINWINDOW_H

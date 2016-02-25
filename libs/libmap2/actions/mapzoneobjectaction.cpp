@@ -38,8 +38,8 @@ bool MapZoneObjectAction::processMouseClickEvent(QMouseEvent *mouseEvent)
 				return true;
 			}
 
-			int exCode = RscViewer::selectZoneExCode(pView->activeLayer()->rscName());
-			if(exCode <= 0)
+			QString key = RscViewer::selectZoneKey(pView->activeLayer()->rscName());
+			if(key.isEmpty())
 			{
 				return false;
 			}
@@ -47,7 +47,7 @@ bool MapZoneObjectAction::processMouseClickEvent(QMouseEvent *mouseEvent)
 			QList<CoordPlane> coords;
 			coords << coord;
 
-			pObject =  pView->activeLayer()->addZoneObject(exCode, coords);
+			pObject =  pView->activeLayer()->addZoneObject(key, coords);
 		}
 		else
 		{

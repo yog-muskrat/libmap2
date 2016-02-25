@@ -3,6 +3,7 @@
 
 #include "map2/mapstructs.h"
 
+#include <QList>
 #include <QRectF>
 #include <QVariant>
 
@@ -10,12 +11,12 @@ namespace Map2
 {
 class MapLayer;
 class MapGroup;
+class MapHelper;
 
 class MapObject
 {
 public:
-	enum Type
-	{
+	enum Type {
 		MO_Vector,
 		MO_Line,
 		MO_Zone,
@@ -24,139 +25,89 @@ public:
 		MO_Sector
 	};
 
-	MapObject(Map2::MapObject::Type t, Map2::MapLayer *layer = 0, long rscCode = -1);
+	MapObject(Map2::MapObject::Type t, Map2::MapLayer *layer = 0);
 	virtual ~MapObject();
 
-	/*!
-	 * \brief Удаляет объект со слоя.
-	 */
 	void remove();
 
-	/*!
-	 * \brief Центрирует карту на объекте.
-	 * В базовой реализации центром считается первая точка метрики объекта.
-	 * В классах-наследниках эта функция может быть переописана для более правильного поведения.
-	 */
-	virtual void center();
+	void centerOnObject() const;
 
-	/*!
-	 * \brief Устанавливает признак выделения объекта.
-	 */
-	virtual void setSelected(bool b = true);
+	CoordPlane coordinatePlane() const;
+	virtual Coord coordinateGeo() const {return Coord();}
 
-	bool selected() const {return mSelected;}
+	virtual void moveBy(double dxPlane, double dyPlane) = 0;
 
-	/*!
-	 * \brief Возвращает координаты объекта.
-	 * В базовой реализации возвращаются координаты первой точки метрики.
-	 * В классах-наследниках эта функция может быть переописана для более правильного поведения.
-	 */
-	virtual CoordPlane coordinate();
+	void bringToFront();
 
-	/*!
-	 * \brief Смещает объект на указанную величину.
-	 * \param dxPlane, dyPlane Величины смещения по осям X и Y в метрах.
-	 */
-	virtual void moveBy(double dxPlane, double dyPlane);
-
-	Type type() const {return mType;}
+	Type type() const { return mType; }
 	QString typeName()const;
-	HOBJ handle() const {return mObjHandle;}
 
-	MapLayer* mapLayer() const {return pLayer;}
+	MapLayer* mapLayer() const { return pLayer; }
 
-	QString name() const {return mName;}
-	void setName(QString name);
-
-	/*!
-	 * \brief Возвращает отображаемый размер знака объекта в мм.
-	 * Ширина и высота прямоугольника соответствую ширине и высоте знака, а координаты - координатам точки отсчета.
-	 */
-	virtual QRectF sizePix() const {return QRectF();}
-
-	void bindMetric(int metricNumber, Map2::MapObject *targetObject, int targetMetricNumber);
-	void unbindMetric(int metricNumber);
-	void unbindMetrics();
-
-	long mapKey();
+	QString name() const { return mName; }
+	virtual void setName(QString name);
 
 	/*!
-	 * \brief Задает значение параметра.
+	 * \brief Функция проверяет, является ли объект карты с дескриптором hObj частю текущего объекта.
 	 */
+	bool containsObject(HOBJ hObj);
+
+	virtual QRectF sizePix() const { return QRectF(); }
+
 	void setParameter(QString parameter, QVariant value);
-
-	/*!
-	 * \brief Возвращает значение параметра.
-	 * \return Значение параметра или пустой QVariant, если заданного параметра у объекта нет.
-	 */
 	QVariant parameter(QString parameter) const;
 
-	virtual void setRscCode(long rscCode){}
-	long rscCode() const {return mRscCode;}
+	void setSelected(bool b = true);
+	bool selected() const { return mSelected; }
 
+	void setHidden(bool hidden);
+	bool isHiden() const { return mHidden; }
 	void hide();
 	void show();
-	void setHidden(bool hidden);
-	bool isHiden() const {return mHidden;}
 
-	Map2::MapGroup * group(){return pGroup;}
+	Map2::MapGroup * group() const { return pGroup; }
 
 	friend class MapLayer;
 	friend class MapGroup;
 
 private:
-	struct MetricBinding
-	{
-		MapObject *object;
-		int metricNumber;
-
-		MetricBinding(MapObject *mo = 0, int metric = 0) : object(mo), metricNumber(metric) {}
-		bool operator == (const MetricBinding &other) const { return object == other.object && metricNumber == other.metricNumber;}
-	};
-
 	void setMapLayer(MapLayer *layer);
-
-	void addMetricBinding(MetricBinding binding, int targetMetric);
-	void removeMetricBinding(MetricBinding binding, int targetMetric);
-
-	virtual void removeFromMap();
-
 	void setGroup(Map2::MapGroup *group);
 
 	QVariantHash mParameters; //!< Дополнительные параметры объекта
 
 protected:
 	/*!
-	 * \brief Обновляет метрику объекты и все связанные с ней метрики других объектов.
-	 * \param metricNumber Номер обновляемой метрики (начинается с 1)
-	 * \param coord Новые координаты обновляемой метрики в метрах.
-	 */
-	void updateMetric(int metricNumber, CoordPlane coord);
-
-	/*!
-	 * \brief Пердназначена для вызова объектом, на который "повязана" метрика текущего объекта.
-	 */
-	void updateBindedMetric(int metricNumber, CoordPlane coord);
-
-	/*!
-	 * \brief Сохраняет изменения в пользовательской карте и уведомляет родительский слой.
+	 * \brief Уведомляет родительский слой об изменении объекта и вызывает функцию записи изменений в карте.
 	 */
 	void commit();
 
+	Map2::MapHelper * helper() const;
+
+	/*!
+	 * \brief Очищает дескрипторы составных частей объекта. (Но не удаляет их с карты).
+	 */
+	void clearHandles();
+
+	void removeFromMap();
+
+	virtual QList<HOBJ*> mapHandles() {return QList<HOBJ*>();}
+
+	void refresh();
+
+	/*!
+	 * \brief Функция используется для того, чтобы пересоздать объект.
+	 */
+	virtual void repaint() {}
+
 	Type mType;
-	HOBJ mObjHandle;
-	MapLayer *pLayer;
 	QString mName;
-	long mMapKey; //!< Порядковый номер объекта в карте.
-	bool mSelected;
-	long mRscCode;
+	MapLayer *pLayer;
 
 	bool mHidden;
+	bool mSelected;
 
 	MapGroup *pGroup;
-
-	QMap<int, MetricBinding> mMetricsBindings; //!< Метрики текущего объекта, привязанные к другим объектам.
-	QMultiMap<int, MetricBinding> mObjectsBindings; //!< Метрики других объектов, привязанные к текущему.
 };
 }
 

@@ -22,6 +22,7 @@ public:
 		COL_Visible,
 		COL_Locked,
 		COL_Name,
+		COL_Type, /// Тип слоя - временный или постоянный
 		COL_Count
 	};
 
@@ -31,8 +32,12 @@ public:
 	int addLayer(Map2::MapLayer * layer);
 	void removeLayer(Map2::MapLayer *layer);
 	void removeLayer(int row);
-	Map2::MapLayer * layerAt(int row);
-	Map2::MapLayer * layerByHandle(HSITE handle);
+
+
+	int layerIndex(Map2::MapLayer *l) const;
+	Map2::MapLayer* layerAt(int row) const;
+	Map2::MapLayer* layerByHandle(HSITE handle) const;
+	Map2::MapLayer* layerByKey(QString key) const;
 
 	virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
 	virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
@@ -40,6 +45,7 @@ public:
 	virtual bool setData(const QModelIndex &index, const QVariant &value, int role = Qt::EditRole);
 	virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
 	virtual Qt::ItemFlags flags(const QModelIndex &index) const;
+
 
 private slots:
 	void onLayerUpdated();

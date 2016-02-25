@@ -23,11 +23,12 @@ public:
 	};
 	Q_DECLARE_FLAGS(SectorStyle, Style)
 
-	MapSectorObject(Map2::Coord center, qreal radius = 1000, qreal azimuth = 0, qreal angle = 360, Map2::MapLayer *layer = 0);
+	MapSectorObject(Map2::Coord centerOnObject, qreal radius = 1000, qreal azimuth = 0, qreal angle = 360, Map2::MapLayer *layer = 0);
 	~MapSectorObject();
 
-	virtual Map2::Coord center() const { return mCenter; }
+	Map2::Coord center() const {return mCenter;}
 	void setCenter(const Map2::Coord &value);
+	void setCenter(const Map2::CoordPlane &value);
 
 	qreal radius() const { return mRadius; }
 	void setRadius(const qreal &meters);
@@ -56,28 +57,22 @@ public:
 	qreal sidesWidth() const {return mSidesWidth;}
 	qreal arcWidth() const {return mArcWidth;}
 
-	virtual void setRscCode(long rscCode);
-	void setSidesCode(long rscCode);
-	void setArcCode(long rscCode);
+	void setRscKey(QString rscKey);
+	void setSidesRscKey(QString rscKey);
+	void setArcRscKey(QString rscKey);
 
-	long sidesCode() const {return mSidesRsc;}
-	long arcCode() const {return mArcRsc;}
+	QString sidesRscKey() const {return mSidesRscKey;}
+	QString arcRsckey() const {return mArcRscKey;}
 
 private:
-	void redraw();
-
 	QPolygonF getArcPolygon() const;
 	QPolygonF getSidesPolygon() const;
 
-	void clearObjects();
-	void updateObjectsStyles() const;
 	void updateSides() const;
 	void updateArc() const;
 
 	void appendDraw(HMAP handle, QColor color, qreal width) const;
-	void registerObject(HMAP handle, int rscKey) const;
-
-	void clearMetrics();
+	void registerObject(HMAP handle, QString rscKey) const;
 
 	Coord mCenter;
 	qreal mRadius;
@@ -92,12 +87,23 @@ private:
 	qreal mSidesWidth;
 	qreal mArcWidth;
 
-	int mSidesRsc;
-	int mArcRsc;
+	QString mSidesRscKey;
+	QString mArcRscKey;
 
+	HMAP hSides;
 	HMAP hArc;
 
 	bool mUpdateObjects; // Признак того, что нужно пересоздать объекты (если измененяется не только метрика)
+
+	// MapObject interface
+public:
+	virtual Map2::Coord coordinateGeo() const { return mCenter; }
+	virtual void moveBy(double dxPlane, double dyPlane);
+	virtual QRectF sizePix() const;
+
+protected:
+	virtual void repaint();
+	virtual QList<HOBJ*> mapHandles();
 };
 }
 
