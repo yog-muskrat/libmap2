@@ -17,6 +17,7 @@ class MapHelper
 {
 public:
 	MapHelper(HMAP hMap, double mkmInPix = 300.) : mMapHnd(hMap), mMkmInPx(mkmInPix){}
+	~MapHelper(){mMapHnd = 0;}
 
 	/*!
 	 * \brief Переводит радианы в градусы.
@@ -63,6 +64,8 @@ public:
 	 */
 	qreal distance(Map2::Coord c1, Map2::Coord c2) const;
 	qreal distance(Map2::CoordPlane c1, Map2::CoordPlane c2) const;
+
+	qreal distancePx(Map2::Coord c1, Map2::Coord c2) const;
 
 	double bearing(const Map2::CoordPlane &pointFrom, const Map2::CoordPlane &pointTo) const;
 

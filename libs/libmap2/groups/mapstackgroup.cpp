@@ -8,9 +8,20 @@
 
 #include <QDebug>
 
-Map2::MapStackGroup::MapStackGroup(MapVectorObject *parent) : MapGroup(parent)
+Map2::MapStackGroup::MapStackGroup(MapVectorObject *parent, Qt::AlignmentFlag parentPosition) : MapGroup(parent), mParentPosition(parentPosition)
 {
+	if(parentPosition != Qt::AlignTop && parentPosition != Qt::AlignBottom)
+	{
+		qDebug()<<"*** ФЛАГШТОК: Некорректное позиция родителя"<<parentPosition<<". Будет установлено значение по умолчанию";
+		mParentPosition = Qt::AlignBottom;
+	}
 
+	mParentInitialCoord = parent->coordinateGeo();
+}
+
+Map2::MapStackGroup::~MapStackGroup()
+{
+	restoreInitialCoordinates();
 }
 
 bool Map2::MapStackGroup::addChild(Map2::MapObject *child)
@@ -25,9 +36,26 @@ bool Map2::MapStackGroup::addChild(Map2::MapObject *child)
 		return false;
 	}
 
-	mInitialCoordinates[child] = child->coordinatePlane();
+	mInitialCoordinates[child] = child->coordinateGeo();
 	updateChildrenDisplayCoordinates();
+	return true;
+}
 
+bool Map2::MapStackGroup::addChildren(QList<Map2::MapObject *> children)
+{
+	if(!MapGroup::addChildren(children))
+	{
+		return false;
+	}
+	foreach(Map2::MapObject *child, children)
+	{
+		if(mInitialCoordinates.contains(child))
+		{
+			continue;
+		}
+
+		mInitialCoordinates[child] = child->coordinateGeo();
+	}
 	updateChildrenDisplayCoordinates();
 	return true;
 }
@@ -39,43 +67,55 @@ void Map2::MapStackGroup::updateChildrenDisplayCoordinates()
 		return;
 	}
 
-	HMAP hMap = parent()->mapLayer()->mapHandle();
-
-	MapVectorObject *parentObj = dynamic_cast<MapVectorObject*>(parent());
-	Q_ASSERT(parentObj);
-
-	Map2::MapHelper *helper = pParent->mapLayer()->mapView()->helper();
-
-	QPoint picturePos = helper->geoToPicture(parentObj->coordinateGeo());
-
-	///TODO: Это тут временно. Нужно перенести, скорее всего, в MapView.
-	double scale = mapGetMapScale(hMap) / parent()->mapLayer()->mapView()->scale();
+	double scale = parent()->mapLayer()->mapView()->scaleRatio();
 	if(scale > 1)
 	{
 		scale = 1;
 	}
 
-	QRectF rect = parentObj->sizePix();
+	QList<MapObject*> items;
 
-//	qDebug()<<"Parent size= "<<rect << "scale="<<scale;
+	items << parent();
+	items += mChildren;
 
-	foreach (MapObject *obj, mChildren)
+	Q_ASSERT(!items.isEmpty());
+
+	if(mParentPosition == Qt::AlignTop)
 	{
-		MapVectorObject *mvo = dynamic_cast<MapVectorObject*>(obj);
+		for(int i = 0; i < items.count() / 2; ++i)
+		{
+			items.swap(i, items.count() - (1+i));
+		}
+	}
+
+	Map2::MapVectorObject *parentObj = dynamic_cast<Map2::MapVectorObject*>(items.first());
+	Q_ASSERT(parentObj);
+
+
+	Map2::MapHelper *helper = pParent->mapLayer()->mapView()->helper();
+	QPoint picturePos = helper->geoToPicture(parentObj->coordinateGeo());
+
+	QRectF parentRect = parentObj->sizePix();
+
+	for(int i = 1; i < items.count(); ++i)
+	{
+
+		MapVectorObject *mvo = dynamic_cast<MapVectorObject*>(items[i]);
 		Q_ASSERT(mvo);
-		picturePos.setY( picturePos.y() - rect.y() * scale *.99);
+
+		QRectF childRect = mvo->sizePix();
+
+		picturePos.setY(picturePos.y() - (parentRect.y() - childRect.y() * 0.3) * scale);
 
 		Coord coord = helper->pictureToGeo(picturePos);
 
 		mvo->setCoordinates(coord);
 
-		rect = mvo->sizePix();
-
-//		qDebug()<<"   Child size="<<rect;
+		parentRect = childRect;
 	}
 }
 
-void Map2::MapStackGroup::restoreInitialChildrenCoordinates()
+void Map2::MapStackGroup::restoreInitialCoordinates()
 {
 	foreach(MapObject*obj, mChildren)
 	{
@@ -84,4 +124,9 @@ void Map2::MapStackGroup::restoreInitialChildrenCoordinates()
 
 		mvo->setCoordinates(mInitialCoordinates[mvo]);
 	}
+
+	MapVectorObject *pvo = dynamic_cast<MapVectorObject*>(parent());
+	Q_ASSERT(pvo);
+
+	pvo->setCoordinates( mParentInitialCoord );
 }

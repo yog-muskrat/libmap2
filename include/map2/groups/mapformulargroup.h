@@ -38,9 +38,9 @@ public:
 
 protected:
 	virtual void updateChildrenDisplayCoordinates();
-	virtual void restoreInitialChildrenCoordinates();
 
 private:
+	void restoreInitialChildrenCoordinates();
 	void updateBorderCoords(const QRectF newRect);
 	void createBorderObject();
 	MapVectorObject * vectorParent();
@@ -50,7 +50,7 @@ private:
 	double mSpacingPx;
 
 	/// Временное решение. В последствии нужно добавить в сам MapObject понятия "Реальная координата" и "Отображаемая координата".
-	QMap<MapObject*, CoordPlane> mInitialCoordinates;
+	QMap<MapObject*, Coord> mInitialCoordinates;
 	QMap<MapObject*, MapTextObject*> mObjectsLabels;
 
 	QPoint mOffset; /// Сдвиг формуляра относительно родительского объекта, px.

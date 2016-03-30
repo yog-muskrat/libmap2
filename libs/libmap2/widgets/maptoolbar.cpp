@@ -52,15 +52,18 @@ QToolBar *MapToolBar::toolBar()
 		QActionGroup *group = new QActionGroup(this);
 		group->setExclusive(true);
 
-		group->addAction( addActionWithData(new QAction(QIcon(":cursor"), "Нет", this), MapToolBar::None) )->setChecked(true);
-		group->addAction( addActionWithData(new QAction(QIcon(":move"), "Переместить объект", this), MapToolBar::MoveObject) );
-		group->addAction( addActionWithData(new QAction(QIcon(":rotate"), "Повернуть объект", this), MapToolBar::RotateObject) );
-		group->addAction( addActionWithData(new QAction(QIcon(":delete"),"Удалить объект", this), MapToolBar::DeleteObject) );
-		group->addAction( addActionWithData(new QAction(QIcon(":map_object"),"Добавить вектор", this), MapToolBar::AddVectorObject) );
-		group->addAction( addActionWithData(new QAction(QIcon(":map_line"), "Добавить линию", this), MapToolBar::AddLineObject) );
-		group->addAction( addActionWithData(new QAction(QIcon(":map_polygon"),"Добавить зону", this), MapToolBar::AddZoneObject) );
-		group->addAction( addActionWithData(new QAction(QIcon(":map_ruler"), "Линейка", this), MapToolBar::Ruler) );
-		group->addAction( addActionWithData(new QAction(QIcon(":zoom_in_bw"),"Приблизить область", this), MapToolBar::RectZoom) );
+		group->addAction( addActionWithData(new QAction(QIcon(":map2/cursor"), "Нет", this), MapToolBar::None) )->setChecked(true);
+		pToolBar->addSeparator();
+		group->addAction( addActionWithData(new QAction(QIcon(":map2/marker"),"Добавить объект", this), MapToolBar::AddVectorObject) );
+		group->addAction( addActionWithData(new QAction(QIcon(":map2/polyline"), "Добавить линию", this), MapToolBar::AddLineObject) );
+		group->addAction( addActionWithData(new QAction(QIcon(":map2/polygon"),"Добавить зону", this), MapToolBar::AddZoneObject) );
+		pToolBar->addSeparator();
+		group->addAction( addActionWithData(new QAction(QIcon(":map2/ruler"), "Линейка", this), MapToolBar::Ruler) );
+		group->addAction( addActionWithData(new QAction(QIcon(":map2/move"), "Переместить объект", this), MapToolBar::MoveObject) );
+		group->addAction( addActionWithData(new QAction(QIcon(":map2/rotate"), "Повернуть объект", this), MapToolBar::RotateObject) );
+		group->addAction( addActionWithData(new QAction(QIcon(":map2/delete"),"Удалить объект", this), MapToolBar::DeleteObject) );
+		pToolBar->addSeparator();
+		group->addAction( addActionWithData(new QAction(QIcon(":map2/zoom"),"Приблизить область", this), MapToolBar::RectZoom) );
 
 		mActions[MapToolBar::None] = new MapNoAction(pView);
 		mActions[MapToolBar::Ruler] = new MapRulerAction(pView);

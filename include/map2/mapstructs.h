@@ -29,8 +29,10 @@ struct Coord
 	Coord(double lat, double lng) : lat(lat), lng(lng) {}
 	Coord(const Map2::Coord &other) : lat(other.lat), lng(other.lng) {}
 
+	///NOTE: Не самый лучший способ проверки валидности
+	bool isValid(){return lat != 0 && lng != 0;}
+
 	QString toString() const { return QString("Ш:%0 Д:%1").arg(lat, 0, 'f').arg(lng, 0, 'f'); }
-	bool operator ==(const Map2::Coord &other) const { return other.lat == lat && other.lng == lng;}
 
 	/*!
 	 * \brief Пересчитывает координаты из градусов с минутами.
@@ -64,6 +66,17 @@ struct CoordPlane
 };
 
 }
+
+inline bool operator==(const Map2::Coord &c1, const Map2::Coord &c2)
+{
+	return c1.lat == c2.lat && c1.lng == c2.lng;
+}
+
+inline uint qHash(const Map2::Coord &coord)
+{
+	return qHash(coord.toString());
+}
+
 Q_DECLARE_METATYPE(Map2::Coord)
 Q_DECLARE_METATYPE(Map2::CoordPlane)
 

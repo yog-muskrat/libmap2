@@ -8,8 +8,7 @@
 namespace Map2
 {
 class MapObject;
-
-class MapObject;
+class MapVectorObject;
 
 /**
  * @brief Базовый класс для групповых объектов карты - формуляров, флагштоков и т.п.
@@ -34,7 +33,7 @@ public:
 		DP_RemoveChildren /// Удалить всех детей.
 	};
 
-	explicit MapGroup(MapObject *parent = 0) : mDtorPolicy(DP_ShowChildren), mChildrenVisible(true), pParent(parent){}
+	MapGroup(Map2::MapVectorObject *parent = 0);
 	virtual ~MapGroup();
 
 	virtual Map2::MapGroup::Type type() {return MG_Simple;}
@@ -48,6 +47,7 @@ public:
 	bool childrenVisible() const {return mChildrenVisible;}
 	virtual int childrenCount() const {return mChildren.count();}
 	virtual bool addChild(Map2::MapObject *child);
+	virtual bool addChildren(QList<Map2::MapObject*> children);
 	Map2::MapObject * takeChild(int pos);
 	Map2::MapObject * takeChild(Map2::MapObject *child);
 
@@ -62,7 +62,6 @@ public:
 
 protected:
 	virtual void updateChildrenDisplayCoordinates() {}
-	virtual void restoreInitialChildrenCoordinates() {}
 
 	DtorPolicy mDtorPolicy;
 	bool mChildrenVisible;

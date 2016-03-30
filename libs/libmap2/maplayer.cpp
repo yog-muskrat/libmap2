@@ -33,7 +33,6 @@ MapLayer::MapLayer(const QString &rscName, const QString &key, const QString &na
 	QString sitname = QString("%0/%1.sit").arg(pMapView->sitDir()).arg(mFileName);
 	QString rscname = QString("%0/%1").arg(pMapView->rscDir(), rscName);
 
-	qDebug()<<"Sit filename is" << sitname;
 	if(!QFile::exists(rscname))
 	{
 		qDebug()<<"Ошибка классификатора";

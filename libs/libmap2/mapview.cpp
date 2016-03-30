@@ -81,6 +81,7 @@ MapView::~MapView()
 	if(mMapHandle > 0)
 	{
 		mapCloseData( mMapHandle );
+		mMapHandle = 0;
 	}
 }
 
@@ -146,9 +147,14 @@ Map2::MapLayer *MapView::createLayer(QString rscName, QString key, QString name,
 	return layer;
 }
 
-double MapView::scale()
+double MapView::scale() const
 {
 	return pCanvas->scale();
+}
+
+double MapView::scaleRatio() const
+{
+	return mapGetMapScale(mMapHandle) / scale();
 }
 
 Map2::Coord MapView::coordinateAtPoint(const QPoint &screenCoord)
@@ -311,6 +317,20 @@ void MapView::calibrate()
 	helper()->setMkmInPxRatio( mkmInPx );
 
 	canvas()->queueRepaint();
+}
+
+void MapView::zoomIn()
+{
+	long scale = mapGetShowScale(mMapHandle);
+	scale *= 1.1;
+	setScale(scale);
+}
+
+void MapView::zoomOut()
+{
+	long scale = mapGetShowScale(mMapHandle);
+	scale *= 0.9;
+	setScale(scale);
 }
 
 void MapView::setScale(double scale)
@@ -508,10 +528,14 @@ void MapView::processWheelEvent(QEvent *e)
 	QWheelEvent *wheelEvent = dynamic_cast<QWheelEvent*>(e);
 	Q_ASSERT(wheelEvent);
 
-	long scale = mapGetShowScale(mMapHandle);
-	scale *= wheelEvent->delta() < 0 ? 1.1 : 0.9;
-
-	setScale(scale);
+	if(wheelEvent->delta() < 0)
+	{
+		zoomIn();
+	}
+	else
+	{
+		zoomOut();
+	}
 }
 
 void MapView::processMousePressEvent(QEvent *e)
@@ -623,6 +647,15 @@ MapHelper *MapView::helper()
 	}
 
 	return pHelper;
+}
+
+QRect MapView::visibleRect() const
+{
+	QRect rect;
+	rect.setTopLeft( pCanvas->mapTopLeft() );
+	rect.setSize( pCanvas->size() );
+
+	return rect;
 }
 
 void MapView::moveMapTopLeft(QPoint pos)

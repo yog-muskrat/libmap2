@@ -212,5 +212,5 @@ void Map2::MapZoneObject::moveBy(double dxPlane, double dyPlane)
 
 QList<HOBJ *> Map2::MapZoneObject::mapHandles()
 {
-	QList<HOBJ*>() << &hObj;
+	return QList<HOBJ*>() << &hObj;
 }

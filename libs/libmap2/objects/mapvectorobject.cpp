@@ -17,8 +17,8 @@ using namespace Map2;
 
 MapVectorObject::MapVectorObject(const QString &rscKey, MapLayer *layer) :
 	MapObject(MO_Vector, layer),
+	mRotation(90), /// TODO: Временное решине, чтобы значки распологались горизонтально. Желательно придумать признак "Использовать поворот".
 	mRscKey(rscKey),
-	mRotation(0),
 	hObj(0)
 {
 }
@@ -37,6 +37,11 @@ void MapVectorObject::setCoordinates(Map2::Coord coord)
 		return;
 	}
 
+	if(!helper())
+	{
+		qDebug()<<"*** MAPOBJECT: Невозможно задать координаты объекта, т.к. MapHelper недоступен.";
+		return;
+	}
 	CoordPlane cp = helper()->geoToPlane(mCoordinate);
 
 	mapUpdatePointPlane(hObj, cp.x, cp.y, 1);

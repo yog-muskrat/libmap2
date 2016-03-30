@@ -28,7 +28,7 @@ ObjectsWidget::ObjectsWidget(QWidget *parent) : QWidget(parent)
 	pbAdd = new QPushButton(QIcon(":map2/plus"), "");
 	pbRemove = new QPushButton(QIcon(":map2/minus"), "");
 	pbRemove->setEnabled(false);
-	pbEdit = new QPushButton(QIcon(":edit"), "");
+	pbEdit = new QPushButton(QIcon(":map2/pencil"), "");
 	pbEdit->setEnabled(false);
 
 	pTitle = new QLabel("Объекты слоя");

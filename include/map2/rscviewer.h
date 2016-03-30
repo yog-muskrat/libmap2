@@ -65,7 +65,7 @@ public:
 	static QString selectLineKey(const QString &rscName);
 	static QString selectZoneKey(const QString &rscName);
 	static QString selectTextKey(const QString &rscName);
-	static QImage image(const QString &rscName, const QString &key, const QSize &size = QSize(64, 64));
+	static QImage image(const QString &key, const QString &rscName, const QSize &iconSize = QSize(64, 64));
 
 	static QTextCodec *codec();
 

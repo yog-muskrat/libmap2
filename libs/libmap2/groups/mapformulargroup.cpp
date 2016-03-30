@@ -27,6 +27,8 @@ Map2::MapFormularGroup::~MapFormularGroup()
 		mapDeleteObject(hObj);
 		mapClearObject(hObj);
 	}
+
+	restoreInitialChildrenCoordinates();
 }
 
 bool Map2::MapFormularGroup::addChild(Map2::MapObject *child)
@@ -41,30 +43,30 @@ bool Map2::MapFormularGroup::addChild(Map2::MapObject *child)
 		return false;
 	}
 
-	mInitialCoordinates[child] = child->coordinatePlane();
+	mInitialCoordinates[child] = child->coordinateGeo();
 	updateChildrenDisplayCoordinates();
 	return true;
 }
 
 void Map2::MapFormularGroup::setChildrenVisible(bool visible)
 {
+	Q_ASSERT(parent());
+
 	mChildrenVisible = visible;
 
-	HSITE hSite = parent()->mapLayer()->siteHandle();
 	HMAP hMap = parent()->mapLayer()->mapHandle();
+	HSITE hSite = parent()->mapLayer()->siteHandle();
 	HSELECT hSelect = parent()->mapLayer()->selectHandle();
-	int list = mapGetListNumber( hObj );
-	int key = mapObjectKey(hObj);
 
-	if(!visible)
+	Map2::MapHelper *helper = parent()->mapLayer()->mapView()->helper();
+
+	if(visible)
 	{
-		mapInvertSample(hSelect);
-		mapSelectSampleByList(hSelect, list, key);
-		mapInvertSample(hSelect);
+		helper->addObjectToSelection(hSelect, hObj);
 	}
 	else
 	{
-		mapSelectSampleByList(hSelect, list, key);
+		helper->removeObjectFromSelection(hSelect, hObj);
 	}
 
 	mapSetSiteViewSelect(hMap, hSite, hSelect);
@@ -109,8 +111,6 @@ void Map2::MapFormularGroup::updateChildrenDisplayCoordinates()
 	{
 		scale = 1;
 	}
-
-//	qDebug()<<"Form origin="<<origin<<"scale="<<scale;
 
 	foreach(Map2::MapObject *child, mChildren)
 	{

@@ -16,7 +16,7 @@ MapObject::MapObject(Map2::MapObject::Type t, Map2::MapLayer *layer):
 	pLayer(layer),
 	mHidden(false),
 	mSelected(false),
-	pGroup(0)
+	pParentGroup(0)
 {
 	refresh();
 }
@@ -28,7 +28,18 @@ MapObject::~MapObject()
 		clearHandles();
 	}
 
-	///TODO: Вероятно, стоит удалять объект из группы, если он в таковую входит.
+	if(pParentGroup)
+	{
+		pParentGroup->takeChild( this );
+	}
+
+	foreach(Map2::MapGroup *grp, pChildGroups)
+	{
+		if(grp)
+		{
+			delete grp;
+		}
+	}
 }
 
 void MapObject::remove()
@@ -199,20 +210,73 @@ void MapObject::refresh()
 
 	///TODO: Необходимо так же обновить семантики объекта, если они были заданы
 }
-
-void MapObject::setGroup(MapGroup *group)
+QPair<int, int> MapObject::displayRange() const
 {
-	if(pGroup == group)
+	return mDisplayRange;
+}
+
+void MapObject::setDisplayRange(const QPair<int, int> &value)
+{
+	if(mDisplayRange == value)
 	{
 		return;
 	}
 
-	if(pGroup != 0)
+	foreach(HOBJ *hObj, mapHandles())
 	{
-		pGroup->takeChild(this);
+		if(value.first == -1 || value.second == -1)
+		{
+			mapClearBotTop(*hObj);
+		}
+
+		if(value.first == 0)
+		{
+			mapSetObjectBotScale(*hObj, mDisplayRange.first);
+		}
+		else if(value.first > 0)
+		{
+			mapSetObjectBotScale(*hObj, value.first);
+		}
+
+		if(value.second == 0)
+		{
+			mapSetObjectTopScale(*hObj, mDisplayRange.second);
+		}
+		else if(value.second > 0)
+		{
+			mapSetObjectTopScale(*hObj, value.second);
+		}
 	}
 
-	pGroup = group;
+	mDisplayRange = value;
+
+	commit();
+}
+
+
+void MapObject::setParentGroup(MapGroup *group)
+{
+	if(pParentGroup == group)
+	{
+		return;
+	}
+
+	if(pParentGroup != 0)
+	{
+		pParentGroup->takeChild(this);
+	}
+
+	pParentGroup = group;
+}
+
+void MapObject::addChildGroup(MapGroup *childGroup)
+{
+	if(pChildGroups.contains( childGroup ))
+	{
+		return;
+	}
+
+	pChildGroups << childGroup;
 }
 
 void MapObject::setName(QString name)
@@ -288,16 +352,37 @@ void MapObject::setHidden(bool hidden)
 		return;
 	}
 
-	foreach(HOBJ *hObj, mapHandles())
+	/// NOTE: Закомментированый фрагмент содержит невыявленные на данный момент баги, из-за которых некоторые объекты
+	/// не скрываются или не появляются, когда их об этом просят. Если текущий вариант не снижает быстродействия,
+	/// то можно удалить закомментированный код.
+	//	HMAP hMap = mapLayer()->mapHandle();
+	//	HSITE hSite = mapLayer()->siteHandle();
+	//	HSELECT hSelect = mapLayer()->selectHandle();
+
+	//	foreach(HOBJ *hObj, mapHandles())
+	//	{
+	//		if(hidden)
+	//		{
+	//			helper()->removeObjectFromSelection(hSelect, *hObj);
+	//		}
+	//		else
+	//		{
+	//			helper()->addObjectToSelection(hSelect, *hObj);
+	//		}
+	//	}
+
+	//	mapSetSiteViewSelect(hMap, hSite, hSelect);
+
+	if(hidden)
 	{
-		if(hidden)
+		foreach(HOBJ *hObj, mapHandles())
 		{
-			helper()->removeObjectFromSelection(mapLayer()->selectHandle(), *hObj);
+			helper()->removeObject(*hObj);
 		}
-		else
-		{
-			helper()->addObjectToSelection(mapLayer()->selectHandle(), *hObj);
-		}
+	}
+	else
+	{
+		refresh();
 	}
 
 	mapLayer()->objectChangedNotify(this);

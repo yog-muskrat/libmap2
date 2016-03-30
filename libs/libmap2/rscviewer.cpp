@@ -66,7 +66,7 @@ void RscViewer::setRsc(QString rscName)
 	QString path;
 	if(QFileInfo(mRscName).isRelative())
 	{
-		path = QTextCodec::codecForName("koi8r")->toUnicode( mapGetCommonRscPath() ) + "/" + mRscName;
+		path = codec()->toUnicode( mapGetCommonRscPath() ) + "/" + mRscName;
 	}
 	mTmpSiteHandle = mapCreateTempSite(path.toLocal8Bit().data() );
 	mapSetBackColor(mTmpSiteHandle, -1);
@@ -204,9 +204,68 @@ QString RscViewer::selectTextKey(const QString &rscName)
 	return selectKey(rscName, LOCAL_TITLE);
 }
 
-QImage RscViewer::image(const QString &rscName, const QString &key, const QSize &size)
+QImage RscViewer::image(const QString &key, const QString &rscName, const QSize &iconSize)
 {
-	return QImage(size, QImage::Format_ARGB32);
+	QString path;
+	if(QFileInfo(rscName).isRelative())
+	{
+		path = codec()->toUnicode( mapGetCommonRscPath() ) + "/" + rscName;
+	}
+	HSITE hSite = mapCreateTempSite(path.toLocal8Bit().data() );
+	mapSetBackColor(hSite, -1);
+
+	HRSC hRsc = mapGetRscIdent(hSite, hSite);
+
+	if( hRsc <= 0)
+	{
+		mapCloseData(hSite);
+		qDebug()<<"*** ПРОСМОТР КЛАССИФИКАТОРА: Ошибка открытия классификатора"<<rscName;
+		return QImage();
+	}
+
+	int bitDepth = mapGetMapScreenDepth();
+
+	int bytesPerLine = static_cast<int>( (double)iconSize.width() * (double)bitDepth / 8.);
+	long dataSize = bytesPerLine * iconSize.height();
+
+	char *dataBytes = AllocateTheMemory(dataSize);
+	memset(dataBytes, 0x0, dataSize);
+
+	long incode = mapGetRscObjectKeyIncode(hRsc, codec()->fromUnicode(key).data());
+	const char* name =  mapGetRscObjectName(hRsc, incode);
+	long function = mapGetRscObjectFunction(hRsc, incode);
+	char* params = const_cast<char*>(mapGetRscObjectParameters(hRsc,incode ));
+
+	///TODO: Доделать!!
+	//long local = mapGetRscObjectLocalInLayer(hRsc, segmentNumber, i);
+	long local = LOCAL_VECTOR;
+
+	XIMAGEDESC ximage;
+	ximage.Point = dataBytes;
+	ximage.Width = iconSize.width();
+	ximage.Height = iconSize.height();
+	ximage.Depth = bitDepth;
+	ximage.CellSize = (double)bitDepth / 8;
+	ximage.RowSize = bytesPerLine;
+
+	RECT rect;
+	rect.top = 0;
+	rect.left = 0;
+	rect.bottom = iconSize.height();
+	rect.right = iconSize.width();
+
+	int colors = mapGetSiteColorsCount(hSite, hSite);
+	COLORREF colorimage[colors];
+	mapGetSitePalette(hSite, hSite, colorimage, colors);
+
+	mapPaintExampleObjectByFuncToXImage(hSite, &ximage, &rect, function, params, colors, colorimage, QByteArray(name).data(), local);
+
+	QImage img = QImage((uchar *) dataBytes, iconSize.width(), iconSize.height(), QImage::Format_RGB32).copy();
+
+	FreeTheMemory(dataBytes);
+	mapCloseData(hSite);
+
+	return img;
 }
 
 QTextCodec *RscViewer::codec()
@@ -272,10 +331,10 @@ void RscViewer::showObjectsForRscLayer(const QModelIndex &index)
 
 		delete[] colorimage;
 
+		QImage img = QImage((uchar *) dataBytes, iconSize.width(), iconSize.height(), QImage::Format_RGB32).copy();
+
 		QString keyString = codec()->toUnicode( key );
 		QString nameString = codec()->toUnicode( name );
-
-		QImage img = QImage((uchar *) dataBytes, iconSize.width(), iconSize.height(), QImage::Format_RGB32).copy();
 
 		pRscObjectsModel->appendRow( new QStandardItem( nameString ) );
 

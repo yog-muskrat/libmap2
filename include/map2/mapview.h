@@ -68,7 +68,12 @@ public:
 	 * \brief Возвращает текущий масштаб карты.
 	 * \return Масштаб карты.
 	 */
-	double scale();
+	double scale() const;
+
+	/*!
+	 * \brief Возвращает отношение масштаба отображения к базовому масштабу карты
+	 */
+	double scaleRatio() const;
 
 	/*!
 	 * \brief Возвращает координаты центра отображаемого участка карты.
@@ -113,6 +118,11 @@ public:
 	 */
 	Map2::MapHelper* helper();
 
+	/*!
+	 * \brief Возвращает прямоугольник, соответствующий видимой области карты в пикселях
+	 */
+	QRect visibleRect() const;
+
 public slots:
 	/*!
 	 * \brief Устанавливает масштаб карты.
@@ -150,6 +160,10 @@ public slots:
 	void zoomToRect( const QRect &rect );
 
 	void calibrate();
+
+	void zoomIn();
+
+	void zoomOut();
 
 signals:
 	/*!

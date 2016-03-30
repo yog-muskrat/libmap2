@@ -170,11 +170,11 @@ QVariant LayersModel::decorationRole(const QModelIndex &index) const
 	MapLayer *l = mLayers.at(index.row());
 	if(index.column() == COL_Visible)
 	{
-		return l->isVisible() ? QIcon(":visible_on") : QIcon(":visible_off");
+		return l->isVisible() ? QIcon(":map2/eye") : QIcon(":map2/eye-off");
 	}
 	else if(index.column() == COL_Locked)
 	{
-		return l->isLocked() ? QIcon(":map2/locked") : QIcon(":map2/unlocked");
+		return l->isLocked() ? QIcon(":map2/lock") : QIcon(":map2/lock-open");
 	}
 
 	return QVariant();

@@ -1,8 +1,29 @@
 <RCC>
     <qresource prefix="/map2">
-        <file alias="minus">img/list-remove.png</file>
-        <file alias="plus">img/list-add.png</file>
-        <file alias="locked">img/changes-prevent.png</file>
-        <file alias="unlocked">img/changes-allow.png</file>
+        <file alias="minus1">img/list-remove.png</file>
+        <file alias="plus1">img/list-add.png</file>
+        <file alias="locked1">img/changes-prevent.png</file>
+        <file alias="unlocked1">img/changes-allow.png</file>
+        <file alias="eye">img/eye.png</file>
+        <file alias="eye-off">img/eye-off.png</file>
+        <file alias="lock">img/lock.png</file>
+        <file alias="lock-open">img/lock-open.png</file>
+        <file alias="minus">img/minus.png</file>
+        <file alias="plus">img/plus.png</file>
+        <file alias="move">img/cursor-move.png</file>
+        <file alias="marker">img/map-marker.png</file>
+        <file alias="pencil">img/pencil.png</file>
+        <file alias="polygon">img/polygon.png</file>
+        <file alias="ruler">img/ruler.png</file>
+        <file alias="polyline">img/polyline.png</file>
+        <file alias="cursor">img/cursor-default-outline.png</file>
+        <file alias="rotate">img/rotate-left.png</file>
+        <file alias="delete">img/delete.png</file>
+        <file alias="zoom-in">img/magnify-minus.png</file>
+        <file alias="zoom-out">img/magnify-plus.png</file>
+        <file alias="selection">img/selection.png</file>
+        <file alias="zoom">img/magnify.png</file>
+        <file alias="layers">img/layers.png</file>
+        <file alias="layers-off">img/layers-off.png</file>
     </qresource>
 </RCC>

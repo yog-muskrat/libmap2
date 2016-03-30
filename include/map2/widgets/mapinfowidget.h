@@ -3,7 +3,7 @@
 
 #include <QWidget>
 
-#include "mapstructs.h"
+#include "map2/mapstructs.h"
 
 class QLabel;
 

@@ -39,13 +39,13 @@ LayersWidget::LayersWidget(QWidget *parent) : QWidget(parent), pMapView(0)
 	pbRemove->setToolTip("Удалить слой");
 	pbRemove->setEnabled(false);
 
-	pbVisibility = new QPushButton( QIcon(":visible_on"), "");
+	pbVisibility = new QPushButton( QIcon(":map2/eye"), "");
 	pbVisibility->setCheckable(true);
 	pbVisibility->setChecked(false);
 	pbVisibility->setEnabled(false);
 	pbVisibility->setToolTip("Видимость слоя");
 
-	pbLock = new QPushButton( QIcon(":map2/locked"), "");
+	pbLock = new QPushButton( QIcon(":map2/lock"), "");
 	pbLock->setCheckable(true);
 	pbLock->setChecked(false);
 	pbLock->setEnabled(false);
@@ -176,7 +176,7 @@ void LayersWidget::onRemove()
 	pbLock->setEnabled(false);
 }
 
-void LayersWidget::onToggleVisibility(const bool &visible)
+void LayersWidget::onToggleVisibility(bool visible)
 {
 	QModelIndex idx = pTableView->currentIndex();
 	if(! idx.isValid())
@@ -187,10 +187,10 @@ void LayersWidget::onToggleVisibility(const bool &visible)
 	MapLayer *l = pMapView->layersModel()->layerAt( idx.row() );
 	l->setVisible( !visible );
 
-	pbVisibility->setIcon( QIcon( (visible ? ":visible_off" : ":visible_on") ) );
+	pbVisibility->setIcon( QIcon( (visible ? ":map2/eye-off" : ":map2/eye") ) );
 }
 
-void LayersWidget::onToggleLock(const bool &locked)
+void LayersWidget::onToggleLock(bool locked)
 {
 	QModelIndex idx = pTableView->currentIndex();
 	if(! idx.isValid())
@@ -201,5 +201,5 @@ void LayersWidget::onToggleLock(const bool &locked)
 	MapLayer *l = pMapView->layersModel()->layerAt( idx.row() );
 	l->setLocked(locked);
 
-	pbLock->setIcon( QIcon( (locked ? ":map2/locked" : ":map2/unlocked" ) ) );
+	pbLock->setIcon( QIcon( (locked ? ":map2/lock" : ":map2/lock-open" ) ) );
 }

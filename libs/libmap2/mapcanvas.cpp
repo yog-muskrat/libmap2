@@ -16,12 +16,14 @@ MapCanvas::MapCanvas(QWidget *parent) :
 	mRepaint(false)
 {
 	connect(&mRepaintTi, SIGNAL(timeout()), this, SLOT(onRepaintTimer()));
-	mRepaintTi.start(150);
+	mRepaintTi.setSingleShot(true);
 
 	mZoomRectPen.setColor( QColor(Qt::green) );
 	mZoomRectPen.setWidth(2);
 	mZoomRectPen.setCapStyle(Qt::RoundCap);
 	mZoomRectPen.setJoinStyle( Qt::RoundJoin );
+
+	mRepaintTi.start(30);
 }
 
 MapCanvas::~MapCanvas()
@@ -190,4 +192,6 @@ void MapCanvas::onRepaintTimer()
 	{
 		repaint();
 	}
+
+	mRepaintTi.start(30);
 }

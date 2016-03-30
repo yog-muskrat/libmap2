@@ -65,14 +65,26 @@ public:
 	void hide();
 	void show();
 
-	Map2::MapGroup * group() const { return pGroup; }
+	Map2::MapGroup * parentGroup() const { return pParentGroup; }
+	QList<Map2::MapGroup*> childGroups() const { return pChildGroups; }
 
 	friend class MapLayer;
 	friend class MapGroup;
 
+	QPair<int, int> displayRange() const;
+	/*!
+	 * \brief Задает масштаб отображения объекта
+	 * \param value Пара значений, соответствующих нижней и верхней границе отображения объекта
+	 * Значения могут находиться в диапазоне от 1 до 40 млн.
+	 * 0 означает, что границе не будет изменена.
+	 * -1 означает, что граница будет задана в соответствии с значением из классификатора.
+	 */
+	void setDisplayRange(const QPair<int, int> &value);
+
 private:
 	void setMapLayer(MapLayer *layer);
-	void setGroup(Map2::MapGroup *group);
+	void setParentGroup(Map2::MapGroup *parentGroup);
+	void addChildGroup(Map2::MapGroup *childGroup);
 
 	QVariantHash mParameters; //!< Дополнительные параметры объекта
 
@@ -107,7 +119,10 @@ protected:
 	bool mHidden;
 	bool mSelected;
 
-	MapGroup *pGroup;
+	MapGroup *pParentGroup;
+	QList<MapGroup *> pChildGroups;
+
+	QPair<int, int> mDisplayRange; //!< Границы масштаба отображения. От 1:1 до 1:40 млн.
 };
 }
 

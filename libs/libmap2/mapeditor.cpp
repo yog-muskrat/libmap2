@@ -22,7 +22,6 @@ MapEditor::MapEditor(QString sitDir, QString rscDir, QWidget *parent) : QWidget(
 	pToolBar = pMapView->toolBar();
 	pToolBar->setOrientation(Qt::Vertical);
 
-
 	pMapInfo = new MapInfoWidget(this);
 	pMapInfo->setMapView(pMapView);
 
@@ -38,12 +37,15 @@ MapEditor::MapEditor(QString sitDir, QString rscDir, QWidget *parent) : QWidget(
 	tablesLay->setSpacing(10);
 	tablesLay->setContentsMargins( QMargins() );
 
+	pToolBar->addAction(QIcon(":map2/zoom-in"), "Приблизить", pMapView, SLOT(zoomIn()));
+	pToolBar->addAction(QIcon(":map2/zoom-out"), "Удалить", pMapView, SLOT(zoomOut()));
 
 	pToolBar->addSeparator();
-	QAction *act = pToolBar->addAction(QIcon(":list"), "Показать слои");
+	QAction *act = pToolBar->addAction(QIcon(":map2/layers"), "Показать слои");
 	act->setCheckable(true);
 	act->setChecked(true);
 	connect(act, SIGNAL(toggled(bool)), panelsWidget, SLOT(setVisible(bool)));
+
 
 	QHBoxLayout *mainLay = new QHBoxLayout(this);
 	mainLay->addWidget(pToolBar);

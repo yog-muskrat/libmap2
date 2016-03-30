@@ -30,8 +30,8 @@ private slots:
 	void onLayerDoubleClicked(const QModelIndex &index);
 	void onAdd();
 	void onRemove();
-	void onToggleVisibility(const bool &visible);
-	void onToggleLock(const bool &locked);
+	void onToggleVisibility(bool visible);
+	void onToggleLock(bool locked);
 
 private:
 	MapView *pMapView;

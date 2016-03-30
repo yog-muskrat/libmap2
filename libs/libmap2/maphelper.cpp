@@ -102,6 +102,14 @@ qreal MapHelper::distance(CoordPlane c1, CoordPlane c2) const
 	return mapDistance(&from, &to);
 }
 
+qreal MapHelper::distancePx(Coord c1, Coord c2) const
+{
+	QPoint p1 = geoToPicture(c1);
+	QPoint p2 = geoToPicture(c2);
+
+	return QLineF( QPointF(p1), QPointF(p2)).length();
+}
+
 Coord MapHelper::center(const Coord &coord1, const Coord &coord2) const
 {
 	CoordPlane coordPlane1 = geoToPlane(coord1);
@@ -135,6 +143,8 @@ bool MapHelper::clearMetrics(HOBJ hObj) const
 	{
 		mapDeletePointPlane(hObj, i);
 	}
+
+	return true;
 }
 
 void MapHelper::clearHandle(HOBJ *hObj)
@@ -212,9 +222,7 @@ void MapHelper::addObjectToSelection(HSELECT select, HOBJ hObj) const
 	int list = mapGetListNumber( hObj );
 	int key = mapObjectKey( hObj );
 
-	mapInvertSample(select);
 	mapSelectSampleByList(select, list, key);
-	mapInvertSample(select);
 }
 
 void MapHelper::removeObjectFromSelection(HSELECT select, HOBJ hObj) const
@@ -227,7 +235,9 @@ void MapHelper::removeObjectFromSelection(HSELECT select, HOBJ hObj) const
 	int list = mapGetListNumber( hObj );
 	int key = mapObjectKey( hObj );
 
+	mapInvertSample(select);
 	mapSelectSampleByList(select, list, key);
+	mapInvertSample(select);
 }
 
 QPolygonF MapHelper::metricsToPlanePolygon(HOBJ hObj) const

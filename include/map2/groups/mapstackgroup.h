@@ -13,19 +13,25 @@ class MapVectorObject;
 class MapStackGroup : public MapGroup
 {
 public:
-	explicit MapStackGroup(Map2::MapVectorObject *parent);
-	~MapStackGroup(){}
+	explicit MapStackGroup(Map2::MapVectorObject *parent, Qt::AlignmentFlag parentPosition = Qt::AlignBottom);
+	~MapStackGroup();
 
 	virtual bool addChild(MapObject *child);
+	virtual bool addChildren(QList<MapObject *> children);
 	virtual MapGroup::Type type() const { return MG_Stack; }
 
 protected:
 	virtual void updateChildrenDisplayCoordinates();
-	virtual void restoreInitialChildrenCoordinates();
 
 private:
+	void restoreInitialCoordinates();
+
+
 	/// Временное решение. В последствии нужно добавить в сам MapObject понятия "Реальная координата" и "Отображаемая координата".
-	QMap<MapObject*, CoordPlane> mInitialCoordinates;
+	QMap<MapObject*, Coord> mInitialCoordinates;
+	Coord mParentInitialCoord;
+
+	Qt::AlignmentFlag mParentPosition;
 };
 }
 
