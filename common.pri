@@ -3,6 +3,8 @@ RCC_DIR = obj
 MOC_DIR = obj
 UI_DIR = obj
 
+libs_path = /home/yog/qtprojects/gis/lib
+
 exists(/etc/astra_version):!defined(ASTRA) {
 	message( "Configuring for Astra Linux build..." )
 	DEFINES += ASTRA

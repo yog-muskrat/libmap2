@@ -1,7 +1,7 @@
 include (../../common.pri)
 
-GISLIBPATH = /home/yog/qtprojects/gis/lib
-GISINCLUDEPATH = /home/yog/qtprojects/gis/include
+GISLIBPATH = $${libs_path}/gis
+GISINCLUDEPATH = gis/include
 
 contains(DEFINES, MSVS_5){
 	GISLIBPATH = /usr/local/GISCore/lib
