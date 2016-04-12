@@ -143,15 +143,15 @@ QVariant MapLayer::decorationRole(const QModelIndex &idx) const
 	{
 		if(obj->type() == MapObject::MO_Vector)
 		{
-			return QIcon(":map_object");
+			return QIcon(":map2/marker");
 		}
 		else if(obj->type() == MapObject::MO_Line)
 		{
-			return QIcon(":map_line");
+			return QIcon(":map2/polyline");
 		}
 		else if(obj->type() == MapObject::MO_Zone)
 		{
-			return QIcon(":map_polygon");
+			return QIcon(":map2/polygon");
 		}
 		else if(obj->type() == MapObject::MO_Text)
 		{
@@ -342,16 +342,9 @@ Map2::MapVectorObject *MapLayer::addVectorObject(const QString &rscKey, Map2::Co
 	return obj;
 }
 
-Map2::MapLineObject *MapLayer::addLineObject(const QString &rscKey, const QList<Map2::CoordPlane> &coords)
+Map2::MapLineObject *MapLayer::addLineObject(const QString &rscKey, const QList<Map2::Coord> &coords)
 {
 	MapLineObject *obj = new MapLineObject(rscKey, coords);
-	addObject(obj);
-	return obj;
-}
-
-Map2::MapZoneObject *MapLayer::addZoneObject(const QString &rscKey, QList<Map2::CoordPlane> coords)
-{
-	MapZoneObject *obj = new MapZoneObject(rscKey, coords);
 	addObject(obj);
 	return obj;
 }

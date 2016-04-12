@@ -2,7 +2,7 @@
 #define MAPLINEOBJECT_H
 
 #include "mapobject.h"
-#include "mapstructs.h"
+#include "map2/mapstructs.h"
 
 #include <QList>
 #include <QPolygonF>
@@ -14,12 +14,11 @@ class MapLineObject : public MapObject
 {
 public:
 	MapLineObject(const QString &rscKey, const QList<Map2::Coord> &coords = QList<Coord>(), Map2::MapLayer *layer = 0);
-	MapLineObject(const QString &rscKey, const QList<Map2::CoordPlane> &coords = QList<CoordPlane>(), Map2::MapLayer *layer = 0);
 
-	void addPoint(const CoordPlane &coord);
 	void addPoint(const Coord &coord);
-	void addPoints(const QList<CoordPlane> &coords);
+	void addPoint(const CoordPlane &coord);
 	void addPoints(const QList<Coord> &coords);
+	void addPoints(const QList<CoordPlane> &coords);
 	void clear();
 
 	/*!

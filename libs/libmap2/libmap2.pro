@@ -1,6 +1,6 @@
 include (../../common.pri)
 
-GISLIBPATH = $${libs_path}/gis
+GISLIBPATH = $${install_path}/gis
 GISINCLUDEPATH = gis/include
 
 contains(DEFINES, MSVS_5){
@@ -11,7 +11,10 @@ contains(DEFINES, MSVS_5){
 
 TEMPLATE = lib
 TARGET = map2
-DESTDIR = ../../lib
+
+libs_dir = ../../lib
+DESTDIR = $${libs_dir}
+
 INCLUDEPATH += \
 			../../include \
 			../../include/map2 \
@@ -19,9 +22,10 @@ INCLUDEPATH += \
 
 QT += gui
 
-greaterThan(QT_MAJOR_VERSION, 4){
-  QT += widgets
-}
+target.path = $${install_path}
+INSTALLS += target
+
+greaterThan(QT_MAJOR_VERSION, 4) : QT += widgets
 
 LIBS += -L$$GISLIBPATH -lmapacces
 
@@ -65,17 +69,17 @@ HEADERS += \
 	../../include/map2/widgets/calibrationdialog.h \
 	../../include/map2/objects/mapcommlineobject.h \
 	../../include/map2/objects/mapsectorobject.h \
-    ../../include/map2/widgets/coordedit.h
+	../../include/map2/widgets/coordedit.h
 
 SOURCES +=\
-			rscselectdialog.cpp \
-			layersmodel.cpp \
-			mapstructs.cpp \
-			maphelper.cpp \
-			rscviewer.cpp \
-			mapcanvas.cpp \
-			maplayer.cpp \
-			mapview.cpp \
+	rscselectdialog.cpp \
+	layersmodel.cpp \
+	mapstructs.cpp \
+	maphelper.cpp \
+	rscviewer.cpp \
+	mapcanvas.cpp \
+	maplayer.cpp \
+	mapview.cpp \
 	actions/mapmoveaction.cpp \
 	actions/mapdeleteaction.cpp \
 	actions/maprotateaction.cpp \
@@ -105,7 +109,7 @@ SOURCES +=\
 	widgets/calibrationdialog.cpp \
 	objects/mapcommlineobject.cpp \
 	objects/mapsectorobject.cpp \
-    widgets/coordedit.cpp
+	widgets/coordedit.cpp
 
 FORMS += \
 	rscselectdialog.ui \

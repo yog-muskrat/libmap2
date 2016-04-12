@@ -252,7 +252,7 @@ QPolygonF MapHelper::metricsToPlanePolygon(HOBJ hObj) const
 	for(int i = mapPointCount(hObj, 0); i > 0; --i)
 	{
 		double x = mapXPlane(hObj, i);
-		double y = mapXPlane(hObj, i);
+		double y = mapYPlane(hObj, i);
 
 		polygon << QPointF(x, y);
 	}
@@ -275,4 +275,19 @@ QPolygonF MapHelper::metricsToPicturePolygon(HOBJ hObj) const
 	}
 
 	return picturePolygon;
+}
+
+QList<Coord> MapHelper::objectGeoCoordinates(HOBJ hObj) const
+{
+	QList<Coord> result;
+
+	for(int i = mapPointCount(hObj, 0); i > 0; --i)
+	{
+		double x = mapXPlane(hObj, i);
+		double y = mapYPlane(hObj, i);
+
+		result << planeToGeo( CoordPlane(x, y));
+	}
+
+	return result;
 }

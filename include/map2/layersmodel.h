@@ -33,11 +33,12 @@ public:
 	void removeLayer(Map2::MapLayer *layer);
 	void removeLayer(int row);
 
-
 	int layerIndex(Map2::MapLayer *l) const;
 	Map2::MapLayer* layerAt(int row) const;
 	Map2::MapLayer* layerByHandle(HSITE handle) const;
-	Map2::MapLayer* layerByKey(QString key) const;
+	Map2::MapLayer* layerByKey(const QString &key) const;
+
+	bool containsKey(const QString &layerKey) const;
 
 	virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
 	virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;

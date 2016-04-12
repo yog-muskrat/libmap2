@@ -12,13 +12,12 @@ namespace Map2 {
 class MapZoneObject : public MapObject
 {
 public:
-	MapZoneObject(const QString &rscKey, QList<Map2::CoordPlane> coords = QList<Map2::CoordPlane>(), Map2::MapLayer *layer = 0);
 	MapZoneObject(const QString &rscKey, QList<Map2::Coord> coords = QList<Map2::Coord>(), Map2::MapLayer *layer = 0);
 
-	void addPoint(Map2::CoordPlane coord);
 	void addPoint(Map2::Coord coord);
-	void addPoints(QList<Map2::CoordPlane> coords);
+	void addPoint(Map2::CoordPlane coord);
 	void addPoints(QList<Map2::Coord> coords);
+	void addPoints(QList<Map2::CoordPlane> coords);
 
 	QList<Map2::Coord> points() const {return mCoords;}
 
@@ -39,8 +38,6 @@ public:
 	QPolygonF toPlanePolygon() const;
 
 private:
-	void updateMetrics();
-
 	QList<Coord> mCoords;
 	QString mRscKey;
 	HOBJ hObj;

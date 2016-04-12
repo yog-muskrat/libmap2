@@ -88,7 +88,7 @@ Map2::MapLayer *LayersModel::layerByHandle(HSITE handle) const
 	return 0;
 }
 
-MapLayer *LayersModel::layerByKey(QString key) const
+MapLayer *LayersModel::layerByKey(const QString &key) const
 {
 	foreach(MapLayer *layer , mLayers)
 	{
@@ -99,6 +99,11 @@ MapLayer *LayersModel::layerByKey(QString key) const
 	}
 
 	return 0;
+}
+
+bool LayersModel::containsKey(const QString &layerKey) const
+{
+	return layerByKey(layerKey) != 0;
 }
 
 int LayersModel::rowCount(const QModelIndex &parent) const
@@ -249,14 +254,14 @@ QVariant LayersModel::headerData(int section, Qt::Orientation orientation, int r
 	{
 		if(role == Qt::DecorationRole)
 		{
-			return QPixmap(":visible_on");
+			return QPixmap(":map2/eye");
 		}
 	}
 	else if(section == COL_Locked)
 	{
 		if(role == Qt::DecorationRole)
 		{
-			return QPixmap(":lock");
+			return QPixmap(":map2/lock");
 		}
 	}
 	else if(section == COL_Name)

@@ -1,9 +1,5 @@
 <RCC>
     <qresource prefix="/map2">
-        <file alias="minus1">img/list-remove.png</file>
-        <file alias="plus1">img/list-add.png</file>
-        <file alias="locked1">img/changes-prevent.png</file>
-        <file alias="unlocked1">img/changes-allow.png</file>
         <file alias="eye">img/eye.png</file>
         <file alias="eye-off">img/eye-off.png</file>
         <file alias="lock">img/lock.png</file>

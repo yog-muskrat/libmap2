@@ -78,8 +78,7 @@ public:
 
 	void addObject(Map2::MapObject *object);
 	Map2::MapVectorObject* addVectorObject(const QString &rscKey, Map2::Coord coords = Coord(), QString name = "");
-	Map2::MapLineObject* addLineObject(const QString &rscKey, const QList<CoordPlane> &coords = QList<Map2::CoordPlane>());
-	Map2::MapZoneObject* addZoneObject(const QString &rscKey, QList<Map2::CoordPlane> coords = QList<Map2::CoordPlane>());
+	Map2::MapLineObject* addLineObject(const QString &rscKey, const QList<Coord> &coords = QList<Map2::Coord>());
 	Map2::MapZoneObject* addZoneObject(const QString &rscKey, QList<Map2::Coord> coords = QList<Map2::Coord>());
 
 	void removeObject(MapObject *object);

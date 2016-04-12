@@ -18,7 +18,10 @@ MapObject::MapObject(Map2::MapObject::Type t, Map2::MapLayer *layer):
 	mSelected(false),
 	pParentGroup(0)
 {
-	refresh();
+	if(pLayer)
+	{
+		pLayer->addObject(this);
+	}
 }
 
 MapObject::~MapObject()

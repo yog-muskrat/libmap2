@@ -6,7 +6,7 @@
 
 using namespace Map2;
 
-MapRuler::MapRuler(Map2::MapLayer *layer)
+MapRuler::MapRuler(Map2::MapLayer *layer) : mVisible(true)
 {
 	pLine = new MapLineObject("", QList<Coord>(), layer);
 	pText = new MapTextObject("", Coord(), 4, QColor(Qt::black), layer);
@@ -29,6 +29,19 @@ void MapRuler::addPoint(const Map2::CoordPlane &coord)
 	pLine->addPoint(coord);
 	pText->setCoordinatePlane(coord);
 	pText->setText( pLine->lengthText() );
+}
+
+void MapRuler::setVisible(bool visible)
+{
+	if(mVisible == visible)
+	{
+		return;
+	}
+
+	mVisible = visible;
+
+	pLine->setHidden( !mVisible );
+	pText->setHidden( !mVisible );
 }
 
 double MapRuler::length() const

@@ -29,7 +29,7 @@ bool MapZoneObjectAction::processMouseClickEvent(QMouseEvent *mouseEvent)
 {
 	if(mouseEvent->button() == Qt::LeftButton)
 	{
-		CoordPlane coord = pView->helper()->pictureToPlane( pView->canvas()->mapTopLeft() + mouseEvent->pos() );
+		Coord coord = pView->helper()->pictureToGeo( pView->canvas()->mapTopLeft() + mouseEvent->pos() );
 		if(!pObject)
 		{
 			if(!pView->activeLayer())
@@ -44,7 +44,7 @@ bool MapZoneObjectAction::processMouseClickEvent(QMouseEvent *mouseEvent)
 				return false;
 			}
 
-			QList<CoordPlane> coords;
+			QList<Coord> coords;
 			coords << coord;
 
 			pObject =  pView->activeLayer()->addZoneObject(key, coords);
@@ -63,7 +63,7 @@ bool MapZoneObjectAction::processMouseDblClickEvent(QMouseEvent *mouseEvent)
 {
 	if(mouseEvent->button() == Qt::LeftButton)
 	{
-		CoordPlane coord = pView->helper()->pictureToPlane( pView->canvas()->mapTopLeft() + mouseEvent->pos() );
+		Coord coord = pView->helper()->pictureToGeo( pView->canvas()->mapTopLeft() + mouseEvent->pos() );
 
 		if(pObject)
 		{

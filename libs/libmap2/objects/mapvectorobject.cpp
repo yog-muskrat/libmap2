@@ -169,7 +169,7 @@ void Map2::MapVectorObject::moveBy(double dxPlane, double dyPlane)
 	}
 
 	CoordPlane cp = coordinatePlane();
-	cp += CoordPlane(dxPlane, dyPlane);
+	cp -= CoordPlane(dxPlane, dyPlane);
 
 	setCoordinates(cp);
 }

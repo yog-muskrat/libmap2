@@ -95,6 +95,7 @@ public:
 
 	QPolygonF metricsToPlanePolygon(HOBJ hObj) const;
 	QPolygonF metricsToPicturePolygon(HOBJ hObj) const;
+	QList<Coord> objectGeoCoordinates(HOBJ hObj) const;
 
 private:
 	HMAP mMapHnd;

@@ -23,6 +23,7 @@ public:
 private:
 	bool mIsDragged;
 	QPoint mDragStartPoint;
+
 };
 }
 #endif // MAPMOVEACTION

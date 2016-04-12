@@ -21,7 +21,13 @@ ObjectsWidget::ObjectsWidget(QWidget *parent) : QWidget(parent)
 	pTableView = new QTableView();
 	pTableView->verticalHeader()->hide();
 	pTableView->horizontalHeader()->setStretchLastSection(true);
+
+#if QT_VERSION >= 0x50000
+    pTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+#else
 	pTableView->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+#endif
+
 	pTableView->setSelectionBehavior( QTableView::SelectRows );
 	pTableView->setModel( pProxyModel );
 

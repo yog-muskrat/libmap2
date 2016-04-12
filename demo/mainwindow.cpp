@@ -19,11 +19,14 @@
 #include "map2/groups/mapformulargroup.h"
 
 #include "map2/objects/mapobject.h"
+#include "map2/objects/maplineobject.h"
 #include "map2/objects/mapvectorobject.h"
 #include "map2/objects/mapsectorobject.h"
 #include "map2/objects/mapcommlineobject.h"
 
 #include "map2/widgets/layerssettingsdialog.h"
+
+using namespace Map2;
 
 MainWindow::MainWindow(QWidget *parent)
 	: QMainWindow(parent)
@@ -46,6 +49,16 @@ MainWindow::MainWindow(QWidget *parent)
 	mainLay->addLayout(btnlay);
 
 	setCentralWidget(w);
+
+	Map2::MapLayer *layer = pMap->mapView()->createLayer("mgk.rsc", "misc", "Loh1");
+	pMap->mapView()->setActiveLayer(layer);
+
+	QList<Coord> coords;
+	coords << Coord(60., 30.) << Coord(60., 40.) << Coord(50., 40.) << Coord(50., 30.);
+
+	Map2::MapLineObject *line = layer->addLineObject("гз_рплнг", coords );
+
+	line->moveBy(10000, 5000);
 
 	new QShortcut(QKeySequence::Quit, this, SLOT(close()));
 

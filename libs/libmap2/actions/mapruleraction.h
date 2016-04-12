@@ -5,8 +5,6 @@
 
 namespace Map2
 {
-class MapLayer;
-
 /*!
  * \brief Класс действия по измерению расстояний
  */
@@ -22,8 +20,9 @@ public:
 	void clear();
 
 private:
+	MapRuler * ruler();
+
 	MapRuler *pRuler;
-	MapLayer *pLayer;
 };
 }
 

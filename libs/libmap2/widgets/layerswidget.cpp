@@ -92,7 +92,13 @@ void LayersWidget::setMapView(Map2::MapView *view)
 	Q_ASSERT(pTableView);
 
 	pTableView->setModel( pMapView->layersModel() );
+	pTableView->hideColumn( LayersModel::COL_Type );
+
+#if QT_VERSION >= 0x50000
+	pTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+#else
 	pTableView->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
+#endif
 }
 
 void LayersWidget::onLayerClicked(const QModelIndex &index)

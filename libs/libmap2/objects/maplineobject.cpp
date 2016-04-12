@@ -13,26 +13,18 @@
 using namespace Map2;
 
 MapLineObject::MapLineObject(const QString &rscKey, const QList<Coord> &coords, Map2::MapLayer *layer) :
-	MapObject(MO_Line, layer), mCoords(coords), mRscKey(rscKey), hObj(0)
-{
-
-}
-
-MapLineObject::MapLineObject(const QString &rscKey, const QList<CoordPlane> &coords, MapLayer *layer) :
 	MapObject(MO_Line, layer), mRscKey(rscKey), hObj(0)
 {
-	addPoints(coords);
-}
-
-void MapLineObject::addPoint(const Map2::CoordPlane &coord)
-{
-	if(!mapLayer())
+	if(layer)
 	{
-		return;
+		hObj = mapCreateSiteObject(mapLayer()->mapHandle(), mapLayer()->siteHandle());
+		mapRegisterObjectByKey( hObj, RscViewer::codec()->fromUnicode(mRscKey).data());
+		addPoints(coords);
 	}
-
-	Map2::MapHelper *helper = mapLayer()->mapView()->helper();
-	addPoint(helper->planeToGeo(coord));
+	else
+	{
+		mCoords = coords;
+	}
 }
 
 void MapLineObject::addPoint(const Map2::Coord &coord)
@@ -54,7 +46,7 @@ void MapLineObject::addPoint(const Map2::Coord &coord)
 	commit();
 }
 
-void MapLineObject::addPoints(const QList<Map2::CoordPlane> &coords)
+void MapLineObject::addPoint(const Map2::CoordPlane &coord)
 {
 	if(!mapLayer())
 	{
@@ -62,15 +54,7 @@ void MapLineObject::addPoints(const QList<Map2::CoordPlane> &coords)
 	}
 
 	Map2::MapHelper *helper = mapLayer()->mapView()->helper();
-
-	QList<Coord> coordsGeo;
-
-	foreach(const CoordPlane &c, coords)
-	{
-		coordsGeo << helper->planeToGeo(c);
-	}
-
-	addPoints(coordsGeo);
+	addPoint(helper->planeToGeo(coord));
 }
 
 void MapLineObject::addPoints(const QList<Map2::Coord> &coords)
@@ -93,6 +77,26 @@ void MapLineObject::addPoints(const QList<Map2::Coord> &coords)
 	}
 
 	commit();
+}
+
+void MapLineObject::addPoints(const QList<Map2::CoordPlane> &coords)
+{
+	if(!mapLayer())
+	{
+		qDebug()<<"*** LINE OBJECT: Невозможно обработать прямоугольную координату, пока объект не добавлен в слой.";
+		return;
+	}
+
+	Map2::MapHelper *helper = mapLayer()->mapView()->helper();
+
+	QList<Coord> coordsGeo;
+
+	foreach(const CoordPlane &c, coords)
+	{
+		coordsGeo << helper->planeToGeo(c);
+	}
+
+	addPoints(coordsGeo);
 }
 
 void MapLineObject::clear()
@@ -191,7 +195,14 @@ void MapLineObject::repaint()
 
 	hObj = mapCreateSiteObject(mapLayer()->mapHandle(), mapLayer()->siteHandle());
 	mapRegisterObjectByKey( hObj, RscViewer::codec()->fromUnicode(mRscKey).data());
-	addPoints(mCoords);
+
+	foreach(Coord c, mCoords)
+	{
+		Map2::CoordPlane cp = helper()->geoToPlane(c);
+		mapAppendPointPlane(hObj, cp.x, cp.y);
+	}
+
+	commit();
 }
 
 Coord Map2::MapLineObject::coordinateGeo() const
@@ -221,15 +232,13 @@ void Map2::MapLineObject::moveBy(double dxPlane, double dyPlane)
 		return;
 	}
 
-	for(int i = 0; i< mCoords.count(); ++i)
-	{
-		CoordPlane cp = helper()->geoToPlane( mCoords[i] );
-		cp += CoordPlane(dxPlane, dyPlane);
+	DOUBLEPOINT dp;
+	dp.x = dxPlane;
+	dp.y = dyPlane;
 
-		mCoords[i] = helper()->planeToGeo(cp);
+	mapRelocateObjectPlane(hObj, &dp);
 
-		mapUpdatePointPlane(hObj, cp.x, cp.y, i+1);
-	}
+	mCoords = helper()->objectGeoCoordinates( hObj );
 
 	commit();
 }

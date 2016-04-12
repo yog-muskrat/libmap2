@@ -61,8 +61,10 @@ void Map2::MapCommlineObject::setColor(const QColor &color)
 
 void Map2::MapCommlineObject::repaint()
 {
+	qDebug()<<"Repaint commline";
 	if(!mapLayer())
 	{
+		qDebug()<<"No layer!";
 		return;
 	}
 
@@ -110,6 +112,8 @@ void Map2::MapCommlineObject::repaint()
 
 		mapAppendPointPlane(hBody, p.x, p.y);
 	}
+
+	qDebug()<<"Done! Commiting...";
 
 	commit();
 }

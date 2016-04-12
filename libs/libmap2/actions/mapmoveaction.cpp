@@ -48,7 +48,7 @@ bool MapMoveAction::processMouseMoveEvent(QMouseEvent *mouseEvent)
 			CoordPlane oldCoord = pView->helper()->pictureToPlane(mDragStartPoint);
 			CoordPlane newCoord = pView->helper()->pictureToPlane(mouseEvent->pos());
 
-			CoordPlane delta = oldCoord - newCoord;
+			CoordPlane delta = newCoord - oldCoord;
 
 			foreach(MapObject *o, pView->selectedObjects())
 			{
@@ -92,6 +92,11 @@ bool MapMoveAction::processMouseReleaseEvent(QMouseEvent *mouseEvent)
 		else
 		{
 			pView->setCursor( QCursor(Qt::OpenHandCursor) );
+		}
+
+		if(pView->selectedObjects().count() <= 1)
+		{
+			pView->clearSelection();
 		}
 
 		mIsDragged = false;
