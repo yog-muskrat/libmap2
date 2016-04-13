@@ -91,6 +91,50 @@ QPixmap MapCanvas::mapPreview(int width)
 	return pm;
 }
 
+QPixmap MapCanvas::objectPreview(CoordPlane coord, QSize picSize) const
+{
+	if( mapHandle() <= 0)
+	{
+		QPixmap p(picSize);
+		p.fill( QColor( Qt::white ));
+		return p;
+	}
+
+	int bytesPerLine = static_cast<int>(picSize.width() * mMapBitDepth / 8);
+	int size = bytesPerLine * picSize.height();
+
+	char *dataBytes = AllocateTheMemory(size);
+	memset(dataBytes, 0x0, size);
+
+	XIMAGEDESC ximage;
+	ximage.Point = dataBytes;
+	ximage.Width = static_cast<long>(picSize.width());
+	ximage.Height = static_cast<long>(picSize.height());
+	ximage.Depth = mMapBitDepth;
+	ximage.CellSize = mMapBitDepth / 8;
+	ximage.RowSize = static_cast<long>(bytesPerLine);
+
+	double x = coord.x;
+	double y = coord.y;
+
+	mapPlaneToPicture(mapHandle(), &x, &y);
+
+	RECT rect;
+	rect.top = static_cast<long>( y - picSize.height() / 2 );
+	rect.left = static_cast<long>( x - picSize.width() / 2 );
+	rect.bottom = static_cast<long>(y + picSize.height() / 2);
+	rect.right = static_cast<long>(x + picSize.width() / 2);
+
+	mapPaintToXImage(mapHandle(), &ximage, 0, 0, &rect);
+
+	QImage img = QImage((uchar *) dataBytes, picSize.width(), picSize.height(), QImage::Format_RGB32).copy();
+	QPixmap pm = QPixmap::fromImage(img);
+
+	FreeTheMemory(dataBytes);
+
+	return pm;
+}
+
 void MapCanvas::setZoomRect(QRect rect)
 {
 	mZoomRect = rect;
@@ -126,6 +170,11 @@ void MapCanvas::setScale(double scale)
 double MapCanvas::scale() const
 {
 	return mapGetShowScale( mapHandle() );
+}
+
+double MapCanvas::scaleRation() const
+{
+	return mapGetMapScale(mMapHandle) / scale();
 }
 
 void MapCanvas::queueRepaint()

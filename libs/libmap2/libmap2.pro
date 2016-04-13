@@ -11,10 +11,7 @@ contains(DEFINES, MSVS_5){
 
 TEMPLATE = lib
 TARGET = map2
-
-libs_dir = ../../lib
-DESTDIR = $${libs_dir}
-
+DESTDIR = ../../build/lib
 INCLUDEPATH += \
 			../../include \
 			../../include/map2 \

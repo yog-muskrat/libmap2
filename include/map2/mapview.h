@@ -19,6 +19,7 @@ class MapObject;
 class MapToolBar;
 class LayersModel;
 class MapLineObject;
+class MapVectorObject;
 
 /*!
  * \brief Виджет для отображения карты
@@ -95,7 +96,7 @@ public:
 	void addObjectToSelection(Map2::MapObject *obj);
 	QList<Map2::MapObject*> selectedObjects(){return mSelectedObjects;}
 
-	Map2::MapCanvas* canvas(){return pCanvas;}
+	Map2::MapCanvas* canvas() const{return pCanvas;}
 
 	QToolBar* toolBar();
 
@@ -106,6 +107,12 @@ public:
 	 * \return
 	 */
 	QPixmap mapPreview(int width);
+
+	/*!
+	 * \brief Возвращает изображение указанного объекта на фоне текущей карты.
+	 * Функция работает только для векторных объектов.
+	 */
+	QPixmap objectPreview(Map2::MapVectorObject *obj, QSize size = QSize(96, 96), double scale = 2000000);
 
 	/*!
 	 * \brief Возвращает полный размер карты в пикселях.

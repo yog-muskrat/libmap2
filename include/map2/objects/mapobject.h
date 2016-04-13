@@ -70,6 +70,7 @@ public:
 
 	friend class MapLayer;
 	friend class MapGroup;
+	friend class MapView;
 
 	QPair<int, int> displayRange() const;
 	/*!
@@ -80,6 +81,7 @@ public:
 	 * -1 означает, что граница будет задана в соответствии с значением из классификатора.
 	 */
 	void setDisplayRange(const QPair<int, int> &value);
+	void setDisplayRange(int min, int max);
 
 private:
 	void setMapLayer(MapLayer *layer);

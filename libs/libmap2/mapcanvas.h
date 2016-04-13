@@ -6,6 +6,7 @@
 #include <QWidget>
 
 #include "gis.h"
+#include "mapstructs.h"
 
 namespace Map2
 {
@@ -20,15 +21,18 @@ public:
 	HMAP mapHandle() const { return mMapHandle; }
 	void setMapHandle(const HMAP &hnd);
 	QPixmap mapPreview(int width);
+	QPixmap objectPreview(CoordPlane coord, QSize picSize) const;
 	QPoint mapTopLeft() const {return mMapTopLeft;}
 
 	void setZoomRect(QRect rect);
 	QRect zoomRect() const {return mZoomRect;}
 
+	double scale() const;
+	double scaleRation() const;
+
 public slots:
 	void setMapTopLeft(const QPoint &point);
 	void setScale(double scale);
-	double scale() const;
 
 	/*!
 	 * \brief Выставляет флаг перерисовки.

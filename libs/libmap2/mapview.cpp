@@ -154,7 +154,7 @@ double MapView::scale() const
 
 double MapView::scaleRatio() const
 {
-	return mapGetMapScale(mMapHandle) / scale();
+	return pCanvas->scaleRation();
 }
 
 Map2::Coord MapView::coordinateAtPoint(const QPoint &screenCoord)
@@ -227,6 +227,52 @@ QToolBar *MapView::toolBar()
 QPixmap MapView::mapPreview(int width)
 {
 	return pCanvas->mapPreview(width);
+}
+
+QPixmap MapView::objectPreview(MapVectorObject *obj, QSize size, double scale)
+{
+	if(!obj)
+	{
+		QPixmap pm(size);
+		pm.fill( QColor( Qt::white ));
+		return pm;
+	}
+
+	long x1 = 0;
+	long y1 = 0;
+
+	long oldScale = this->scale();
+	mapSetViewScale(mapHandle(), &x1, &y1, scale);
+
+	double ratio = scaleRatio();
+	if(ratio > 1)
+	{
+		ratio = 1;
+	}
+
+	QRectF objRect =obj->sizePix();
+	QSize objSize = QSize(objRect.width() * ratio, objRect.height() * ratio);
+
+	QPoint coord = helper()->planeToPicture( obj->coordinatePlane() );
+	coord += QPoint( objSize.width() /2, objSize.height() / 2) - (objRect.topLeft() * ratio).toPoint();
+
+	CoordPlane coordPlane = helper()->pictureToPlane( coord );
+
+	if(objSize.width() > size.width())
+	{
+		size.setWidth( objSize.width() * 1.2);
+	}
+
+	if(objSize.height() > size.height())
+	{
+		size.setHeight( objSize.height() * 1.2);
+	}
+
+	const QPixmap &pm = canvas()->objectPreview( coordPlane, size);
+
+	mapSetViewScale(mapHandle(), &x1, &y1, oldScale);
+
+	return pm;
 }
 
 bool MapView::checkDirs()
