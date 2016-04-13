@@ -26,6 +26,7 @@ signals:
 	void layerSelected(Map2::MapLayer *layer);
 
 private slots:
+	void onActiveLayerChanged(Map2::MapLayer *layer);
 	void onLayerClicked(const QModelIndex &index);
 	void onLayerDoubleClicked(const QModelIndex &index);
 	void onAdd();

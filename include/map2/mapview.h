@@ -62,7 +62,7 @@ public:
 	 */
 	HMAP mapHandle() const {return mMapHandle;}
 
-	Map2::LayersModel * layersModel() {return mLayersModel; }
+	Map2::LayersModel * layersModel() {return pLayersModel; }
 
 	/*!
 	 * \brief Возвращает текущий масштаб карты.
@@ -189,6 +189,8 @@ signals:
 
 	void mapLoaded();
 
+	void activeLayerChanged(Map2::MapLayer *layer);
+
 protected:
 	bool eventFilter(QObject *obj, QEvent *e);
 	void keyPressEvent(QKeyEvent *keyEvent);
@@ -265,7 +267,7 @@ private:
 	bool mIsDragged;
 	QPoint mDragStartPoint;
 
-	LayersModel *mLayersModel; //!< Модель с перечнем слоев карты.
+	LayersModel *pLayersModel; //!< Модель с перечнем слоев карты.
 
 	quint16 mLastLayerId;
 

@@ -14,7 +14,6 @@ class MapLayer;
 class MapTextObject : public MapObject
 {
 public:
-	MapTextObject(QString text = "", Map2::CoordPlane coord = Map2::CoordPlane(), int fontHeightMm = 4, QColor color = QColor(Qt::black), Map2::MapLayer *layer = 0);
 	MapTextObject(QString text = "", Map2::Coord coord = Map2::Coord(), int fontHeightMm = 4, QColor color = QColor(Qt::black), Map2::MapLayer *layer = 0);
 
 	QString text() const;

@@ -13,6 +13,7 @@
 #include "seekapi.h"
 #include "rscapi.h"
 #include "sitapi.h"
+#include "mathapi.h"
 
 #pragma GCC diagnostic pop
 

@@ -136,7 +136,6 @@ void MapObject::setMapLayer(Map2::MapLayer *layer)
 		return;
 	}
 
-	pLayer = layer;
 	refresh();
 }
 

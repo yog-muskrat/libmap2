@@ -56,11 +56,12 @@ MainWindow::MainWindow(QWidget *parent)
 	QList<Coord> coords;
 	coords << Coord(60., 30.) << Coord(60., 40.) << Coord(50., 40.) << Coord(50., 30.);
 
-	Map2::MapLineObject *line = layer->addLineObject("гз_рплнг", coords );
-
-	line->moveBy(10000, 5000);
+	pObj = layer->addLineObject("гз_рплнг", coords );
+	pObj->setName("Test line");
 
 	new QShortcut(QKeySequence::Quit, this, SLOT(close()));
+
+//	QTimer::singleShot(500, this, SLOT(onTimer()));
 
 	connect(pMap->mapView(), SIGNAL(scaleChanged(double)), this, SLOT(onScaleChanged()));
 	connect(btnCalibrate, SIGNAL(clicked(bool)), pMap->mapView(), SLOT(calibrate()));
@@ -107,6 +108,15 @@ void MainWindow::closeEvent(QCloseEvent *e)
 	set.setValue("lng", coord.lng);
 
 	QMainWindow::closeEvent(e);
+}
+
+void MainWindow::onTimer()
+{
+//	pObj->moveBy(10000, 0);
+
+	pObj->setSelected( !pObj->isSelected() );
+
+	QTimer::singleShot(500, this, SLOT(onTimer()));
 }
 
 void MainWindow::onScaleChanged()

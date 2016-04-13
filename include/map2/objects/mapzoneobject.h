@@ -48,6 +48,8 @@ public:
 	virtual void moveBy(double dxPlane, double dyPlane);
 
 protected:
+	void updateCoordinates();
+
 	virtual void repaint();
 	virtual QList<HOBJ *> mapHandles();
 };

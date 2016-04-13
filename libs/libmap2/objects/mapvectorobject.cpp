@@ -21,6 +21,16 @@ MapVectorObject::MapVectorObject(const QString &rscKey, MapLayer *layer) :
 	mRscKey(rscKey),
 	hObj(0)
 {
+	if(pLayer)
+	{
+		hObj = mapCreateSiteObject(mapLayer()->mapHandle(), mapLayer()->siteHandle());
+		mapRegisterObjectByKey(hObj, RscViewer::codec()->fromUnicode(mRscKey).data());
+
+		mapAppendPointPlane(hObj, 0, 0);
+		mapAppendPointPlane(hObj, 0, 0);
+
+		commit();
+	}
 }
 
 void MapVectorObject::setCoordinates(Map2::Coord coord)
@@ -152,13 +162,16 @@ void MapVectorObject::repaint()
 	}
 
 	hObj = mapCreateSiteObject(mapLayer()->mapHandle(), mapLayer()->siteHandle());
+	mapRegisterObjectByKey(hObj, RscViewer::codec()->fromUnicode(mRscKey).data());
+
 	CoordPlane coord = coordinatePlane();
 
 	mapAppendPointPlane(hObj, coord.x, coord.y);
 	mapAppendPointPlane(hObj, coord.x, coord.y);
-	mapRegisterObjectByKey(hObj, RscViewer::codec()->fromUnicode(mRscKey).data());
 
 	setRotation(mRotation);
+
+	commit();
 }
 
 void Map2::MapVectorObject::moveBy(double dxPlane, double dyPlane)
@@ -168,10 +181,15 @@ void Map2::MapVectorObject::moveBy(double dxPlane, double dyPlane)
 		return;
 	}
 
-	CoordPlane cp = coordinatePlane();
-	cp -= CoordPlane(dxPlane, dyPlane);
+	DOUBLEPOINT dp;
+	dp.x = dxPlane;
+	dp.y = dyPlane;
 
-	setCoordinates(cp);
+	mapRelocateObjectPlane(hObj, &dp);
+
+	mCoordinate = helper()->objectGeoCoordinates( hObj ).first();
+
+	commit();
 }
 
 QList<HOBJ *> Map2::MapVectorObject::mapHandles()

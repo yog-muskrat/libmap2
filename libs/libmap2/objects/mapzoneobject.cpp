@@ -35,13 +35,15 @@ void MapZoneObject::addPoint(Map2::Coord coord)
 		return;
 	}
 
-	Q_ASSERT(hObj);
+	updateCoordinates();
 
-	CoordPlane cp = helper()->geoToPlane(coord);
+//	Q_ASSERT(hObj);
 
-	mapAppendPointPlane(hObj, cp.x, cp.y);
+//	CoordPlane cp = helper()->geoToPlane(coord);
 
-	commit();
+//	mapAppendPointPlane(hObj, cp.x, cp.y);
+
+//	commit();
 }
 
 void MapZoneObject::addPoint(Map2::CoordPlane coord)
@@ -64,15 +66,17 @@ void MapZoneObject::addPoints(QList<Map2::Coord> coords)
 		return;
 	}
 
-	Q_ASSERT(hObj);
+	updateCoordinates();
 
-	foreach(const Coord &c, coords)
-	{
-		CoordPlane cp = helper()->geoToPlane(c);
-		mapAppendPointPlane(hObj, cp.x, cp.y);
-	}
+//	Q_ASSERT(hObj);
 
-	commit();
+//	foreach(const Coord &c, coords)
+//	{
+//		CoordPlane cp = helper()->geoToPlane(c);
+//		mapAppendPointPlane(hObj, cp.x, cp.y);
+//	}
+
+//	commit();
 }
 
 void MapZoneObject::addPoints(QList<Map2::CoordPlane> coords)
@@ -157,13 +161,15 @@ void MapZoneObject::repaint()
 	hObj = mapCreateSiteObject(mapLayer()->mapHandle(), mapLayer()->siteHandle());
 	mapRegisterObjectByKey( hObj, RscViewer::codec()->fromUnicode(mRscKey).data());
 
-	foreach(Coord c, mCoords)
-	{
-		Map2::CoordPlane cp = helper()->geoToPlane(c);
-		mapAppendPointPlane(hObj, cp.x, cp.y);
-	}
+	updateCoordinates();
 
-	commit();
+//	foreach(Coord c, mCoords)
+//	{
+//		Map2::CoordPlane cp = helper()->geoToPlane(c);
+//		mapAppendPointPlane(hObj, cp.x, cp.y);
+//	}
+
+//	commit();
 }
 
 Coord Map2::MapZoneObject::coordinateGeo() const
@@ -172,10 +178,7 @@ Coord Map2::MapZoneObject::coordinateGeo() const
 	{
 		return Coord();
 	}
-
-	QPointF polygonCenter = toPlanePolygon().boundingRect().center();
-
-	return helper()->planeToGeo( CoordPlane(polygonCenter) );
+	return helper()->objectCenter(hObj);
 }
 
 void Map2::MapZoneObject::moveBy(double dxPlane, double dyPlane)
@@ -192,6 +195,19 @@ void Map2::MapZoneObject::moveBy(double dxPlane, double dyPlane)
 	mapRelocateObjectPlane(hObj, &dp);
 
 	mCoords = helper()->objectGeoCoordinates( hObj );
+
+	commit();
+}
+
+void MapZoneObject::updateCoordinates()
+{
+	helper()->clearMetrics(hObj);
+
+	foreach(const Coord &c, mCoords)
+	{
+		Map2::CoordPlane cp = helper()->geoToPlane(c);
+		mapAppendPointPlane(hObj, cp.x, cp.y);
+	}
 
 	commit();
 }

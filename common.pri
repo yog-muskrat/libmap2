@@ -3,8 +3,8 @@ RCC_DIR = obj
 MOC_DIR = obj
 UI_DIR = obj
 
-libs_path = /home/yog/qtprojects/gis/lib
-install_path = /sharedlibs/udar
+libs_path = /usr/local/GISCore/lib:
+install_path = /root/projects/cntr/projects/buhara_centr/build/lib
 
 exists(/etc/astra_version):!defined(ASTRA) {
 	message( "Configuring for Astra Linux build..." )

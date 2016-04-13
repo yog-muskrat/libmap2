@@ -10,16 +10,20 @@
 
 using namespace Map2;
 
-MapTextObject::MapTextObject(QString text, Map2::CoordPlane coord, int fontHeightMm, QColor color, MapLayer *layer)
-	: MapObject(MO_Text, layer), mText(text),  mFontHeightMm(fontHeightMm), mColor(color), hObj(0)
-{
-	setCoordinatePlane(coord);
-}
-
 MapTextObject::MapTextObject(QString text, Map2::Coord coord, int fontHeightMm, QColor color, MapLayer *layer)
 	: MapObject(MO_Text, layer), mText(text), mCoord(coord), mFontHeightMm(fontHeightMm), mColor(color), hObj(0)
 {
+	if(layer)
+	{
+		hObj = mapCreateSiteObject(mapLayer()->mapHandle(), mapLayer()->siteHandle());
+		mapRegisterDrawObject(hObj, 0, LOCAL_TITLE);
+		updateDraw();
+		CoordPlane cp = helper()->geoToPlane(mCoord);
+		mapAppendPointPlane(hObj, cp.x, cp.y);
+		setText(text);
+	}
 }
+
 QString MapTextObject::text() const
 {
 	return mText;
@@ -107,7 +111,6 @@ void MapTextObject::repaint()
 	mapRegisterDrawObject(hObj, 0, LOCAL_TITLE);
 	updateDraw();
 	CoordPlane cp = helper()->geoToPlane(mCoord);
-
 	mapAppendPointPlane(hObj, cp.x, cp.y);
 	commit();
 

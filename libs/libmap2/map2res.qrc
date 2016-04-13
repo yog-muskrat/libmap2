@@ -21,5 +21,7 @@
         <file alias="zoom">img/magnify.png</file>
         <file alias="layers">img/layers.png</file>
         <file alias="layers-off">img/layers-off.png</file>
+        <file alias="text">img/format-text.png</file>
+        <file alias="help">img/help.png</file>
     </qresource>
 </RCC>

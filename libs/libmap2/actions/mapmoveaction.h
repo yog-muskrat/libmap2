@@ -21,9 +21,8 @@ public:
 	virtual bool processMouseReleaseEvent(QMouseEvent *mouseEvent);
 
 private:
-	bool mIsDragged;
-	QPoint mDragStartPoint;
-
+	CoordPlane mOldCoord;
+	MapObject *pObj;
 };
 }
 #endif // MAPMOVEACTION

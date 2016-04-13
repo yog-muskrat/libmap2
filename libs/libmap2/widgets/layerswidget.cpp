@@ -87,9 +87,12 @@ void LayersWidget::setMapView(Map2::MapView *view)
 		return;
 	}
 
-	pMapView = view;
+	if(pMapView)
+	{
+		disconnect(pMapView, SIGNAL(activeLayerChanged(Map2::MapLayer*)), this, SLOT(onActiveLayerChanged(Map2::MapLayer*)));
+	}
 
-	Q_ASSERT(pTableView);
+	pMapView = view;
 
 	pTableView->setModel( pMapView->layersModel() );
 	pTableView->hideColumn( LayersModel::COL_Type );
@@ -99,12 +102,30 @@ void LayersWidget::setMapView(Map2::MapView *view)
 #else
 	pTableView->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
 #endif
+
+	connect(pMapView, SIGNAL(activeLayerChanged(Map2::MapLayer*)), this, SLOT(onActiveLayerChanged(Map2::MapLayer*)));
+}
+
+void LayersWidget::onActiveLayerChanged(MapLayer *layer)
+{
+	int row = pMapView->layersModel()->layerIndex(layer);
+
+	if(row < 0 || row == pTableView->currentIndex().row())
+	{
+		return;
+	}
+
+	pTableView->setCurrentIndex( pTableView->model()->index(row, 0));
+	onLayerClicked(pTableView->currentIndex());
 }
 
 void LayersWidget::onLayerClicked(const QModelIndex &index)
 {
 	MapLayer *l = pMapView->layersModel()->layerAt( index.row() );
-	pMapView->setActiveLayer(l);
+	if(l != pMapView->activeLayer())
+	{
+		pMapView->setActiveLayer(l);
+	}
 
 	pbRemove->setEnabled(true);
 	pbVisibility->setEnabled( true );
@@ -112,7 +133,6 @@ void LayersWidget::onLayerClicked(const QModelIndex &index)
 
 	pbVisibility->setChecked( ! l->isVisible() );
 	pbLock->setChecked( l->isLocked() );
-
 
 	emit layerSelected(l);
 }

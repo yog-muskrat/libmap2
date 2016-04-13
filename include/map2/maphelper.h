@@ -93,6 +93,8 @@ public:
 	void addObjectToSelection(HSELECT select, HOBJ obj) const;
 	void removeObjectFromSelection(HSELECT select, HOBJ hObj) const;
 
+	Coord objectCenter(HOBJ hObj);
+
 	QPolygonF metricsToPlanePolygon(HOBJ hObj) const;
 	QPolygonF metricsToPicturePolygon(HOBJ hObj) const;
 	QList<Coord> objectGeoCoordinates(HOBJ hObj) const;

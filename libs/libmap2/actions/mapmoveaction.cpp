@@ -6,7 +6,7 @@
 
 using namespace Map2;
 
-MapMoveAction::MapMoveAction(Map2::MapView *view) : MapAction(view), mIsDragged(false)
+MapMoveAction::MapMoveAction(Map2::MapView *view) : MapAction(view), pObj(0)
 {
 
 }
@@ -19,21 +19,10 @@ bool MapMoveAction::processMousePressEvent(QMouseEvent *mouseEvent)
 
 		if(!objects.isEmpty())
 		{
-			mIsDragged = true;
-			mDragStartPoint = mouseEvent->pos();
+			mOldCoord = pView->helper()->pictureToPlane(mouseEvent->pos());
 
-			MapObject *obj = objects.first();
-			obj->setSelected();
-
-			if(!mouseEvent->modifiers().testFlag( Qt::ControlModifier ))
-			{
-				pView->clearSelection();
-			}
-			pView->addObjectToSelection( obj );
-		}
-		else
-		{
-			pView->clearSelection();
+			pObj = objects.first();
+//			pObj->setSelected(true);
 		}
 	}
 	return true;
@@ -41,65 +30,26 @@ bool MapMoveAction::processMousePressEvent(QMouseEvent *mouseEvent)
 
 bool MapMoveAction::processMouseMoveEvent(QMouseEvent *mouseEvent)
 {
-	if(mIsDragged)
+	if(pObj && mouseEvent->buttons().testFlag( Qt::LeftButton ))
 	{
-		if(!pView->selectedObjects().isEmpty() && mouseEvent->buttons().testFlag( Qt::LeftButton ))
-		{
-			CoordPlane oldCoord = pView->helper()->pictureToPlane(mDragStartPoint);
-			CoordPlane newCoord = pView->helper()->pictureToPlane(mouseEvent->pos());
+		CoordPlane newCoord = pView->helper()->pictureToPlane(mouseEvent->pos());
+		CoordPlane delta = newCoord - mOldCoord;
 
-			CoordPlane delta = newCoord - oldCoord;
+		pObj->moveBy(delta.x, delta.y);
 
-			foreach(MapObject *o, pView->selectedObjects())
-			{
-				o->moveBy(delta.x, delta.y);
-			}
+		mOldCoord = newCoord;
 
-			mDragStartPoint = mouseEvent->pos();
-
-			pView->setCursor( QCursor(Qt::ClosedHandCursor) );
-		}
-	}
-	else
-	{
-		if(!pView->objectsAtPoint(mouseEvent->pos(), 5).isEmpty())
-		{
-			if(mouseEvent->modifiers().testFlag( Qt::ControlModifier))
-			{
-				pView->setCursor( QCursor(Qt::ArrowCursor) );
-			}
-			else
-			{
-				pView->setCursor( QCursor(Qt::OpenHandCursor) );
-			}
-		}
-		else
-		{
-			pView->setCursor( QCursor(Qt::ArrowCursor) );
-		}
+		pView->setCursor( QCursor(Qt::ClosedHandCursor) );
 	}
 	return true;
 }
 
 bool MapMoveAction::processMouseReleaseEvent(QMouseEvent *mouseEvent)
 {
-	if(mouseEvent->button() == Qt::LeftButton)
+	if(mouseEvent->button() == Qt::LeftButton && pObj)
 	{
-		if(pView->objectsAtPoint(mouseEvent->pos()).isEmpty(), 5)
-		{
-			pView->setCursor( QCursor(Qt::ArrowCursor) );
-		}
-		else
-		{
-			pView->setCursor( QCursor(Qt::OpenHandCursor) );
-		}
-
-		if(pView->selectedObjects().count() <= 1)
-		{
-			pView->clearSelection();
-		}
-
-		mIsDragged = false;
+//		pObj->setSelected(false);
+		pObj = 0;
 		return false;
 	}
 

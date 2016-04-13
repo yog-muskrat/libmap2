@@ -22,6 +22,7 @@ public:
 	enum Columns
 	{
 		COL_Type,
+		COL_Visible,
 		COL_Name,
 		COL_Coord,
 		COL_Count

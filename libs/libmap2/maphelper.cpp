@@ -240,6 +240,21 @@ void MapHelper::removeObjectFromSelection(HSELECT select, HOBJ hObj) const
 	mapInvertSample(select);
 }
 
+Coord MapHelper::objectCenter(HOBJ hObj)
+{
+	if(!hObj)
+	{
+		return Coord();
+	}
+
+	double x = 0;
+	double y = 0;
+
+	mathGetObjectCenter(mMapHnd, hObj, &x, &y);
+
+	return planeToGeo( CoordPlane(x, y) );
+}
+
 QPolygonF MapHelper::metricsToPlanePolygon(HOBJ hObj) const
 {
 	QPolygonF polygon;

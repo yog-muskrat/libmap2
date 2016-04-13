@@ -58,7 +58,7 @@ public:
 	QVariant parameter(QString parameter) const;
 
 	void setSelected(bool b = true);
-	bool selected() const { return mSelected; }
+	bool isSelected() const { return mSelected; }
 
 	void setHidden(bool hidden);
 	bool isHiden() const { return mHidden; }

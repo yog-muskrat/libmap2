@@ -42,8 +42,8 @@ MapView::MapView(QString sitDir, QString rscDir, QWidget *parent)
 	pCanvas->installEventFilter( this );
 	pCanvas->setMouseTracking(true);
 
-	mLayersModel = new LayersModel(this);
-	connect(mLayersModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)), pCanvas, SLOT(queueRepaint()));
+	pLayersModel = new LayersModel(this);
+	connect(pLayersModel, SIGNAL(dataChanged(QModelIndex,QModelIndex)), pCanvas, SLOT(queueRepaint()));
 
 	QGridLayout *lay = new QGridLayout(this);
 	lay->addWidget(pCanvas, 0, 0);
@@ -76,7 +76,7 @@ MapView::~MapView()
 		pHelper = 0;
 	}
 
-	mLayersModel->deleteLater();
+	pLayersModel->deleteLater();
 
 	if(mMapHandle > 0)
 	{
@@ -131,7 +131,7 @@ Map2::MapLayer *MapView::createLayer(QString rscName, QString key, QString name,
 		key = QUuid::createUuid().toString();
 	}
 
-	if(mLayersModel->layerByKey(key) != 0)
+	if(pLayersModel->layerByKey(key) != 0)
 	{
 		return 0;
 	}
@@ -142,7 +142,7 @@ Map2::MapLayer *MapView::createLayer(QString rscName, QString key, QString name,
 	}
 
 	Map2::MapLayer *layer = new Map2::MapLayer(rscName, key, name, this, temp);
-	mLayersModel->addLayer( layer );
+	pLayersModel->addLayer( layer );
 
 	return layer;
 }
@@ -189,7 +189,7 @@ QList<Map2::MapObject *> MapView::objectsAtPoint(QPoint point, double radiusPx)
 	while(found)
 	{
 		HSITE site = mapGetObjectSiteIdent(mMapHandle, found);
-		MapLayer *l = mLayersModel->layerByHandle( site);
+		MapLayer *l = pLayersModel->layerByHandle( site);
 		if(l && !l->isLocked())
 		{
 			MapObject *obj = l->objectByHandle(found);
@@ -402,12 +402,18 @@ void MapView::clearSelection()
 
 void MapView::setActiveLayer(Map2::MapLayer *layer)
 {
+	if(!layer || layer == pActiveLayer)
+	{
+		return;
+	}
+
 	pActiveLayer = layer;
+	emit activeLayerChanged(layer);
 }
 
 void MapView::setActiveLayer(int index)
 {
-	pActiveLayer = mLayersModel->layerAt(index);
+	setActiveLayer(pLayersModel->layerAt(index));
 }
 
 Map2::MapLayer *MapView::activeLayer()

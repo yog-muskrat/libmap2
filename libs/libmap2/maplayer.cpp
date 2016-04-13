@@ -130,6 +130,10 @@ QVariant MapLayer::editRole(const QModelIndex &idx) const
 	{
 		return QVariant::fromValue( obj->type() );
 	}
+	else if(idx.column() == COL_Visible)
+	{
+		return !obj->isHiden();
+	}
 
 	return QVariant();
 }
@@ -155,12 +159,16 @@ QVariant MapLayer::decorationRole(const QModelIndex &idx) const
 		}
 		else if(obj->type() == MapObject::MO_Text)
 		{
-			return QIcon(":map_text");
+			return QIcon(":map2/text");
 		}
 		else
 		{
-			return QIcon(":help");
+			return QIcon(":map2/help");
 		}
+	}
+	else if( idx.column() == COL_Visible)
+	{
+		return QIcon( obj->isHiden() ? ":map2/eye-off" : ":map2/eye");
 	}
 
 	return QVariant();
@@ -445,6 +453,13 @@ QVariant MapLayer::headerData(int section, Qt::Orientation orientation, int role
 		else if(section == COL_Type)
 		{
 			return "Тип";
+		}
+	}
+	else if(role == Qt::DecorationRole)
+	{
+		if(section == COL_Visible)
+		{
+			return QIcon(":map2/eye");
 		}
 	}
 

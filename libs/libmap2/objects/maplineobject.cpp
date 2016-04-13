@@ -207,21 +207,12 @@ void MapLineObject::repaint()
 
 Coord Map2::MapLineObject::coordinateGeo() const
 {
-	if(mCoords.isEmpty())
+	if(!mapLayer())
 	{
 		return Coord();
 	}
 
-	if(!mapLayer())
-	{
-		return mCoords.first();
-	}
-
-	MapHelper *helper = mapLayer()->mapView()->helper();
-
-	QPointF centerPoint = picturePolygon().boundingRect().center();
-
-	return helper->pictureToGeo(centerPoint.toPoint());
+	return helper()->objectCenter(hObj);
 }
 
 void Map2::MapLineObject::moveBy(double dxPlane, double dyPlane)

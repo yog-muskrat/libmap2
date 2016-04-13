@@ -23,7 +23,7 @@ ObjectsWidget::ObjectsWidget(QWidget *parent) : QWidget(parent)
 	pTableView->horizontalHeader()->setStretchLastSection(true);
 
 #if QT_VERSION >= 0x50000
-    pTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+	pTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 #else
 	pTableView->horizontalHeader()->setResizeMode(QHeaderView::ResizeToContents);
 #endif
@@ -151,10 +151,16 @@ void ObjectsWidget::onObjectDoubleClicked(const QModelIndex &index)
 	MapObject *obj = pLayerModel->objectAtIndex( pProxyModel->mapToSource( index) );
 	Q_ASSERT(obj);
 
-	obj->centerOnObject();
-	onEdit();
+	if(index.column() == MapLayer::COL_Visible)
+	{
+		obj->setHidden( !obj->isHiden() );
+	}
+	else
+	{
+		obj->centerOnObject();
+		onEdit();
+	}
 }
-
 
 void HiddenTextProxyModel::setColumnTextHidden(int col, bool hidden)
 {
