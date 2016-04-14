@@ -172,7 +172,7 @@ double MapCanvas::scale() const
 	return mapGetShowScale( mapHandle() );
 }
 
-double MapCanvas::scaleRation() const
+double MapCanvas::scaleRatio() const
 {
 	return mapGetMapScale(mMapHandle) / scale();
 }

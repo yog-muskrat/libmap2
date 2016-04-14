@@ -83,20 +83,20 @@ public:
 
 	void setMkmInPxRatio(double mkmInPx) {mMkmInPx = mkmInPx;}
 
-	bool clearMetrics(HOBJ hObj) const;
-	void clearHandle(HOBJ *hObj);
-	bool commitByOrder(HOBJ hObj);
-	bool removeObject(HOBJ hObj);
-	bool commitObject(HOBJ hObj);
-	long objectMapKey(HOBJ hObj) const;
-	void setSelected(HOBJ hObj, QColor c = QColor(Qt::yellow) ) const;
-	void addObjectToSelection(HSELECT select, HOBJ obj) const;
-	void removeObjectFromSelection(HSELECT select, HOBJ hObj) const;
+	static bool clearMetrics(HOBJ hObj);
+	static void clearHandle(HOBJ *hObj);
+	static bool commitByOrder(HOBJ hObj);
+	static bool removeObject(HOBJ hObj);
+	static bool commitObject(HOBJ hObj);
+	static long objectMapKey(HOBJ hObj);
+	static void setSelected(HOBJ hObj, QColor c = QColor(Qt::yellow) );
+	static void addObjectToSelection(HSELECT select, HOBJ obj);
+	static void removeObjectFromSelection(HSELECT select, HOBJ hObj);
 
 	Coord objectCenter(HOBJ hObj);
 
-	QPolygonF metricsToPlanePolygon(HOBJ hObj) const;
-	QPolygonF metricsToPicturePolygon(HOBJ hObj) const;
+	static QPolygonF metricsToPlanePolygon(HOBJ hObj);
+	static QPolygonF metricsToPicturePolygon(HOBJ hObj);
 	QList<Coord> objectGeoCoordinates(HOBJ hObj) const;
 
 private:

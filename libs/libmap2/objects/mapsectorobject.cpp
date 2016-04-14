@@ -29,7 +29,10 @@ Map2::MapSectorObject::MapSectorObject(Map2::Coord center, qreal radius, qreal a
 	hArc(0),
 	mUpdateObjects(true)
 {
-
+	if(pLayer)
+	{
+		refresh();
+	}
 }
 
 Map2::MapSectorObject::~MapSectorObject()

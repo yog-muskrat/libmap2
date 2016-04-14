@@ -1,6 +1,6 @@
 include (../../common.pri)
 
-GISLIBPATH = $${install_path}/gis
+GISLIBPATH = gis/lib
 GISINCLUDEPATH = gis/include
 
 contains(DEFINES, MSVS_5){
@@ -11,7 +11,7 @@ contains(DEFINES, MSVS_5){
 
 TEMPLATE = lib
 TARGET = map2
-DESTDIR = ../../build/lib
+DESTDIR = ../../lib
 INCLUDEPATH += \
 			../../include \
 			../../include/map2 \
@@ -19,7 +19,7 @@ INCLUDEPATH += \
 
 QT += gui
 
-target.path = $${install_path}
+target.path = $${install_path}/lib
 INSTALLS += target
 
 greaterThan(QT_MAJOR_VERSION, 4) : QT += widgets
@@ -60,7 +60,6 @@ HEADERS += \
 	mapruler.h \
 	../../include/map2/groups/mapgroup.h \
 	../../include/map2/groups/mapstackgroup.h \
-	../../include/map2/mapgroupsmodel.h \
 	../../include/map2/groups/mapformulargroup.h \
 	../../include/map2/widgets/layerssettingsdialog.h \
 	../../include/map2/widgets/calibrationdialog.h \
@@ -99,7 +98,6 @@ SOURCES +=\
 	objects/mapzoneobject.cpp \
 	mapruler.cpp \
 	groups/mapstackgroup.cpp \
-	mapgroupsmodel.cpp \
 	groups/mapformulargroup.cpp \
 	groups/mapgroup.cpp \
 	widgets/layerssettingsdialog.cpp \

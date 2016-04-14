@@ -20,6 +20,8 @@ MapLineObject::MapLineObject(const QString &rscKey, const QList<Coord> &coords, 
 		hObj = mapCreateSiteObject(mapLayer()->mapHandle(), mapLayer()->siteHandle());
 		mapRegisterObjectByKey( hObj, RscViewer::codec()->fromUnicode(mRscKey).data());
 		addPoints(coords);
+
+		show();
 	}
 	else
 	{

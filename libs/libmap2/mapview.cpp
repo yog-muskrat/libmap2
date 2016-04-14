@@ -93,6 +93,8 @@ void MapView::openMap(QString mapFullPath)
 		mMapHandle = 0;
 	}
 
+	mMapFilePath = mapFullPath;
+
 	mMapHandle = mapOpenData(qPrintable(mapFullPath), 0);
 	if(mMapHandle <= 0)
 	{
@@ -103,10 +105,12 @@ void MapView::openMap(QString mapFullPath)
 
 	pCanvas->setMapHandle(mMapHandle);
 
-	QList<int> hiddenLayers = Map2::LayersSettingsDialog::hiddenLayers();
-	Map2::LayersSettingsDialog::setHiddenLayers(mapHandle(), hiddenLayers);
+//	QList<int> hiddenLayers = Map2::LayersSettingsDialog::hiddenLayers();
+//	Map2::LayersSettingsDialog::setHiddenLayers(mapHandle(), hiddenLayers);
 
-	emit mapLoaded();
+	QFileInfo f(mapFullPath);
+
+	emit mapLoaded(f.baseName());
 
 	adjustScrollSize();
 	adjustScrollValues();
@@ -154,7 +158,7 @@ double MapView::scale() const
 
 double MapView::scaleRatio() const
 {
-	return pCanvas->scaleRation();
+	return pCanvas->scaleRatio();
 }
 
 Map2::Coord MapView::coordinateAtPoint(const QPoint &screenCoord)

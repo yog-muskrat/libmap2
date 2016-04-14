@@ -203,13 +203,10 @@ void MapObject::refresh()
 
 	if(mSelected)
 	{
-		setSelected(true);
+		setSelected(mSelected);
 	}
 
-	if(mHidden)
-	{
-		setHidden(true);
-	}
+	setHidden(mHidden);
 
 	///TODO: Необходимо так же обновить семантики объекта, если они были заданы
 }
@@ -363,35 +360,35 @@ void MapObject::setHidden(bool hidden)
 	/// NOTE: Закомментированый фрагмент содержит невыявленные на данный момент баги, из-за которых некоторые объекты
 	/// не скрываются или не появляются, когда их об этом просят. Если текущий вариант не снижает быстродействия,
 	/// то можно удалить закомментированный код.
-	//	HMAP hMap = mapLayer()->mapHandle();
-	//	HSITE hSite = mapLayer()->siteHandle();
-	//	HSELECT hSelect = mapLayer()->selectHandle();
+		HMAP hMap = mapLayer()->mapHandle();
+		HSITE hSite = mapLayer()->siteHandle();
+		HSELECT hSelect = mapLayer()->selectHandle();
 
-	//	foreach(HOBJ *hObj, mapHandles())
-	//	{
-	//		if(hidden)
-	//		{
-	//			helper()->removeObjectFromSelection(hSelect, *hObj);
-	//		}
-	//		else
-	//		{
-	//			helper()->addObjectToSelection(hSelect, *hObj);
-	//		}
-	//	}
-
-	//	mapSetSiteViewSelect(hMap, hSite, hSelect);
-
-	if(hidden)
-	{
 		foreach(HOBJ *hObj, mapHandles())
 		{
-			helper()->removeObject(*hObj);
+			if(hidden)
+			{
+				helper()->removeObjectFromSelection(hSelect, *hObj);
+			}
+			else
+			{
+				helper()->addObjectToSelection(hSelect, *hObj);
+			}
 		}
-	}
-	else
-	{
-		refresh();
-	}
+
+		mapSetSiteViewSelect(hMap, hSite, hSelect);
+
+//	if(hidden)
+//	{
+//		foreach(HOBJ *hObj, mapHandles())
+//		{
+//			helper()->removeObject(*hObj);
+//		}
+//	}
+//	else
+//	{
+//		refresh();
+//	}
 
 	mapLayer()->objectChangedNotify(this);
 }

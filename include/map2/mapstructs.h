@@ -30,7 +30,7 @@ struct Coord
 	Coord(const Map2::Coord &other) : lat(other.lat), lng(other.lng) {}
 
 	///NOTE: Не самый лучший способ проверки валидности
-	bool isValid(){return lat != 0 && lng != 0;}
+	bool isValid() const {return lat != 0 && lng != 0;}
 
 	QString toString() const { return QString("Ш:%0 Д:%1").arg(lat, 0, 'f').arg(lng, 0, 'f'); }
 

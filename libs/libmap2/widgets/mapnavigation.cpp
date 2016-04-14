@@ -41,7 +41,7 @@ void MapNavigation::setMapView(MapView *view)
 
 	if(pMapView)
 	{
-		disconnect(pMapView, SIGNAL(mapLoaded()), this, SLOT(onMapLoaded()));
+		disconnect(pMapView, SIGNAL(mapLoaded(QString)), this, SLOT(onMapLoaded()));
 		disconnect(pMapView, SIGNAL(mapCenterScrolled(Map2::Coord)), this, SLOT(onMapScrolled()));
 		disconnect(pMapView, SIGNAL(resized(QSize)), this, SLOT(adjustSize()));
 		disconnect(pMapView, SIGNAL(scaleChanged(double)), this, SLOT(adjustSize()));
@@ -59,7 +59,7 @@ void MapNavigation::setMapView(MapView *view)
 		mPixmap = QPixmap( size() );
 	}
 
-	connect(pMapView, SIGNAL(mapLoaded()), this, SLOT(onMapLoaded()));
+	connect(pMapView, SIGNAL(mapLoaded(QString)), this, SLOT(onMapLoaded()));
 	connect(pMapView, SIGNAL(mapCenterScrolled(Map2::Coord)), this, SLOT(onMapScrolled()));
 	connect(pMapView, SIGNAL(resized(QSize)), this, SLOT(adjustSize()));
 	connect(pMapView, SIGNAL(scaleChanged(double)), this, SLOT(adjustSize()));

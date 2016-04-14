@@ -121,7 +121,7 @@ void Map2::MapFormularGroup::updateChildrenDisplayCoordinates()
 		{
 			QString name = mvo->name();
 
-			mObjectsLabels[mvo] = new MapTextObject(name, mvo->coordinatePlane(), 4, QColor(Qt::black), mvo->mapLayer());
+			mObjectsLabels[mvo] = new MapTextObject(name, mvo->coordinateGeo(), 4, QColor(Qt::black), mvo->mapLayer());
 			mvo->setName("");
 		}
 

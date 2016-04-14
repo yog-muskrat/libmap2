@@ -1,8 +1,12 @@
 #include "actions/mapmoveaction.h"
 
+#include "groups/mapformulargroup.h"
+
 #include "objects/mapobject.h"
 #include "maphelper.h"
 #include "mapcanvas.h"
+
+#include <QDebug>
 
 using namespace Map2;
 
@@ -22,7 +26,6 @@ bool MapMoveAction::processMousePressEvent(QMouseEvent *mouseEvent)
 			mOldCoord = pView->helper()->pictureToPlane(mouseEvent->pos());
 
 			pObj = objects.first();
-//			pObj->setSelected(true);
 		}
 	}
 	return true;
@@ -35,7 +38,10 @@ bool MapMoveAction::processMouseMoveEvent(QMouseEvent *mouseEvent)
 		CoordPlane newCoord = pView->helper()->pictureToPlane(mouseEvent->pos());
 		CoordPlane delta = newCoord - mOldCoord;
 
-		pObj->moveBy(delta.x, delta.y);
+		if(!pObj->parentGroup() || pObj->parentGroup()->type() == MapGroup::MG_Simple)
+		{
+			pObj->moveBy(delta.x, delta.y);
+		}
 
 		mOldCoord = newCoord;
 
@@ -48,7 +54,6 @@ bool MapMoveAction::processMouseReleaseEvent(QMouseEvent *mouseEvent)
 {
 	if(mouseEvent->button() == Qt::LeftButton && pObj)
 	{
-//		pObj->setSelected(false);
 		pObj = 0;
 		return false;
 	}

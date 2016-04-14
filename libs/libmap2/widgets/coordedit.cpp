@@ -137,12 +137,11 @@ double CoordEdit::stringToDouble(const QString &s) const
 
 QString CoordEdit::doubleToString(double d) const
 {
-	double fract = 0.;
 	double degree = 0.;
 	double mins = 0.;
 	double secs = 0.;
 
-	fract = modf(d, &degree) * 60;
+	double fract = modf(d, &degree) * 60;
 	fract = modf(fract, &mins) * 60;
 	fract = modf(fract, &secs);
 

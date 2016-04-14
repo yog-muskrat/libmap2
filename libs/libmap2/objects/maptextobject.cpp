@@ -21,6 +21,7 @@ MapTextObject::MapTextObject(QString text, Map2::Coord coord, int fontHeightMm, 
 		CoordPlane cp = helper()->geoToPlane(mCoord);
 		mapAppendPointPlane(hObj, cp.x, cp.y);
 		setText(text);
+		show();
 	}
 }
 

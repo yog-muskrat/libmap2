@@ -62,7 +62,7 @@ public:
 	void setArcRscKey(QString rscKey);
 
 	QString sidesRscKey() const {return mSidesRscKey;}
-	QString arcRsckey() const {return mArcRscKey;}
+	QString arcRscKey() const {return mArcRscKey;}
 
 private:
 	QPolygonF getArcPolygon() const;

@@ -30,6 +30,8 @@ MapVectorObject::MapVectorObject(const QString &rscKey, MapLayer *layer) :
 		mapAppendPointPlane(hObj, 0, 0);
 
 		commit();
+
+		show();
 	}
 }
 

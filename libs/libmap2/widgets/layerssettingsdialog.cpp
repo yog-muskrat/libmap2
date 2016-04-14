@@ -1,5 +1,6 @@
 #include "widgets/layerssettingsdialog.h"
 #include "ui_layerssettingsdialog.h"
+#include "rscviewer.h"
 
 #include "gis.h"
 
@@ -69,6 +70,23 @@ void Map2::LayersSettingsDialog::setHiddenLayers(HMAP hmap, QList<int> layers)
 	set.setValue("hidden_layers", vl);
 }
 
+QStringList Map2::LayersSettingsDialog::mapLayers(HMAP hMap)
+{
+	QStringList result;
+
+	QTextCodec *tc = RscViewer::codec();
+
+	int count = mapGetLayerCount(hMap);
+
+	for(int i = 0; i < count; ++i)
+	{
+		QByteArray ba = mapGetLayerName(hMap, i);
+		result << tc->toUnicode(ba);
+	}
+
+	return result;
+}
+
 void Map2::LayersSettingsDialog::accept()
 {
 	QVariantList vl;
@@ -104,7 +122,7 @@ void Map2::LayersSettingsDialog::fillLayers()
 
 	mapGetViewSelect(hMap, hSelect);
 
-	QTextCodec *tc = QTextCodec::codecForName("koi8-r");
+	QTextCodec *tc = RscViewer::codec();
 
 	int count = mapGetLayerCount(hMap);
 

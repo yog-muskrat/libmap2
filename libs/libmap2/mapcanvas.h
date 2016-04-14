@@ -28,7 +28,7 @@ public:
 	QRect zoomRect() const {return mZoomRect;}
 
 	double scale() const;
-	double scaleRation() const;
+	double scaleRatio() const;
 
 public slots:
 	void setMapTopLeft(const QPoint &point);

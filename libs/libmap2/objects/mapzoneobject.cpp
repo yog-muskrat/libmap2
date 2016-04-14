@@ -19,6 +19,8 @@ MapZoneObject::MapZoneObject(const QString &rscKey, QList<Coord> coords, MapLaye
 		hObj = mapCreateSiteObject(mapLayer()->mapHandle(), mapLayer()->siteHandle());
 		mapRegisterObjectByKey( hObj, RscViewer::codec()->fromUnicode(mRscKey).data());
 		addPoints(coords);
+
+		show();
 	}
 	else
 	{

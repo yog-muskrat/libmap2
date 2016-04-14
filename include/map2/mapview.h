@@ -43,6 +43,8 @@ public:
 	 */
 	void openMap(QString mapFullPath);
 
+	QString mapFile() const {return mMapFilePath;}
+
 	/*!
 	 * \brief Создает новый картографический слой, использующий заданный классификатор знаков.
 	 * Если классификатор не задан, будет вызван диалог выбора классификатора.
@@ -194,7 +196,7 @@ signals:
 
 	void resized(QSize newSize);
 
-	void mapLoaded();
+	void mapLoaded(QString mapName);
 
 	void activeLayerChanged(Map2::MapLayer *layer);
 
@@ -285,6 +287,8 @@ private:
 	MapLayer *pActiveLayer;
 
 	MapHelper *pHelper;
+
+	QString mMapFilePath;
 };
 }
 #endif // MAPVIEW_H

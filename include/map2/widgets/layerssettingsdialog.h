@@ -22,8 +22,9 @@ public:
 	~LayersSettingsDialog();
 
 	static QList<int> hiddenLayers();
-
 	static void setHiddenLayers(HMAP hmap, QList<int> layers);
+
+	static QStringList mapLayers(HMAP hMap);
 
 public slots:
 	virtual void accept();

@@ -21,7 +21,10 @@ Map2::MapCommlineObject::MapCommlineObject(const Map2::Coord &from, const Map2::
 	hToHandle(0),
 	hFromHandle(0)
 {
-
+	if(pLayer)
+	{
+		refresh();
+	}
 }
 
 Map2::MapCommlineObject::~MapCommlineObject()

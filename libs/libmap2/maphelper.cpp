@@ -132,7 +132,7 @@ double MapHelper::px2mkm(double pix) const
 	return pix * mMkmInPx;
 }
 
-bool MapHelper::clearMetrics(HOBJ hObj) const
+bool MapHelper::clearMetrics(HOBJ hObj)
 {
 	if(hObj <= 0)
 	{
@@ -190,7 +190,7 @@ bool MapHelper::commitObject(HOBJ hObj)
 	return mapCommitObject(hObj) != 0;
 }
 
-long MapHelper::objectMapKey(HOBJ hObj) const
+long MapHelper::objectMapKey(HOBJ hObj)
 {
 	if(hObj <= 0)
 	{
@@ -200,7 +200,7 @@ long MapHelper::objectMapKey(HOBJ hObj) const
 	return mapObjectKey(hObj);
 }
 
-void MapHelper::setSelected(HOBJ hObj, QColor c) const
+void MapHelper::setSelected(HOBJ hObj, QColor c)
 {
 	if(hObj <= 0)
 	{
@@ -212,7 +212,7 @@ void MapHelper::setSelected(HOBJ hObj, QColor c) const
 	mapAppendSemantic(hObj, 31002, color.toLocal8Bit().data(), 255);
 }
 
-void MapHelper::addObjectToSelection(HSELECT select, HOBJ hObj) const
+void MapHelper::addObjectToSelection(HSELECT select, HOBJ hObj)
 {
 	if(hObj <=0 )
 	{
@@ -225,7 +225,7 @@ void MapHelper::addObjectToSelection(HSELECT select, HOBJ hObj) const
 	mapSelectSampleByList(select, list, key);
 }
 
-void MapHelper::removeObjectFromSelection(HSELECT select, HOBJ hObj) const
+void MapHelper::removeObjectFromSelection(HSELECT select, HOBJ hObj)
 {
 	if(hObj <=0 )
 	{
@@ -255,7 +255,7 @@ Coord MapHelper::objectCenter(HOBJ hObj)
 	return planeToGeo( CoordPlane(x, y) );
 }
 
-QPolygonF MapHelper::metricsToPlanePolygon(HOBJ hObj) const
+QPolygonF MapHelper::metricsToPlanePolygon(HOBJ hObj)
 {
 	QPolygonF polygon;
 
@@ -275,9 +275,9 @@ QPolygonF MapHelper::metricsToPlanePolygon(HOBJ hObj) const
 	return polygon;
 }
 
-QPolygonF MapHelper::metricsToPicturePolygon(HOBJ hObj) const
+QPolygonF MapHelper::metricsToPicturePolygon(HOBJ hObj)
 {
-	QPolygonF planePolygon = metricsToPlanePolygon(hObj);
+	QPolygonF planePolygon = MapHelper::metricsToPlanePolygon(hObj);
 	QPolygonF picturePolygon;
 
 	foreach(QPointF plane, planePolygon)
