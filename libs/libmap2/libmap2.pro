@@ -19,7 +19,7 @@ INCLUDEPATH += \
 
 QT += gui
 
-target.path = $${install_path}/lib
+target.path = $${install_path}
 INSTALLS += target
 
 greaterThan(QT_MAJOR_VERSION, 4) : QT += widgets

@@ -235,9 +235,11 @@ void MapHelper::removeObjectFromSelection(HSELECT select, HOBJ hObj)
 	int list = mapGetListNumber( hObj );
 	int key = mapObjectKey( hObj );
 
-	mapInvertSample(select);
-	mapSelectSampleByList(select, list, key);
-	mapInvertSample(select);
+//	mapInvertSample(select);
+//	mapSelectSampleByList(select, list, key);
+//	mapInvertSample(select);
+
+	mapUnselectSampleByList(select, list, key);
 }
 
 Coord MapHelper::objectCenter(HOBJ hObj)

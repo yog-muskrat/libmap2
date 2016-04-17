@@ -3,7 +3,7 @@ RCC_DIR = obj
 MOC_DIR = obj
 UI_DIR = obj
 
-install_path = /usr/local/niipa/fpreb
+install_path = /sharedlibs/udar
 
 exists(/etc/astra_version):!contains(DEFINES, ASTRA) {
 	message( "Configuring for Astra Linux build..." )

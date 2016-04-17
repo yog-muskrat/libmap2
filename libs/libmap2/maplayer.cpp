@@ -74,6 +74,8 @@ MapLayer::MapLayer(const QString &rscName, const QString &key, const QString &na
 	mapAppendPointPlane(invisibleRootObject, 0, 0);
 	mapCommitObject(invisibleRootObject);
 	mapFreeObject(invisibleRootObject);
+
+	mapSetSampleAllObjects(mSelectHandle, 1);
 }
 
 MapLayer::~MapLayer()

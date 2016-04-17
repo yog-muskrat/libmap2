@@ -110,6 +110,9 @@ void MapObject::bringToFront()
 	{
 		return;
 	}
+
+
+
 	refresh();
 }
 
