@@ -53,15 +53,18 @@ MainWindow::MainWindow(QWidget *parent)
 	Map2::MapLayer *layer = pMap->mapView()->createLayer("mgk.rsc", "misc", "Loh1");
 	pMap->mapView()->setActiveLayer(layer);
 
-	QList<Coord> coords;
-	coords << Coord(60., 30.) << Coord(60., 40.) << Coord(50., 40.) << Coord(50., 30.);
+	pObj = layer->addVectorObject("гр вмс", Coord(60., 30.) );
+	pObj->setName("Object");
 
-	pObj = layer->addLineObject("гз_рплнг", coords );
-	pObj->setName("Test line");
+	MapVectorObject *mvo = dynamic_cast<MapVectorObject*>(pObj);
+	MapFormularGroup *group = new MapFormularGroup(mvo, Qt::green);
+	group->addChild( layer->addVectorObject("оок вмс", Coord(55., 30.) ) );
+	group->addChild( layer->addVectorObject("оок вмс", Coord(50., 30.) ) );
+	group->addChild( layer->addVectorObject("оок вмс", Coord(45., 30.) ) );
+
+	qDebug()<<"Group created"<<group->formularCoordinate().toString();
 
 	new QShortcut(QKeySequence::Quit, this, SLOT(close()));
-
-//	QTimer::singleShot(500, this, SLOT(onTimer()));
 
 	connect(pMap->mapView(), SIGNAL(scaleChanged(double)), this, SLOT(onScaleChanged()));
 	connect(btnCalibrate, SIGNAL(clicked(bool)), pMap->mapView(), SLOT(calibrate()));
@@ -110,18 +113,12 @@ void MainWindow::closeEvent(QCloseEvent *e)
 	QMainWindow::closeEvent(e);
 }
 
-void MainWindow::onTimer()
-{
-//	pObj->moveBy(10000, 0);
-
-	pObj->setSelected( !pObj->isSelected() );
-
-	QTimer::singleShot(500, this, SLOT(onTimer()));
-}
-
 void MainWindow::onScaleChanged()
 {
-
+	foreach(MapGroup *grp, pObj->childGroups())
+	{
+		grp->update();
+	}
 }
 
 void MainWindow::onEditLayers()
@@ -134,12 +131,22 @@ void MainWindow::onLeftClick(QPoint point)
 {
 	QList<Map2::MapObject*> objs = pMap->mapView()->objectsAtPoint(point);
 
-	if(objs.count() < 2)
+	if(objs.isEmpty())
 	{
 		return;
 	}
 
-	objs.last()->bringToFront();
+	foreach(MapGroup *grp, objs.first()->childGroups())
+	{
+		if(grp->type() != MapGroup::MG_Formular)
+		{
+			continue;
+		}
+
+		qDebug()<<"About to change visibility"<<((MapFormularGroup*)grp)->formularCoordinate().toString();
+		grp->setChildrenVisible( !grp->childrenVisible() );
+		qDebug()<<"Visibility changed"<<((MapFormularGroup*)grp)->formularCoordinate().toString();
+	}
 }
 
 void MainWindow::onRightClick(QPoint point)

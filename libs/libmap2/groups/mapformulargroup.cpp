@@ -4,28 +4,32 @@
 #include "maplayer.h"
 #include "maphelper.h"
 #include "mapview.h"
+#include "rscviewer.h"
 #include "gis.h"
 
 #include <QRect>
 #include <QDebug>
+#include <QTextCodec>
 
 Map2::MapFormularGroup::MapFormularGroup(Map2::MapVectorObject *parent, QColor borderColor) :
 	Map2::MapGroup(parent),
 	mBorderWidthPx(2),
-	mPaddingPx(0),
-	mSpacingPx(0),
-	mOffset( QPoint(70, -35)),
+	mPaddingPx(10),
+	mSpacingPx(10),
 	mBorderColor(borderColor),
-	hObj(0)
+	rectHobj(0),
+	strutHobj(0)
 {
 }
 
 Map2::MapFormularGroup::~MapFormularGroup()
 {
-	if(hObj > 0)
+	if(rectHobj > 0)
 	{
-		mapDeleteObject(hObj);
-		mapClearObject(hObj);
+		mapDeleteObject(rectHobj);
+		mapClearObject(rectHobj);
+		mapDeleteObject(strutHobj);
+		mapClearObject(strutHobj);
 	}
 
 	restoreInitialChildrenCoordinates();
@@ -44,7 +48,9 @@ bool Map2::MapFormularGroup::addChild(Map2::MapObject *child)
 	}
 
 	mInitialCoordinates[child] = child->coordinateGeo();
+
 	updateChildrenDisplayCoordinates();
+
 	return true;
 }
 
@@ -62,104 +68,41 @@ void Map2::MapFormularGroup::setChildrenVisible(bool visible)
 
 	if(visible)
 	{
-		helper->addObjectToSelection(hSelect, hObj);
+		helper->addObjectToSelection(hSelect, rectHobj);
+		helper->addObjectToSelection(hSelect, strutHobj);
 	}
 	else
 	{
-		helper->removeObjectFromSelection(hSelect, hObj);
+		helper->removeObjectFromSelection(hSelect, rectHobj);
+		helper->removeObjectFromSelection(hSelect, strutHobj);
 	}
 
 	mapSetSiteViewSelect(hMap, hSite, hSelect);
 
 	foreach(Map2::MapObject *obj, mChildren)
 	{
-		if(visible)
-		{
-			obj->show();
-			if(mObjectsLabels.contains(obj))
-			{
-				mObjectsLabels[obj]->show();
-			}
-		}
-		else
-		{
-			obj->hide();
-			if(mObjectsLabels.contains(obj))
-			{
-				mObjectsLabels[obj]->hide();
-			}
-		}
+		obj->setHidden(!visible);
 	}
 }
 
 void Map2::MapFormularGroup::updateChildrenDisplayCoordinates()
 {
-	MapVectorObject *parentObj = vectorParent();
-	Q_ASSERT(parentObj);
+	arrangeChildren();
+	updateBorderCoords();
 
-	Map2::MapHelper *helper = pParent->mapLayer()->mapView()->helper();
-
-	HMAP hMap = pParent->mapLayer()->mapHandle();
-
-	QPoint origin = helper->planeToPicture(parentObj->coordinatePlane()) + mOffset + QPoint(mPaddingPx, -mPaddingPx);
-
-	QRectF frameRect( origin.x() - mPaddingPx, origin.y() + mPaddingPx, 0, 0 );
-
-	///TODO: Это тут временно. Нужно перенести, скорее всего, в MapView.
-	double scale = mapGetMapScale(hMap) / parentObj->mapLayer()->mapView()->scale();
-	if(scale > 1)
+	if(mFormularCoord.isValid())
 	{
-		scale = 1;
+		setFormularCoordinate(mFormularCoord);
+	}
+	else
+	{
+		MapHelper *helper = parent()->mapLayer()->mapView()->helper();
+
+		QPoint p = helper->geoToPicture( parent()->coordinateGeo() );
+		p += QPoint(100, 50);
+		setFormularCoordinate( helper->pictureToGeo(p));
 	}
 
-	foreach(Map2::MapObject *child, mChildren)
-	{
-		MapVectorObject *mvo = dynamic_cast<MapVectorObject*>(child);
-		Q_ASSERT(mvo);
-
-		if(!mObjectsLabels.contains(mvo))
-		{
-			QString name = mvo->name();
-
-			mObjectsLabels[mvo] = new MapTextObject(name, mvo->coordinateGeo(), 4, QColor(Qt::black), mvo->mapLayer());
-			mvo->setName("");
-		}
-
-		MapTextObject *lblObj = mObjectsLabels[mvo];
-
-		QRectF childRect = mvo->sizePix();
-		QRectF lblRect = lblObj->sizePix();
-
-//		qDebug()<<"    FormChild "<<lblObj->text()<<"rect="<<childRect<<"label="<<lblRect;
-
-		QPoint childPos = origin;
-		childPos.rx() += (childRect.x() + (childRect.width() - childRect.x()))* scale;
-		childPos.ry() -= (childRect.height() - childRect.y()) * scale;
-
-		Map2::CoordPlane childCoord = helper->pictureToPlane(childPos);
-		mvo->setCoordinates(childCoord);
-		mvo->setRotation( 90 );
-
-		QPoint lblPos = origin;
-		lblPos.rx() += mSpacingPx + (childRect.width() + (childRect.width() - childRect.x()))* scale;
-		lblPos.ry()-= childRect.height()*scale - childRect.y()*scale;
-
-		Map2::CoordPlane lblCoord = helper->pictureToPlane(lblPos);
-		lblObj->setCoordinatePlane(lblCoord);
-
-		origin.ry() -= mSpacingPx + childRect.height()*scale;
-
-		if( frameRect.width() > ((childRect.width() + lblRect.width())*scale + 2 * mPaddingPx + mSpacingPx) )
-		{
-			frameRect.setTopLeft( QPointF(frameRect.x(), origin.y() + mPaddingPx) );
-		}
-		else
-		{
-			frameRect.setTopRight( QPointF(frameRect.x() + 2*mPaddingPx + mSpacingPx + (childRect.width() + lblRect.width())*scale, origin.y() + mPaddingPx) );
-		}
-	}
-
-	updateBorderCoords(frameRect);
 }
 
 void Map2::MapFormularGroup::restoreInitialChildrenCoordinates()
@@ -176,78 +119,196 @@ void Map2::MapFormularGroup::restoreInitialChildrenCoordinates()
 		mvo->setCoordinates( mInitialCoordinates[mvo] );
 		if(mObjectsLabels.contains(mvo))
 		{
-			mvo->setName( mObjectsLabels[mvo]->text() );
-			MapObject *lblObj = mObjectsLabels.take(mvo);
-			lblObj->remove();
+			mvo->setNameVisible(true);
+			HOBJ hobj = mObjectsLabels.take(mvo);
+			mvo->removeExtraHobj(hobj);
+			mapDeleteObject(hobj);
+			mapFreeObject(hobj);
 		}
 	}
 }
 
-void Map2::MapFormularGroup::updateBorderCoords(const QRectF newRect)
+void Map2::MapFormularGroup::arrangeChildren()
 {
 	MapVectorObject *parentObj = vectorParent();
 	Q_ASSERT(parentObj);
 
 	Map2::MapHelper *helper = pParent->mapLayer()->mapView()->helper();
 
-	if(hObj == 0)
+	double scale = parentObj->mapLayer()->mapView()->scaleRatio();
+	if(scale > 1)
+	{
+		scale = 1;
+	}
+
+	double padding = mPaddingPx * scale;
+	double spacing = mSpacingPx * scale;
+
+	QPoint origin = helper->planeToPicture(parentObj->coordinatePlane()) + QPoint(padding, -padding);
+
+	QRect rect = QRect( origin.x() - padding, origin.y() + padding, 0, 0 );
+
+	foreach(Map2::MapObject *child, mChildren)
+	{
+		MapVectorObject *mvo = dynamic_cast<MapVectorObject*>(child);
+		Q_ASSERT(mvo);
+
+		HOBJ textHobj = 0;
+
+		if(!mObjectsLabels.contains(mvo))
+		{
+			textHobj = createText(mvo->mapLayer(), mvo->coordinateGeo(), mvo->name());
+			mvo->setNameVisible(false);
+			mvo->addExtraHobj(textHobj);
+			mObjectsLabels[mvo] = textHobj;
+		}
+
+		textHobj = mObjectsLabels[mvo];
+
+		QRectF childRect = mvo->sizePix();
+		QRectF lblRect = textRect(textHobj);
+
+		QPoint childPos = origin;
+		childPos.rx() += (childRect.x() + (childRect.width() - childRect.x()))* scale;
+		childPos.ry() -= (childRect.height() - childRect.y()) * scale;
+
+		Map2::CoordPlane childCoord = helper->pictureToPlane(childPos);
+		mvo->setCoordinates(childCoord);
+		mvo->setRotationUse(false);
+
+		QPoint lblPos = origin;
+		lblPos.rx() += spacing + (childRect.width() + (childRect.width() - childRect.x()))* scale;
+		lblPos.ry()-= childRect.height()*scale - childRect.y()*scale;
+
+		Map2::CoordPlane lblCoord = helper->pictureToPlane(lblPos);
+		mapUpdatePointPlane(textHobj, lblCoord.x, lblCoord.y, 1);
+		mapCommitObject(textHobj);
+
+		origin.ry() -= spacing + childRect.height()*scale;
+
+		if( rect.width() > ((childRect.width() + lblRect.width())*scale + 2 * padding + spacing) )
+		{
+			rect.setTopLeft( QPoint(rect.x(), origin.y() - padding) );
+		}
+		else
+		{
+			rect.setTopRight( QPoint(rect.x() + 2 * padding + spacing + (childRect.width() + lblRect.width()) * scale, origin.y() - padding - childRect.y() * scale) );
+		}
+	}
+
+	mBottomLeft = helper->pictureToPlane(rect.bottomLeft());
+	mBottomRight= helper->pictureToPlane(rect.bottomRight());
+	mTopLeft= helper->pictureToPlane(rect.topLeft());
+	mTopRight = helper->pictureToPlane(rect.topRight());
+}
+
+void Map2::MapFormularGroup::updateBorderCoords()
+{
+	MapVectorObject *parentObj = vectorParent();
+	Q_ASSERT(parentObj);
+
+	if(rectHobj == 0)
 	{
 		createBorderObject();
 	}
 
-	QList<QPointF> screenPoints;
-
-	/// В зависимости от положения формуляра относительно родительского объекта
-	if(mOffset.x() < 0 && mOffset.y() <= 0)
-	{ // TOP-LEFT
-		screenPoints << newRect.bottomRight() <<newRect.bottomLeft() <<newRect.topLeft() <<newRect.topRight() <<newRect.bottomRight();
-	}
-	else if(mOffset.x() >= 0 && mOffset.y() <= 0)
-	{ // TOP-RIGHT
-		screenPoints << newRect.bottomLeft() <<newRect.topLeft() <<newRect.topRight() <<newRect.bottomRight() <<newRect.bottomLeft();
-	}
-	else if(mOffset.x() < 0 && mOffset.y() > 0)
-	{ // BOTTOM-LEFT
-		screenPoints << newRect.topRight() << newRect.bottomRight() <<newRect.bottomLeft() <<newRect.topLeft() <<newRect.topRight();
-	}
-	else
-	{ // BOTTOM-RIGHT... right?
-		screenPoints << newRect.topLeft() <<newRect.topRight() <<newRect.bottomRight() <<newRect.bottomLeft() <<newRect.topLeft();
-	}
-
 	QList<Map2::CoordPlane> coords;
-	coords << parentObj->coordinatePlane();
-
-	foreach(const QPointF &point, screenPoints)
-	{
-		coords << helper->pictureToPlane(point.toPoint());
-	}
+	coords << mTopLeft;
+	coords << mTopRight;
+	coords << mBottomRight;
+	coords << mBottomLeft;
+	coords << coords.first();
 
 	for(int i = 0; i < coords.count(); ++i)
 	{
-		mapUpdatePointPlane(hObj, coords[i].x, coords[i].y, i+1);
+		mapUpdatePointPlane(rectHobj, coords[i].x, coords[i].y, i+1);
 	}
 
-	mapCommitObject(hObj);
+	mapCommitObject(rectHobj);
+
+	updateStrutCoords();
+}
+
+void Map2::MapFormularGroup::updateStrutCoords()
+{
+	CoordPlane pointA = parent()->coordinatePlane();
+	CoordPlane pointB;
+
+	Qt::Alignment align = formularAlignment();
+
+	if(align.testFlag( Qt::AlignTop) && align.testFlag( Qt::AlignLeft))
+	{
+		pointB = mBottomRight;
+	}
+	else if(align.testFlag( Qt::AlignTop) && align.testFlag( Qt::AlignRight))
+	{
+		pointB = mBottomLeft;
+	}
+	else if(align.testFlag( Qt::AlignBottom) && align.testFlag( Qt::AlignLeft))
+	{
+		pointB = mTopRight;
+	}
+	else if(align.testFlag( Qt::AlignBottom) && align.testFlag( Qt::AlignRight))
+	{
+		pointB = mTopLeft;
+	}
+	else
+	{
+		return;
+	}
+
+	mapUpdatePointPlane(strutHobj, pointA.x, pointA.y, 1);
+	mapUpdatePointPlane(strutHobj, pointB.x, pointB.y, 2);
+
+	mapCommitObject(strutHobj);
 }
 
 void Map2::MapFormularGroup::createBorderObject()
 {
 	Map2::MapHelper *helper = pParent->mapLayer()->mapView()->helper();
 
-	IMGLINE parmLine;
-	memset(&parmLine, 0x0, sizeof(IMGLINE));
-	parmLine.Thick = helper->px2mkm( mBorderWidthPx );
-	parmLine.Color = RGB(mBorderColor.red(), mBorderColor.green(), mBorderColor.blue());
+	IMGLINE lineParm;
+	memset(&lineParm, 0x0, sizeof(IMGLINE));
+	lineParm.Thick = helper->px2mkm( mBorderWidthPx );
+	lineParm.Color = RGB(mBorderColor.red(), mBorderColor.green(), mBorderColor.blue());
+
+	IMGPOLYGONGLASS polygonParm;
+	memset(&polygonParm, 0x0, sizeof(IMGPOLYGONGLASS));
+	polygonParm.Color = RGB(255,255,255);
+	polygonParm.Bright = 0;
+	polygonParm.Contrast = 0;
+	polygonParm.Transparency = 90;
 
 	HMAP hMap = pParent->mapLayer()->mapHandle();
 
-	hObj = mapCreateSiteObject(hMap, pParent->mapLayer()->siteHandle(), IDDOUBLE2, 1);
-	mapAppendDraw(hObj, IMG_LINE, (char*)&parmLine);
+	rectHobj = mapCreateSiteObject(hMap, pParent->mapLayer()->siteHandle());
+	mapAppendDraw(rectHobj, IMG_POLYGONGLASS, (char*)&polygonParm);
+	mapAppendDraw(rectHobj, IMG_LINE, (char*)&lineParm);
 
-	for(int i = 0; i < 6; ++i)
+	for(int i = 0; i < 5; ++i)
 	{
-		mapAppendPointGeo(hObj, 0, 0, 0);
+		mapAppendPointGeo(rectHobj, 0, 0);
+	}
+
+	strutHobj = mapCreateSiteObject(hMap, pParent->mapLayer()->siteHandle());
+	mapAppendDraw(strutHobj, IMG_LINE, (char*)&lineParm);
+	mapAppendPointGeo(strutHobj, 0, 0);
+	mapAppendPointGeo(strutHobj, 0, 0);
+
+	if(childrenVisible())
+	{
+		mapCommitObject(rectHobj);
+		mapCommitObject(strutHobj);
+
+		HSELECT hSelect = parent()->mapLayer()->selectHandle();
+
+		helper->addObjectToSelection(hSelect, rectHobj);
+		helper->addObjectToSelection(hSelect, strutHobj);
+
+		HMAP hMap = parent()->mapLayer()->mapHandle();
+		HSITE hSite = parent()->mapLayer()->siteHandle();
+
+		mapSetSiteViewSelect(hMap, hSite, hSelect);
 	}
 }
 
@@ -262,26 +323,159 @@ Map2::MapVectorObject *Map2::MapFormularGroup::vectorParent()
 	return parentObj;
 }
 
+HOBJ Map2::MapFormularGroup::createText(Map2::MapLayer *layer, Map2::Coord coordinate, const QString &text)
+{
+	double ratio = layer->mapView()->scaleRatio();
+	if(ratio > 1)
+	{
+		ratio = 1;
+	}
+
+	HOBJ hobj = mapCreateSiteObject(layer->mapHandle(), layer->siteHandle(), IDDOUBLE2, 1);
+
+	mapRegisterDrawObject(hobj, 0, LOCAL_TITLE);
+	IMGTRUETEXT trueText;
+	memset(&trueText, 0x0, sizeof(IMGTRUETEXT));
+	trueText.Text.Color = RGB(mBorderColor.red(), mBorderColor.green(), mBorderColor.blue());
+	trueText.Text.BkgndColor = IMGC_TRANSPARENT;
+	trueText.Text.ShadowColor = IMGC_TRANSPARENT;
+	trueText.Text.Height = 4 * 1000 * ratio;
+	trueText.Text.CharSet = RUSSIAN_CHARSET;
+	trueText.Text.Horizontal = 1;
+
+	CoordPlane cp = layer->mapView()->helper()->geoToPlane( coordinate );
+
+	mapAppendDraw(hobj, IMG_TRUETEXT, (char*)&trueText);
+	mapAppendPointPlane(hobj, cp.x, cp.y);
+
+	QTextCodec *tc = Map2::RscViewer::codec();
+
+	mapPutText(hobj, tc->fromUnicode(text).constData(), 0);
+	mapPutTextHorizontalAlign(hobj, FA_LEFT, 0);
+	mapPutTextVerticalAlign(hobj, FA_MIDDLE, 0);
+
+	mapCommitObject(hobj);
+
+	return hobj;
+}
+
+QRectF Map2::MapFormularGroup::textRect(HOBJ hobj) const
+{
+	Map2::MapHelper *helper = parent()->mapLayer()->mapView()->helper();
+
+	int mkmLength = mapGetTextLengthMkm(hobj, 0);
+	int mkmHeight = 4 * 1000;
+
+	QRectF rect;
+	rect.setWidth( helper->mkm2px(mkmLength) );
+	rect.setHeight( helper->mkm2px(mkmHeight) );
+
+	return rect;
+}
+
 void Map2::MapFormularGroup::setSpacingPx(double value)
 {
 	mSpacingPx = value;
-	update();
+	updateChildrenDisplayCoordinates();
+}
+
+Qt::Alignment Map2::MapFormularGroup::formularAlignment() const
+{
+	MapHelper *helper = parent()->mapLayer()->mapView()->helper();
+	CoordPlane parentCoord = parent()->coordinatePlane();
+	CoordPlane formularCoord = helper->geoToPlane( formularCoordinate() );
+
+	Qt::Alignment align;
+
+	if(formularCoord.x < parentCoord.x)
+	{
+		align |= Qt::AlignBottom;
+	}
+	else
+	{
+		align |= Qt::AlignTop;
+	}
+
+	if(formularCoord.y < parentCoord.y)
+	{
+		align |= Qt::AlignLeft;
+	}
+	else
+	{
+		align |= Qt::AlignRight;
+	}
+
+	return align;
+}
+
+Map2::Coord Map2::MapFormularGroup::formularCoordinate() const
+{
+	MapHelper *helper = parent()->mapLayer()->mapView()->helper();
+	return helper->planeToGeo( CoordPlane(mBottomLeft.x + (mTopLeft.x - mBottomLeft.x)/2, mBottomLeft.y + (mBottomRight.y - mBottomLeft.y)/2) );
+}
+
+void Map2::MapFormularGroup::setFormularCoordinate(Map2::Coord coord)
+{
+	Map2::MapHelper *helper = parent()->mapLayer()->mapView()->helper();
+
+	QPoint newCoord = helper->geoToPicture( coord );
+	QPoint oldCoord = helper->geoToPicture( formularCoordinate() );
+	moveBy( newCoord - oldCoord );
 }
 
 void Map2::MapFormularGroup::setPaddingPx(double value)
 {
 	mPaddingPx = value;
-	update();
+	updateChildrenDisplayCoordinates();
 }
 
 void Map2::MapFormularGroup::setBorderWidthPx(double value)
 {
 	mBorderWidthPx = value;
-	update();
+
+	if(rectHobj > 0)
+	{
+		mapDeleteObject(rectHobj);
+		mapDeleteObject(strutHobj);
+		mapFreeObject(rectHobj);
+		mapFreeObject(strutHobj);
+		rectHobj = 0;
+		strutHobj = 0;
+	}
+
+	createBorderObject();
 }
 
-void Map2::MapFormularGroup::setOffset(const QPoint &offset)
+void Map2::MapFormularGroup::moveBy(const QPoint &offset)
 {
-	mOffset = offset;
-	update();
+	Map2::MapHelper *helper = parent()->mapLayer()->mapView()->helper();
+
+	CoordPlane oldCoord = helper->geoToPlane( formularCoordinate() );
+	QPoint oldPoint = helper->planeToPicture(oldCoord);
+
+	CoordPlane newCoord = helper->pictureToPlane( oldPoint + offset);
+
+	DOUBLEPOINT dp;
+	dp.x = newCoord.x - oldCoord.x;
+	dp.y = newCoord.y - oldCoord.y;
+
+	CoordPlane delta(dp.x, dp.y);
+
+	mBottomLeft += delta;
+	mBottomRight += delta;
+	mTopLeft += delta;
+	mTopRight += delta;
+
+	foreach(MapObject*obj, mChildren)
+	{
+		obj->moveBy(dp.x, dp.y);
+
+		mapRelocateObjectPlane(mObjectsLabels[obj], &dp);
+		mapCommitObject(mObjectsLabels[obj]);
+	}
+
+
+	mFormularCoord = helper->planeToGeo(newCoord);
+
+	updateBorderCoords();
 }

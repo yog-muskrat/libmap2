@@ -105,9 +105,6 @@ void MapView::openMap(QString mapFullPath)
 
 	pCanvas->setMapHandle(mMapHandle);
 
-//	QList<int> hiddenLayers = Map2::LayersSettingsDialog::hiddenLayers();
-//	Map2::LayersSettingsDialog::setHiddenLayers(mapHandle(), hiddenLayers);
-
 	QFileInfo f(mapFullPath);
 
 	emit mapLoaded(f.baseName());
@@ -691,6 +688,20 @@ QSize MapView::mapSizePx() const
 	mapGetPictureSize(mMapHandle, &width, &height);
 
 	return QSize(width, height);
+}
+
+CoordPlane MapView::bottomLeftPlane() const
+{
+	DFRAME dfr;
+	mapGetTotalBorder(mMapHandle, &dfr, PP_PLANE);
+	return CoordPlane(dfr.X1, dfr.Y1);
+}
+
+CoordPlane MapView::topRightPlane() const
+{
+	DFRAME dfr;
+	mapGetTotalBorder(mMapHandle, &dfr, PP_PLANE);
+	return CoordPlane(dfr.X2, dfr.Y2);
 }
 
 MapHelper *MapView::helper()

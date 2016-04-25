@@ -20,14 +20,19 @@ public:
 	double rotation() const { return mRotation; }
 	void setRotation(double degree);
 
+	void setRotationUse(bool use = true);
+
 	void setRscKey(const QString &key);
 	virtual void setName(QString name);
+
+	virtual void setNameVisible(bool visible = true);
 
 private:
 	double mRotation;
 	QString mRscKey;
 	Coord mCoordinate;
 	HOBJ hObj;
+	bool mUseRotation;
 
 	// MapObject interface
 public:

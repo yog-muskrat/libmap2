@@ -122,6 +122,9 @@ public:
 	 */
 	QSize mapSizePx() const;
 
+	CoordPlane bottomLeftPlane() const;
+	CoordPlane topRightPlane() const;
+
 	/*!
 	 * \brief Возвращает указатель на экземпляр класса-помощника, инициализированный дескриптором текущей карты.
 	 */

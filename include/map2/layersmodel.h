@@ -22,7 +22,7 @@ public:
 		COL_Visible,
 		COL_Locked,
 		COL_Name,
-		COL_Type, /// Тип слоя - временный или постоянный
+		COL_Temp, /// Тип слоя - временный или постоянный
 		COL_Count
 	};
 
@@ -47,18 +47,17 @@ public:
 	virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
 	virtual Qt::ItemFlags flags(const QModelIndex &index) const;
 
-
 private slots:
 	void onLayerUpdated();
 
+private:
 	QVariant displayRole(const QModelIndex &index)const ;
 	QVariant checkStateRole(const QModelIndex &index) const;
 	QVariant decorationRole(const QModelIndex &index) const;
+	QVariant editRole(const QModelIndex &index) const;
 
 	bool setCheckStateRole(QModelIndex index, QVariant value);
 	bool setEditRole(QModelIndex index, QVariant value);
-
-private:
 	bool checkIndex( const QModelIndex &idx) const;
 
 	QList<MapLayer*> mLayers;

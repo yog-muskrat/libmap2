@@ -16,6 +16,7 @@ MapObject::MapObject(Map2::MapObject::Type t, Map2::MapLayer *layer):
 	pLayer(layer),
 	mHidden(false),
 	mSelected(false),
+	mNameVisible(true),
 	pParentGroup(0)
 {
 	if(pLayer)
@@ -110,8 +111,6 @@ void MapObject::bringToFront()
 	{
 		return;
 	}
-
-
 
 	refresh();
 }
@@ -261,6 +260,16 @@ void MapObject::setDisplayRange(int min, int max)
 	setDisplayRange( qMakePair(min, max) );
 }
 
+void MapObject::addExtraHobj(HOBJ hobj)
+{
+	mExtraHobjs.insert(hobj);
+}
+
+void MapObject::removeExtraHobj(HOBJ hobj)
+{
+	mExtraHobjs.remove(hobj);
+}
+
 
 void MapObject::setParentGroup(MapGroup *group)
 {
@@ -328,6 +337,16 @@ bool MapObject::containsObject(HOBJ hObj)
 		}
 	}
 
+	///TODO: Переделать
+	foreach(HOBJ hobj, mExtraHobjs)
+	{
+		long selfKey = mapObjectKey(hobj);
+		if(key == selfKey)
+		{
+			return true;
+		}
+	}
+
 	return false;
 }
 
@@ -360,38 +379,36 @@ void MapObject::setHidden(bool hidden)
 		return;
 	}
 
-	/// NOTE: Закомментированый фрагмент содержит невыявленные на данный момент баги, из-за которых некоторые объекты
-	/// не скрываются или не появляются, когда их об этом просят. Если текущий вариант не снижает быстродействия,
-	/// то можно удалить закомментированный код.
-		HMAP hMap = mapLayer()->mapHandle();
-		HSITE hSite = mapLayer()->siteHandle();
-		HSELECT hSelect = mapLayer()->selectHandle();
+	HMAP hMap = mapLayer()->mapHandle();
+	HSITE hSite = mapLayer()->siteHandle();
+	HSELECT hSelect = mapLayer()->selectHandle();
 
-		foreach(HOBJ *hObj, mapHandles())
+	foreach(HOBJ *hObj, mapHandles())
+	{
+		if(hidden)
 		{
-			if(hidden)
-			{
-				helper()->removeObjectFromSelection(hSelect, *hObj);
-			}
-			else
-			{
-				helper()->addObjectToSelection(hSelect, *hObj);
-			}
+			helper()->removeObjectFromSelection(hSelect, *hObj);
 		}
+		else
+		{
+			helper()->addObjectToSelection(hSelect, *hObj);
+		}
+	}
 
-		mapSetSiteViewSelect(hMap, hSite, hSelect);
+	///TODO: Переделать
+	foreach(HOBJ hObj, mExtraHobjs)
+	{
+		if(hidden)
+		{
+			helper()->removeObjectFromSelection(hSelect, hObj);
+		}
+		else
+		{
+			helper()->addObjectToSelection(hSelect, hObj);
+		}
+	}
 
-//	if(hidden)
-//	{
-//		foreach(HOBJ *hObj, mapHandles())
-//		{
-//			helper()->removeObject(*hObj);
-//		}
-//	}
-//	else
-//	{
-//		refresh();
-//	}
+	mapSetSiteViewSelect(hMap, hSite, hSelect);
 
 	mapLayer()->objectChangedNotify(this);
 }

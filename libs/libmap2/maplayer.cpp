@@ -1,5 +1,6 @@
 #include "maplayer.h"
 #include "mapview.h"
+#include "rscviewer.h"
 #include "objects/mapobject.h"
 #include "objects/mapvectorobject.h"
 #include "objects/maplineobject.h"
@@ -136,6 +137,10 @@ QVariant MapLayer::editRole(const QModelIndex &idx) const
 	{
 		return !obj->isHiden();
 	}
+	else if(idx.column() == COL_NameVisible)
+	{
+		return obj->isNameVisible();
+	}
 
 	return QVariant();
 }
@@ -171,6 +176,10 @@ QVariant MapLayer::decorationRole(const QModelIndex &idx) const
 	else if( idx.column() == COL_Visible)
 	{
 		return QIcon( obj->isHiden() ? ":map2/eye-off" : ":map2/eye");
+	}
+	else if( idx.column() == COL_NameVisible)
+	{
+		return QIcon( obj->isNameVisible() ? ":map2/eye" : ":map2/eye-off");
 	}
 
 	return QVariant();
@@ -462,6 +471,10 @@ QVariant MapLayer::headerData(int section, Qt::Orientation orientation, int role
 		if(section == COL_Visible)
 		{
 			return QIcon(":map2/eye");
+		}
+		else if(section == COL_NameVisible)
+		{
+			return QIcon(":map2/text");
 		}
 	}
 

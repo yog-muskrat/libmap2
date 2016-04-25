@@ -128,7 +128,6 @@ bool MapToolBar::processMouseReleaseEvent(QMouseEvent *mouseEvent)
 				b = act->processMouseClickEvent(mouseEvent);
 			}
 		}
-
 	}
 
 	else if(mouseEvent->button() == Qt::RightButton)
@@ -138,6 +137,7 @@ bool MapToolBar::processMouseReleaseEvent(QMouseEvent *mouseEvent)
 			mRightClickTi.invalidate();
 			mRightBtnPressed = false;
 			emit rightClick(mouseEvent->pos());
+
 			if(b)
 			{
 				b = act->processMouseClickEvent(mouseEvent);

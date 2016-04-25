@@ -95,7 +95,7 @@ void LayersWidget::setMapView(Map2::MapView *view)
 	pMapView = view;
 
 	pTableView->setModel( pMapView->layersModel() );
-	pTableView->hideColumn( LayersModel::COL_Type );
+	pTableView->hideColumn( LayersModel::COL_Temp );
 
 #if QT_VERSION >= 0x50000
 	pTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);

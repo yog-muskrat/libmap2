@@ -36,7 +36,7 @@ public:
 	MapGroup(Map2::MapVectorObject *parent = 0);
 	virtual ~MapGroup();
 
-	virtual Map2::MapGroup::Type type() {return MG_Simple;}
+	virtual Map2::MapGroup::Type type() const {return MG_Simple;}
 
 	virtual void update();
 

@@ -3,6 +3,7 @@
 
 #include "map2/mapstructs.h"
 
+#include <QSet>
 #include <QList>
 #include <QRectF>
 #include <QVariant>
@@ -47,6 +48,9 @@ public:
 	QString name() const { return mName; }
 	virtual void setName(QString name);
 
+	bool isNameVisible() const {return mNameVisible;}
+	virtual void setNameVisible(bool visible = true){mNameVisible = visible;}
+
 	/*!
 	 * \brief Функция проверяет, является ли объект карты с дескриптором hObj частю текущего объекта.
 	 */
@@ -82,6 +86,9 @@ public:
 	 */
 	void setDisplayRange(const QPair<int, int> &value);
 	void setDisplayRange(int min, int max);
+
+	void addExtraHobj(HOBJ hobj);
+	void removeExtraHobj(HOBJ hobj);
 
 private:
 	void setMapLayer(MapLayer *layer);
@@ -120,9 +127,12 @@ protected:
 
 	bool mHidden;
 	bool mSelected;
+	bool mNameVisible;
 
 	MapGroup *pParentGroup;
 	QList<MapGroup *> pChildGroups;
+
+	QSet<HOBJ> mExtraHobjs;
 
 	QPair<int, int> mDisplayRange; //!< Границы масштаба отображения. От 1:1 до 1:40 млн.
 };

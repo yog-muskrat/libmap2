@@ -37,7 +37,7 @@ void MapTextObject::setText(const QString &text)
 	QTextCodec *tc = QTextCodec::codecForName("koi8-r");
 
 	mapPutText(hObj, tc->fromUnicode(mText).constData(), 0);
-	mapPutTextHorizontalAlign(hObj, FA_LEFT | FA_TOP, 0);
+	mapPutTextHorizontalAlign(hObj, FA_LEFT | FA_MIDDLE, 0);
 	commit();
 }
 
@@ -125,12 +125,18 @@ void MapTextObject::updateDraw()
 {
 	mapClearDraw(hObj);
 
+	double ratio = mapLayer()->mapView()->scaleRatio();
+	if(ratio > 1)
+	{
+		ratio = 1;
+	}
+
 	IMGTRUETEXT trueText;
 	trueText.Text.Color = RGB(mColor.red(), mColor.green(), mColor.blue());
 	trueText.Text.BkgndColor = IMGC_TRANSPARENT;
 	trueText.Text.Outline = 0;
 	trueText.Text.ShadowColor = IMGC_TRANSPARENT;
-	trueText.Text.Height = mFontHeightMm* 1000; /// TODO: Добавить домножение на масштаб.
+	trueText.Text.Height = mFontHeightMm* 1000 * ratio;
 	trueText.Text.CharSet = RUSSIAN_CHARSET;
 	trueText.Text.Italic = 0;
 	trueText.Text.Underline = 0;
@@ -140,16 +146,20 @@ void MapTextObject::updateDraw()
 
 void Map2::MapTextObject::moveBy(double dxPlane, double dyPlane)
 {
-	if(!helper())
+	if(!mapLayer())
 	{
 		return;
 	}
 
-	CoordPlane cp = helper()->geoToPlane(mCoord);
+	DOUBLEPOINT dp;
+	dp.x = dxPlane;
+	dp.y = dyPlane;
 
-	cp += CoordPlane(dxPlane, dyPlane);
+	mapRelocateObjectPlane(hObj, &dp);
 
-	setCoordinatePlane(cp);
+	mCoord = helper()->objectGeoCoordinates( hObj ).first();
+
+	commit();
 }
 
 QList<HOBJ *> Map2::MapTextObject::mapHandles()

@@ -155,6 +155,10 @@ void ObjectsWidget::onObjectDoubleClicked(const QModelIndex &index)
 	{
 		obj->setHidden( !obj->isHiden() );
 	}
+	else if(index.column() == MapLayer::COL_NameVisible)
+	{
+		obj->setNameVisible( !obj->isNameVisible() );
+	}
 	else
 	{
 		obj->centerOnObject();

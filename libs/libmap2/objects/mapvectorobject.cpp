@@ -17,9 +17,10 @@ using namespace Map2;
 
 MapVectorObject::MapVectorObject(const QString &rscKey, MapLayer *layer) :
 	MapObject(MO_Vector, layer),
-	mRotation(90), /// TODO: Временное решине, чтобы значки распологались горизонтально. Желательно придумать признак "Использовать поворот".
+	mRotation(0),
 	mRscKey(rscKey),
-	hObj(0)
+	hObj(0),
+	mUseRotation(false)
 {
 	if(pLayer)
 	{
@@ -102,14 +103,30 @@ void MapVectorObject::setRotation(double degree)
 
 	QPointF firstPoint = coordinatePlane().toPointF();
 
-	QLineF line( firstPoint.y(), firstPoint.x(), firstPoint.y() + 100, firstPoint.x() );
-	qreal lineAngle = fmod(-mRotation + 90. + 360., 360.);
-	line.setAngle( -lineAngle );
+	if(mUseRotation)
+	{
+		QLineF line( firstPoint.y(), firstPoint.x(), firstPoint.y() + 100, firstPoint.x() );
+		qreal lineAngle = fmod(-mRotation + 90. + 360., 360.);
+		line.setAngle( -lineAngle );
 
-	CoordPlane cp(line.p2().y(), line.p2().x() );
-	mapUpdatePointPlane(hObj, cp.x, cp.y, 2);
+		CoordPlane cp(line.p2().y(), line.p2().x() );
+		mapUpdatePointPlane(hObj, cp.x, cp.y, 2);
+	}
+	else
+	{
+		double x = mapXPlane(hObj);
+		double y = mapYPlane(hObj);
+		mapUpdatePointPlane(hObj, x, y, 2);
+	}
 
 	commit();
+}
+
+void MapVectorObject::setRotationUse(bool use)
+{
+	mUseRotation = use;
+
+	setRotation(mRotation);
 }
 
 void MapVectorObject::setRscKey(const QString &key)
@@ -133,7 +150,19 @@ void MapVectorObject::setName(QString name)
 
 	mName = name;
 
-	if(name.isEmpty())
+	setNameVisible( isNameVisible() );
+}
+
+void MapVectorObject::setNameVisible(bool visible)
+{
+	mNameVisible = visible;
+
+	if(visible)
+	{
+		QTextCodec *tc = RscViewer::codec();
+		mapAppendSemantic( hObj, 33334, tc->fromUnicode(name()).data(), name().size());
+	}
+	else
 	{
 		int number = mapSemanticNumber(hObj, 33334);
 		if(number > 0)
@@ -141,11 +170,7 @@ void MapVectorObject::setName(QString name)
 			mapDeleteSemantic(hObj, number);
 		}
 	}
-	else
-	{
-		QTextCodec *tc = RscViewer::codec();
-		mapAppendSemantic( hObj, 33334, tc->fromUnicode(name).data(), 100);
-	}
+
 	commit();
 }
 

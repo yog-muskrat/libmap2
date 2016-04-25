@@ -141,6 +141,10 @@ QVariant LayersModel::data(const QModelIndex &index, int role) const
 		f.setPointSize(10);
 		return f;
 	}
+	else if(role == Qt::EditRole)
+	{
+		return editRole(index);
+	}
 
 	return QVariant();
 }
@@ -185,6 +189,25 @@ QVariant LayersModel::decorationRole(const QModelIndex &index) const
 	return QVariant();
 }
 
+QVariant LayersModel::editRole(const QModelIndex &index) const
+{
+	MapLayer *l = mLayers.at(index.row());
+
+	if(index.column() == COL_Visible)
+	{
+		return l->isVisible();
+	}
+	else if(index.column() == COL_Locked)
+	{
+		return l->isLocked();
+	}
+	else if(index.column() == COL_Name)
+	{
+		return l->layerName();
+	}
+
+	return QVariant();
+}
 
 bool LayersModel::setData(const QModelIndex &index, const QVariant &value, int role)
 {

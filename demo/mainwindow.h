@@ -27,7 +27,6 @@ protected:
 	virtual void closeEvent(QCloseEvent *e);
 
 private slots:
-	void onTimer();
 
 	void onScaleChanged();
 	void onEditLayers();
@@ -37,6 +36,7 @@ private slots:
 
 private:
 	Map2::MapEditor *pMap;
+	Map2::MapGroup *pGrp;
 	Map2::MapObject *pObj;
 };
 

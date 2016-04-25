@@ -18,7 +18,7 @@ public:
 
 	virtual bool addChild(MapObject *child);
 	virtual bool addChildren(QList<MapObject *> children);
-	virtual MapGroup::Type type() const { return MG_Stack; }
+	virtual Map2::MapGroup::Type type() const { return MG_Stack; }
 
 protected:
 	virtual void updateChildrenDisplayCoordinates();

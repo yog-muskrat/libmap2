@@ -23,6 +23,7 @@ public:
 	{
 		COL_Type,
 		COL_Visible,
+		COL_NameVisible,
 		COL_Name,
 		COL_Coord,
 		COL_Count

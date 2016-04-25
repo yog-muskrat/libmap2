@@ -6,12 +6,14 @@
 
 #include <QMap>
 #include <QList>
+#include <QRectF>
 #include <QColor>
 
 namespace Map2
 {
-class MapVectorObject;
+class MapLayer;
 class MapTextObject;
+class MapVectorObject;
 
 class MapFormularGroup : public MapGroup
 {
@@ -19,13 +21,12 @@ public:
 	MapFormularGroup(Map2::MapVectorObject *parent, QColor borderColor = QColor(Qt::black));
 	~MapFormularGroup();
 
-	virtual MapGroup::Type type() const { return MapGroup::MG_Formular; }
+	virtual Map2::MapGroup::Type type() const { return MapGroup::MG_Formular; }
 
 	virtual bool addChild(MapObject *child);
 	virtual void setChildrenVisible(bool visible);
 
-	QPoint offset() const { return mOffset; }
-	void setOffset(const QPoint &offset);
+	void moveBy(const QPoint &offset);
 
 	double borderWidthPx() const { return mBorderWidthPx; }
 	void setBorderWidthPx(double value);
@@ -36,14 +37,23 @@ public:
 	double spacingPx() const { return mSpacingPx; }
 	void setSpacingPx(double value);
 
+	Map2::Coord formularCoordinate() const;
+	void setFormularCoordinate(Map2::Coord coord);
+
 protected:
 	virtual void updateChildrenDisplayCoordinates();
 
 private:
 	void restoreInitialChildrenCoordinates();
-	void updateBorderCoords(const QRectF newRect);
+
+	void arrangeChildren();
+	void updateBorderCoords();
+	void updateStrutCoords();
+
 	void createBorderObject();
 	MapVectorObject * vectorParent();
+	HOBJ createText(MapLayer *layer, Coord coordinate, const QString &text);
+	QRectF textRect(HOBJ hobj) const;
 
 	double mBorderWidthPx;
 	double mPaddingPx;
@@ -51,11 +61,20 @@ private:
 
 	/// Временное решение. В последствии нужно добавить в сам MapObject понятия "Реальная координата" и "Отображаемая координата".
 	QMap<MapObject*, Coord> mInitialCoordinates;
-	QMap<MapObject*, MapTextObject*> mObjectsLabels;
+	QMap<MapObject*, HOBJ> mObjectsLabels;
 
-	QPoint mOffset; /// Сдвиг формуляра относительно родительского объекта, px.
+	Qt::Alignment formularAlignment() const;
+	CoordPlane mBottomLeft;
+	CoordPlane mBottomRight;
+	CoordPlane mTopLeft;
+	CoordPlane mTopRight;
+//	QRect mRect;
+
+	Coord mFormularCoord;
+
 	QColor mBorderColor; /// Цвет рамки формуляра
-	HOBJ hObj; /// Дескриптор объекта-рамки.
+	HOBJ rectHobj; /// Дескриптор объекта-рамки.
+	HOBJ strutHobj; /// Дескриптор выносной линии.
 };
 }
 #endif // MAPFORMULARGROUP_H
