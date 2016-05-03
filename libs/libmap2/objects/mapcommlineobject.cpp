@@ -2,11 +2,13 @@
 #include "maphelper.h"
 #include "mapview.h"
 #include "maplayer.h"
+#include "rscviewer.h"
 
 #include "gis.h"
 
-#include <qmath.h>
 #include <QDebug>
+#include <qmath.h>
+#include <QTextCodec>
 
 using namespace Map2;
 
@@ -41,6 +43,31 @@ void Map2::MapCommlineObject::setArrowStyle(const ArrowStyle &arrowStyle)
 void Map2::MapCommlineObject::setLineWidth(double value)
 {
 	mLineWidth = value;
+	refresh();
+}
+
+void MapCommlineObject::addAssignment(const MapCommlineObject::Assignment &a)
+{
+	int index = mAssignments.count();
+
+	mAssignments[a] = addAssignmentObject(a, index);
+	refresh();
+}
+
+void MapCommlineObject::removeAssignment(int index)
+{
+	if(index < 0 || index >= mAssignments.count())
+	{
+		return;
+	}
+
+	mAssignments.remove( mAssignments.keys().at(index) );
+	refresh();
+}
+
+void MapCommlineObject::clearAssignments()
+{
+	mAssignments.clear();
 	refresh();
 }
 
@@ -107,12 +134,16 @@ void Map2::MapCommlineObject::repaint()
 		arcCoords.replace(count-1, line.p2());
 	}
 
+	mArcCoords = arcCoords;
+
 	foreach(const QPointF &coord, arcCoords)
 	{
 		CoordPlane p = helper()->pictureToPlane(coord.toPoint());
 
 		mapAppendPointPlane(hBody, p.x, p.y);
 	}
+
+	updateAssignmentObjects();
 
 	commit();
 }
@@ -184,6 +215,7 @@ QPolygonF Map2::MapCommlineObject::drawArc(QPointF from, QPointF to, qreal radiu
 
 	center = radialLine.p2();
 
+
 	qreal angleTo = QLineF(center, to).angle();
 
 	radialLine.setPoints(center, from);
@@ -254,6 +286,62 @@ HMAP Map2::MapCommlineObject::addArrow(Map2::CoordPlane pointCoord, double azimu
 	return hobj;
 }
 
+HMAP MapCommlineObject::addAssignmentObject(const MapCommlineObject::Assignment &a, int index)
+{
+	Map2::MapHelper *helper = mapLayer()->mapView()->helper();
+
+	HOBJ hObj = mapCreateSiteObject(mapLayer()->mapHandle(), mapLayer()->siteHandle());
+
+	QTextCodec *tc = RscViewer::codec();
+	mapRegisterObjectByKey(hObj, tc->fromUnicode("под_ср_рэб"));
+
+	QPointF point = mArcCoords.at( (index + 1) * 2);
+
+	CoordPlane first = helper->pictureToPlane( point.toPoint() );
+	CoordPlane second = helper->pictureToPlane( point.toPoint() );
+
+	mapAppendPointPlane(hObj, first.x, first.y);
+	mapAppendPointPlane(hObj, second.x, second.y);
+
+	mapAppendSemantic(hObj, 33334, tc->fromUnicode( a.name ), a.name.length() );
+	mapAppendSemantic(hObj, 46, tc->fromUnicode( a.caption ), a.caption.length() );
+
+	mapCommitObject(hObj);
+
+	helper->addObjectToSelection(mapLayer()->selectHandle(), hObj);
+	mapSetSiteViewSelect(mapLayer()->mapHandle(), mapLayer()->siteHandle(), mapLayer()->selectHandle());
+
+	return hObj;
+}
+
+void MapCommlineObject::updateAssignmentObjects() const
+{
+	Map2::MapHelper *helper = mapLayer()->mapView()->helper();
+
+	for(int i = 0; i < mAssignments.count(); ++i)
+	{
+		HOBJ hObj = mAssignments.values().at(i);
+
+		int coordNumber = (i+1) * 2;
+
+		QPointF point1 = mArcCoords.at(coordNumber);
+
+		QLineF line(point1, point1 + QPointF(1,1));
+		line.setLength(300);
+		line.setAngle( QLineF(mArcCoords[coordNumber-1], mArcCoords[coordNumber+1]).normalVector().angle());
+
+		CoordPlane first = helper->pictureToPlane( line.p1().toPoint() );
+		CoordPlane second = helper->pictureToPlane( line.p2().toPoint() );
+
+		mapUpdatePointPlane(hObj, first.x, first.y, 1);
+		mapUpdatePointPlane(hObj, second.x, second.y, 2);
+
+		int ok = mapCommitObject(hObj);
+
+		qDebug() << "Object updated" << hObj << ok << helper->planeToGeo(first).toString() << helper->planeToGeo(second).toString();
+	}
+}
+
 void Map2::MapCommlineObject::moveBy(double dxPlane, double dyPlane)
 {
 	if(!mapLayer())
@@ -276,4 +364,10 @@ void Map2::MapCommlineObject::moveBy(double dxPlane, double dyPlane)
 QList<HOBJ*> Map2::MapCommlineObject::mapHandles()
 {
 	return QList<HOBJ*>() << &hFromHandle << &hToHandle << &hBody;
+}
+
+
+bool MapCommlineObject::Assignment::operator<(const MapCommlineObject::Assignment &other) const
+{
+	return this->name < other.name;
 }

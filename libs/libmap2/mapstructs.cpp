@@ -37,6 +37,34 @@ CoordPlane &CoordPlane::operator-=(const Map2::CoordPlane &other)
 	return *this;
 }
 
+bool Coord::isValid() const
+{
+	if(lat == 0 && lng == 0)
+	{
+		return false;
+	}
+	else if(lat < -90.)
+	{
+		return false;
+	}
+	else if(lat > 90.)
+	{
+		return false;
+	}
+	else if(lng < -360)
+	{
+		return false;
+	}
+	else if(lng > 360)
+	{
+		return false;
+	}
+
+	return true;
+
+//	return lat != 0 && lng != 0 && lat <= 90. && lat >= -90 && lng <= 360 && lng >= -360;
+}
+
 Coord Coord::fromDegreeWithMinutes(const double &lat, const double &lng)
 {
 	double latInt = 0.;

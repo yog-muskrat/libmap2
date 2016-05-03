@@ -26,7 +26,6 @@ bool Map2::MapNoAction::processMousePressEvent(QMouseEvent *e)
 		if(obj->parentGroup() && obj->parentGroup()->type() == MapGroup::MG_Formular)
 		{
 			pFormular = dynamic_cast<MapFormularGroup*>(obj->parentGroup());
-			qDebug()<<"Formular press"<<pFormular->formularCoordinate().toString();
 			mInitialPoint = e->pos();
 			return false;
 		}

@@ -2,6 +2,7 @@
 #define STRUCTS
 
 #include <QPoint>
+#include <QDebug>
 #include <QVariant>
 
 #ifndef MAPTYPE_H
@@ -19,6 +20,7 @@ struct CoordPlane;
 
 /*!
  * \brief Координата в формате "градусы + десятая часть"
+ * Корректные координаты должны находиться в пределах значений [-90, 90] для широты и [-360, 360] для долготы.
  */
 struct Coord
 {
@@ -29,8 +31,7 @@ struct Coord
 	Coord(double lat, double lng) : lat(lat), lng(lng) {}
 	Coord(const Map2::Coord &other) : lat(other.lat), lng(other.lng) {}
 
-	///NOTE: Не самый лучший способ проверки валидности
-	bool isValid() const {return lat != 0 && lng != 0;}
+	bool isValid() const;
 
 	QString toString() const { return QString("Ш:%0 Д:%1").arg(lat, 0, 'f').arg(lng, 0, 'f'); }
 
@@ -63,6 +64,7 @@ struct CoordPlane
 
 	CoordPlane operator-(const Map2::CoordPlane &right);
 	CoordPlane& operator-=(const Map2::CoordPlane &other);
+
 };
 
 }

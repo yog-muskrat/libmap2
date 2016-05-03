@@ -62,7 +62,11 @@ MainWindow::MainWindow(QWidget *parent)
 	group->addChild( layer->addVectorObject("оок вмс", Coord(50., 30.) ) );
 	group->addChild( layer->addVectorObject("оок вмс", Coord(45., 30.) ) );
 
-	qDebug()<<"Group created"<<group->formularCoordinate().toString();
+	Map2::MapCommlineObject *comm = new Map2::MapCommlineObject(Map2::Coord(30., 30.), Map2::Coord(45., 90.), layer);
+
+	comm->addAssignment(Map2::MapCommlineObject::Assignment("Средство 1", "Некая часть РЭБ"));
+	comm->addAssignment(Map2::MapCommlineObject::Assignment("Средство 2", "Другая часть РЭБ"));
+	comm->addAssignment(Map2::MapCommlineObject::Assignment("Средство 3", "Еще одна часть РЭБ"));
 
 	new QShortcut(QKeySequence::Quit, this, SLOT(close()));
 

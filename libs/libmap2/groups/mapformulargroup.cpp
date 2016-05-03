@@ -66,6 +66,8 @@ void Map2::MapFormularGroup::setChildrenVisible(bool visible)
 
 	Map2::MapHelper *helper = parent()->mapLayer()->mapView()->helper();
 
+	qDebug()<<"Toggling coordinage at"<<formularCoordinate().toString();
+
 	if(visible)
 	{
 		helper->addObjectToSelection(hSelect, rectHobj);
@@ -90,6 +92,8 @@ void Map2::MapFormularGroup::updateChildrenDisplayCoordinates()
 	arrangeChildren();
 	updateBorderCoords();
 
+//	qDebug() << "Updating children position for "<<parent()->name()<<mFormularCoord.toString();
+
 	if(mFormularCoord.isValid())
 	{
 		setFormularCoordinate(mFormularCoord);
@@ -102,7 +106,6 @@ void Map2::MapFormularGroup::updateChildrenDisplayCoordinates()
 		p += QPoint(100, 50);
 		setFormularCoordinate( helper->pictureToGeo(p));
 	}
-
 }
 
 void Map2::MapFormularGroup::restoreInitialChildrenCoordinates()
@@ -126,6 +129,8 @@ void Map2::MapFormularGroup::restoreInitialChildrenCoordinates()
 			mapFreeObject(hobj);
 		}
 	}
+
+	mFormularCoord = Coord();
 }
 
 void Map2::MapFormularGroup::arrangeChildren()
@@ -178,7 +183,7 @@ void Map2::MapFormularGroup::arrangeChildren()
 
 		QPoint lblPos = origin;
 		lblPos.rx() += spacing + (childRect.width() + (childRect.width() - childRect.x()))* scale;
-		lblPos.ry()-= childRect.height()*scale - childRect.y()*scale;
+		lblPos.ry() -= childRect.height()*scale - childRect.y()*scale;
 
 		Map2::CoordPlane lblCoord = helper->pictureToPlane(lblPos);
 		mapUpdatePointPlane(textHobj, lblCoord.x, lblCoord.y, 1);
@@ -197,8 +202,8 @@ void Map2::MapFormularGroup::arrangeChildren()
 	}
 
 	mBottomLeft = helper->pictureToPlane(rect.bottomLeft());
-	mBottomRight= helper->pictureToPlane(rect.bottomRight());
-	mTopLeft= helper->pictureToPlane(rect.topLeft());
+	mBottomRight = helper->pictureToPlane(rect.bottomRight());
+	mTopLeft = helper->pictureToPlane(rect.topLeft());
 	mTopRight = helper->pictureToPlane(rect.topRight());
 }
 
@@ -410,8 +415,19 @@ Qt::Alignment Map2::MapFormularGroup::formularAlignment() const
 
 Map2::Coord Map2::MapFormularGroup::formularCoordinate() const
 {
-	MapHelper *helper = parent()->mapLayer()->mapView()->helper();
-	return helper->planeToGeo( CoordPlane(mBottomLeft.x + (mTopLeft.x - mBottomLeft.x)/2, mBottomLeft.y + (mBottomRight.y - mBottomLeft.y)/2) );
+//	Coord c;
+
+//	if(mBottomLeft == CoordPlane(0,0) && mTopRight == CoordPlane(0,0))
+//	{
+//		c = Coord();
+//	}
+//	else
+//	{
+//		MapHelper *helper = parent()->mapLayer()->mapView()->helper();
+//		c = helper->planeToGeo( CoordPlane(mBottomLeft.x + (mTopLeft.x - mBottomLeft.x)/2, mBottomLeft.y + (mBottomRight.y - mBottomLeft.y)/2) );
+//	}
+
+	return mFormularCoord;
 }
 
 void Map2::MapFormularGroup::setFormularCoordinate(Map2::Coord coord)
@@ -474,8 +490,8 @@ void Map2::MapFormularGroup::moveBy(const QPoint &offset)
 		mapCommitObject(mObjectsLabels[obj]);
 	}
 
-
 	mFormularCoord = helper->planeToGeo(newCoord);
+//	qDebug() << "move mFormularCoord for"<<parent()->name()<<mFormularCoord.toString();
 
 	updateBorderCoords();
 }

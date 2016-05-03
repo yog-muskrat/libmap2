@@ -19,6 +19,20 @@ public:
 		AS_BothArrows
 	};
 
+	/*!
+	 * \brief Назначенное средство подавления
+	 */
+	struct Assignment
+	{
+		QString name;
+		QString caption;
+		QVariantMap attributes;
+
+		Assignment(const QString &name, const QString &caption) : name(name), caption(caption) {}
+
+		bool operator<(const Assignment &other) const;
+	};
+
 	MapCommlineObject(const Map2::Coord &from, const Map2::Coord &to, Map2::MapLayer * layer = 0);
 
 	~MapCommlineObject();
@@ -38,11 +52,26 @@ public:
 	double lineWidth() const { return mLineWidth; }
 	void setLineWidth(double value);
 
+	void addAssignment(const Assignment &a);
+	QList<Assignment> assignments() const {return mAssignments.keys();}
+	void removeAssignment(int index);
+	void clearAssignments();
+
+	virtual Coord coordinateGeo() const { return mFrom; }
+	virtual void moveBy(double dxPlane, double dyPlane);
+	virtual QList<HOBJ*> mapHandles();
+
+protected:
+	virtual void repaint();
+
 private:
 	QPolygonF drawArcs();
 	QPolygonF drawArc(QPointF from, QPointF to, qreal radius);
 
 	HMAP addArrow(CoordPlane pointCoord, double azimuth) const;
+
+	HMAP addAssignmentObject(const Assignment &a, int index);
+	void updateAssignmentObjects() const;
 
 	Coord mFrom;
 	Coord mTo;
@@ -54,15 +83,9 @@ private:
 	HOBJ hToHandle;
 	HOBJ hFromHandle;
 
-	// MapObject interface
-public:
-	virtual Coord coordinateGeo() const { return mFrom; }
-	virtual void moveBy(double dxPlane, double dyPlane);
-	virtual QList<HOBJ*> mapHandles();
+	QPolygonF mArcCoords;
 
-protected:
-	virtual void repaint();
-
+	QMap<Assignment, HOBJ> mAssignments;
 };
 }
 
