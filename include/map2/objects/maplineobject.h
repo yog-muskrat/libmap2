@@ -26,6 +26,8 @@ public:
 	 */
 	double length() const;
 
+	QList<Coord> coordinates() const {return mCoords;}
+
 	/*!
 	 * \brief Возвращает протяженность линии в текстовом виде.
 	 * Значение будет приведено к максимально компактному виду (м, км, тыс. км и т.д.)

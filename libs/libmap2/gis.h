@@ -8,6 +8,7 @@
 #pragma GCC diagnostic ignored "-Wint-to-pointer-cast"
 #pragma GCC diagnostic ignored "-Wreorder"
 #pragma GCC diagnostic ignored "-Wparentheses"
+#pragma GCC diagnostic ignored "-Woverloaded-virtual"
 
 #include "mapapi.h"
 #include "seekapi.h"
