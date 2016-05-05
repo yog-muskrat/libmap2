@@ -76,7 +76,7 @@ public:
 	/*!
 	 * \brief Возвращает отношение масштаба отображения к базовому масштабу карты
 	 */
-	double scaleRatio() const;
+	qreal scaleRatio() const;
 
 	/*!
 	 * \brief Возвращает координаты центра отображаемого участка карты.
@@ -108,13 +108,13 @@ public:
 	 * Высота будет расчитана пропорционально.
 	 * \return
 	 */
-	QPixmap mapPreview(int width);
+	QPixmap mapPreview(quint16 width);
 
 	/*!
 	 * \brief Возвращает изображение указанного объекта на фоне текущей карты.
 	 * Функция работает только для векторных объектов.
 	 */
-	QPixmap objectPreview(Map2::MapVectorObject *obj, QSize size = QSize(96, 96), double scale = 2000000);
+	QPixmap objectPreview(Map2::MapVectorObject *obj, QSize size = QSize(96, 96), qreal scale = 2000000);
 
 	/*!
 	 * \brief Возвращает полный размер карты в пикселях.
@@ -140,7 +140,7 @@ public slots:
 	 * \brief Устанавливает масштаб карты.
 	 * \param scale - Новое значение масштаба карты. При scale == -1 устанавливается базовый масштаб карты.
 	 */
-	void setScale(double scale = -1);
+	void setScale(qreal scale = -1);
 
 	/*!
 	 * \brief Центрирует область отображения в заданной точке.

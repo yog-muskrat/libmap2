@@ -13,6 +13,7 @@ class MapMoveAction : public MapAction
 {
 public:
 	explicit MapMoveAction(Map2::MapView *view);
+	~MapMoveAction() {}
 
 	virtual Map2::MapToolBar::Tools type() { return MapToolBar::MoveObject; }
 

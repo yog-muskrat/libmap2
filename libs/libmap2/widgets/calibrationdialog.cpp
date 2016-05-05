@@ -16,8 +16,8 @@ Map2::CalibrationDialog::CalibrationDialog(QWidget *parent) : QDialog(parent), u
 	QSettings set(org, app);
 	mResolution = set.value("screen_resolution", QSize()).toSize();
 	mDimension = set.value("screen_dimension", QSizeF()).toSizeF();
-	mMkmInPx = set.value("screen_mkm_in_px", 255).toDouble();
-	mDpm = set.value("screen_dpm", 3000).toDouble();
+	mMkmInPx = set.value("screen_mkm_in_px", 255).toInt();
+	mDpm = set.value("screen_dpm", 3000).toInt();
 
 	ui->cbUnits->addItem("Дюймы", "inch");
 	ui->cbUnits->addItem("Сантиметры", "cm");
@@ -152,8 +152,8 @@ void Map2::CalibrationDialog::updateResults()
 	double mkmInPxH = mDimension.width() * 10000 / (double)mResolution.width();
 	double mkmInPxV = mDimension.height() * 10000 / (double)mResolution.height();
 
-	mDpm = (dpmH + dpmV) / 2;
-	mMkmInPx = (mkmInPxH + mkmInPxV) / 2;
+	mDpm =  (int) ((dpmH + dpmV) / 2.);
+	mMkmInPx = (int) ((mkmInPxH + mkmInPxV) / 2.);
 
 	ui->sbDpm->setValue( mDpm );
 	ui->sbMkmInPx->setValue( mMkmInPx );

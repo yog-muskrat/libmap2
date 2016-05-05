@@ -337,8 +337,6 @@ void MapCommlineObject::updateAssignmentObjects() const
 		mapUpdatePointPlane(hObj, second.x, second.y, 2);
 
 		int ok = mapCommitObject(hObj);
-
-		qDebug() << "Object updated" << hObj << ok << helper->planeToGeo(first).toString() << helper->planeToGeo(second).toString();
 	}
 }
 

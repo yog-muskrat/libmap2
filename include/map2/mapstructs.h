@@ -79,6 +79,9 @@ inline uint qHash(const Map2::Coord &coord)
 	return qHash(coord.toString());
 }
 
+QDebug operator<<(QDebug d, const Map2::Coord &coord);
+QDebug operator<<(QDebug d, const Map2::CoordPlane &coordPlane);
+
 Q_DECLARE_METATYPE(Map2::Coord)
 Q_DECLARE_METATYPE(Map2::CoordPlane)
 

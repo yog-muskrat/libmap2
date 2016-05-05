@@ -86,8 +86,8 @@ void MapNavigation::onMapScrolled()
 
 	point -= pMapView->rect().center();
 
-	int x = (double)point.x() / mScaleX;
-	int y = (double)point.y() / mScaleY;
+	int x = (int) ((double)point.x() / mScaleX);
+	int y = (int) ((double)point.y() / mScaleY);
 
 	///NOTE: Возможно, необходимость этой проверки - следствие какого-то моего косяка.
 	/// Но пока это не доказано, буду считат ее ловким ходом.
@@ -185,16 +185,16 @@ void MapNavigation::adjustSize()
 	mScaleX = (double)mapSize.width() / (double)sceneRect().width();
 	mScaleY = (double)mapSize.height() / (double)sceneRect().height();
 
-	int w = (double)viewportSize.width() / mScaleX;
-	int h = (double)viewportSize.height() / mScaleY;
+	int w = (int) ((double)viewportSize.width() / mScaleX);
+	int h = (int) ((double)viewportSize.height() / mScaleY);
 
 	Coord centerCoord = pMapView->screenCenterCoordinate();
 	QPoint centerPoint = pMapView->helper()->geoToPicture(centerCoord);
 
 	centerPoint -= pMapView->rect().center();
 
-	int x = (double)centerPoint.x() / mScaleX;
-	int y = (double)centerPoint.y() / mScaleY;
+	int x = (int) ((double)centerPoint.x() / mScaleX);
+	int y = (int) ((double)centerPoint.y() / mScaleY);
 
 	pFrame->setRect(0, 0, w, h);
 	pFrame->setPos(x, y);
@@ -232,8 +232,8 @@ void MapNavigation::dragFrameBy(int dx, int dy)
 		}
 	}
 
-	int x =  (pFrame->x() + pFrame->rect().center().x())* mScaleX;
-	int y = (pFrame->y() + pFrame->rect().center().y()) * mScaleY;
+	int x = (int) ((pFrame->x() + pFrame->rect().center().x())* mScaleX);
+	int y = (int) ((pFrame->y() + pFrame->rect().center().y()) * mScaleY);
 
 	qDebug()<<"Set center"<<QPoint(x,y);
 

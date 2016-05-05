@@ -12,6 +12,7 @@ class MapRotateAction : public MapAction
 {
 public:
 	explicit MapRotateAction(Map2::MapView *view);
+	~MapRotateAction() {}
 
 	virtual Map2::MapToolBar::Tools type() { return MapToolBar::RotateObject; }
 	virtual bool processMousePressEvent(QMouseEvent *mouseEvent);

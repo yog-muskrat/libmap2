@@ -263,13 +263,17 @@ void MapObject::setDisplayRange(int min, int max)
 void MapObject::addExtraHobj(HOBJ hobj)
 {
 	mExtraHobjs.insert(hobj);
+
+	setHidden(isHiden());
 }
 
 void MapObject::removeExtraHobj(HOBJ hobj)
 {
-	mExtraHobjs.remove(hobj);
+	if(mExtraHobjs.contains(hobj))
+	{
+		mExtraHobjs.remove(hobj);
+	}
 }
-
 
 void MapObject::setParentGroup(MapGroup *group)
 {
@@ -357,6 +361,11 @@ void MapObject::setParameter(QString parameter, QVariant value)
 
 QVariant MapObject::parameter(QString parameter) const
 {
+	if(!mParameters.contains(parameter))
+	{
+		return QVariant();
+	}
+
 	return mParameters[parameter];
 }
 

@@ -153,7 +153,7 @@ double MapView::scale() const
 	return pCanvas->scale();
 }
 
-double MapView::scaleRatio() const
+qreal MapView::scaleRatio() const
 {
 	return pCanvas->scaleRatio();
 }
@@ -194,7 +194,7 @@ QList<Map2::MapObject *> MapView::objectsAtPoint(QPoint point, double radiusPx)
 		if(l && !l->isLocked())
 		{
 			MapObject *obj = l->objectByHandle(found);
-			if(obj)
+			if(obj && !obj->isHiden())
 			{
 				result << obj;
 			}
@@ -225,12 +225,12 @@ QToolBar *MapView::toolBar()
 	return pTools->toolBar();
 }
 
-QPixmap MapView::mapPreview(int width)
+QPixmap MapView::mapPreview(quint16 width)
 {
 	return pCanvas->mapPreview(width);
 }
 
-QPixmap MapView::objectPreview(MapVectorObject *obj, QSize size, double scale)
+QPixmap MapView::objectPreview(MapVectorObject *obj, QSize size, qreal scale)
 {
 	if(!obj)
 	{
@@ -242,7 +242,7 @@ QPixmap MapView::objectPreview(MapVectorObject *obj, QSize size, double scale)
 	long x1 = 0;
 	long y1 = 0;
 
-	long oldScale = this->scale();
+	qreal oldScale = this->scale();
 	mapSetViewScale(mapHandle(), &x1, &y1, scale);
 
 	double ratio = scaleRatio();
@@ -252,21 +252,21 @@ QPixmap MapView::objectPreview(MapVectorObject *obj, QSize size, double scale)
 	}
 
 	QRectF objRect =obj->sizePix();
-	QSize objSize = QSize(objRect.width() * ratio, objRect.height() * ratio);
+	QSizeF objSize = QSizeF(objRect.width() * ratio, objRect.height() * ratio);
 
 	QPoint coord = helper()->planeToPicture( obj->coordinatePlane() );
-	coord += QPoint( objSize.width() /2, objSize.height() / 2) - (objRect.topLeft() * ratio).toPoint();
+	coord += QPoint( (quint16)(objSize.width() / 2.), (quint16)(objSize.height() / 2.)) - (objRect.topLeft() * ratio).toPoint();
 
 	CoordPlane coordPlane = helper()->pictureToPlane( coord );
 
 	if(objSize.width() > size.width())
 	{
-		size.setWidth( objSize.width() * 1.2);
+		size.setWidth( (quint16)(objSize.width() * 1.2));
 	}
 
 	if(objSize.height() > size.height())
 	{
-		size.setHeight( objSize.height() * 1.2);
+		size.setHeight( (quint16)(objSize.height() * 1.2));
 	}
 
 	const QPixmap &pm = canvas()->objectPreview( coordPlane, size);
@@ -324,19 +324,19 @@ void MapView::zoomToRect(const QRect &rect)
 
 	QRect selfRect = pCanvas->rect();
 
-	double selfRatio = (double)selfRect.width() / (double)selfRect.height();
-	double rectRatio = (double)rect.width() / (double)rect.height();
+	qreal selfRatio = (qreal)selfRect.width() / (qreal)selfRect.height();
+	qreal rectRatio = (qreal)rect.width() / (qreal)rect.height();
 
 
 	if(selfRatio > rectRatio)
 	{
-		int w = (double)rect.height() * (double)selfRect.width() / (double)selfRect.height();
+		quint16 w = (quint16)( (qreal)rect.height() * (qreal)selfRect.width() / (qreal)selfRect.height() );
 		selfRect.setHeight( rect.height() );
 		selfRect.setWidth( w );
 	}
 	else
 	{
-		int h = (double)rect.width() * (double)selfRect.height() / (double)selfRect.width();
+		quint16 h = (quint16)((qreal)rect.width() * (qreal)selfRect.height() / (qreal)selfRect.width());
 		selfRect.setWidth( rect.width() );
 		selfRect.setHeight( h );
 	}
@@ -345,7 +345,7 @@ void MapView::zoomToRect(const QRect &rect)
 	QPoint p = rect.center() - pCanvas->rect().center();
 	scrollMapTopLeft( p.x(), p.y() );
 
-	double newScale = scale() * selfRect.width() / pCanvas->width();
+	qreal newScale = scale() * selfRect.width() / pCanvas->width();
 	setScale(newScale);
 }
 
@@ -357,8 +357,8 @@ void MapView::calibrate()
 		return;
 	}
 
-	double dpm = CalibrationDialog::dpm();
-	double mkmInPx = CalibrationDialog::mkmInPx();
+	qreal dpm = CalibrationDialog::dpm();
+	qreal mkmInPx = CalibrationDialog::mkmInPx();
 
 	mapSetScreenPrecision( (long)dpm );
 	helper()->setMkmInPxRatio( mkmInPx );
@@ -368,19 +368,19 @@ void MapView::calibrate()
 
 void MapView::zoomIn()
 {
-	long scale = mapGetShowScale(mMapHandle);
+	qreal scale = mapGetShowScale(mMapHandle);
 	scale *= 1.1;
 	setScale(scale);
 }
 
 void MapView::zoomOut()
 {
-	long scale = mapGetShowScale(mMapHandle);
+	qreal scale = mapGetShowScale(mMapHandle);
 	scale *= 0.9;
 	setScale(scale);
 }
 
-void MapView::setScale(double scale)
+void MapView::setScale(qreal scale)
 {
 	if(mapSizePx().height() <= height() && scale > pCanvas->scale())
 	{
@@ -538,22 +538,22 @@ void MapView::keyPressEvent(QKeyEvent *keyEvent)
 {
 	if(keyEvent->key() == Qt::Key_Left)
 	{
-		scrollMapTopLeft(-pCanvas->width()*0.25, 0);
+		scrollMapTopLeft(-(int)(pCanvas->width()*0.25), 0);
 		adjustScrollValues();
 	}
 	else if(keyEvent->key() == Qt::Key_Right)
 	{
-		scrollMapTopLeft(pCanvas->width()*0.25, 0);
+		scrollMapTopLeft( (int)(pCanvas->width()*0.25), 0);
 		adjustScrollValues();
 	}
 	else if(keyEvent->key() == Qt::Key_Up)
 	{
-		scrollMapTopLeft(0, -pCanvas->height()*0.25);
+		scrollMapTopLeft(0, (int)(-pCanvas->height()*0.25));
 		adjustScrollValues();
 	}
 	else if(keyEvent->key() == Qt::Key_Down)
 	{
-		scrollMapTopLeft(0, pCanvas->height()*0.25);
+		scrollMapTopLeft(0, (int)(pCanvas->height()*0.25));
 		adjustScrollValues();
 	}
 	else if(keyEvent->key() == Qt::Key_PageUp)

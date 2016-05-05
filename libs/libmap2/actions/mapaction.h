@@ -16,6 +16,7 @@ class MapAction
 {
 public:
 	explicit MapAction(Map2::MapView *view) : pView(view) {}
+	virtual ~MapAction() {}
 
 	virtual MapToolBar::Tools type() = 0;
 

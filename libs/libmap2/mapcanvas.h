@@ -20,19 +20,19 @@ public:
 
 	HMAP mapHandle() const { return mMapHandle; }
 	void setMapHandle(const HMAP &hnd);
-	QPixmap mapPreview(int width);
+	QPixmap mapPreview(quint16 width);
 	QPixmap objectPreview(CoordPlane coord, QSize picSize) const;
 	QPoint mapTopLeft() const {return mMapTopLeft;}
 
 	void setZoomRect(QRect rect);
 	QRect zoomRect() const {return mZoomRect;}
 
-	double scale() const;
-	double scaleRatio() const;
+	qreal scale() const;
+	qreal scaleRatio() const;
 
 public slots:
 	void setMapTopLeft(const QPoint &point);
-	void setScale(double scale);
+	void setScale(qreal scale);
 
 	/*!
 	 * \brief Выставляет флаг перерисовки.

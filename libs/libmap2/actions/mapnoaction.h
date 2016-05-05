@@ -10,6 +10,7 @@ class MapNoAction : public MapAction
 {
 public:
 	explicit MapNoAction(Map2::MapView *view);
+	~MapNoAction() {}
 
 	virtual Map2::MapToolBar::Tools type() { return MapToolBar::None; }
 

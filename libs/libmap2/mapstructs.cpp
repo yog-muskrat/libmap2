@@ -61,8 +61,6 @@ bool Coord::isValid() const
 	}
 
 	return true;
-
-//	return lat != 0 && lng != 0 && lat <= 90. && lat >= -90 && lng <= 360 && lng >= -360;
 }
 
 Coord Coord::fromDegreeWithMinutes(const double &lat, const double &lng)
@@ -77,4 +75,16 @@ Coord Coord::fromDegreeWithMinutes(const double &lat, const double &lng)
 	double newLng = lngInt + lngFract * 100. / 60.;
 
 	return Coord(newLat, newLng);
+}
+
+QDebug operator<<(QDebug d, const Coord &coord)
+{
+	d << coord.toString();
+	return d.maybeSpace();
+}
+
+QDebug operator<<(QDebug d, const CoordPlane &coordPlane)
+{
+	d << coordPlane.toString();
+	return d.maybeSpace();
 }

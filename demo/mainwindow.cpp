@@ -50,17 +50,19 @@ MainWindow::MainWindow(QWidget *parent)
 
 	setCentralWidget(w);
 
-	Map2::MapLayer *layer = pMap->mapView()->createLayer("mgk.rsc", "misc", "Loh1");
+	Map2::MapLayer *layer = pMap->mapView()->createLayer("mgk.rsc", "misc", "Слой 1");
 	pMap->mapView()->setActiveLayer(layer);
 
-	pObj = layer->addVectorObject("гр вмс", Coord(60., 30.) );
-	pObj->setName("Object");
+	pObj = layer->addVectorObject("гр вмс", Coord(60., 30.), "Группа" );
 
 	MapVectorObject *mvo = dynamic_cast<MapVectorObject*>(pObj);
-	MapFormularGroup *group = new MapFormularGroup(mvo, Qt::green);
-	group->addChild( layer->addVectorObject("оок вмс", Coord(55., 30.) ) );
-	group->addChild( layer->addVectorObject("оок вмс", Coord(50., 30.) ) );
-	group->addChild( layer->addVectorObject("оок вмс", Coord(45., 30.) ) );
+	MapFormularGroup *group = new MapFormularGroup(mvo, Qt::red);
+
+	group->addChild( layer->addVectorObject("оок вмс", Coord(55., 30.), "Корабль 1") );
+	group->addChild( layer->addVectorObject("оок вмс", Coord(50., 30.), "Корабль 2") );
+	group->addChild( layer->addVectorObject("оок вмс", Coord(45., 30.), "Корабль 3") );
+
+	group->setChildrenVisible(false);
 
 	Map2::MapCommlineObject *comm = new Map2::MapCommlineObject(Map2::Coord(30., 30.), Map2::Coord(45., 90.), layer);
 
@@ -119,10 +121,7 @@ void MainWindow::closeEvent(QCloseEvent *e)
 
 void MainWindow::onScaleChanged()
 {
-	foreach(MapGroup *grp, pObj->childGroups())
-	{
-		grp->update();
-	}
+
 }
 
 void MainWindow::onEditLayers()
@@ -147,9 +146,7 @@ void MainWindow::onLeftClick(QPoint point)
 			continue;
 		}
 
-		qDebug()<<"About to change visibility"<<((MapFormularGroup*)grp)->formularCoordinate().toString();
 		grp->setChildrenVisible( !grp->childrenVisible() );
-		qDebug()<<"Visibility changed"<<((MapFormularGroup*)grp)->formularCoordinate().toString();
 	}
 }
 

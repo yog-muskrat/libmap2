@@ -13,6 +13,7 @@ class MapRectZoomAction : public MapAction
 {
 public:
 	explicit MapRectZoomAction(Map2::MapView *view);
+	~MapRectZoomAction() {}
 
 	virtual Map2::MapToolBar::Tools type() { return MapToolBar::RectZoom; }
 	virtual bool processMousePressEvent(QMouseEvent *mouseEvent);

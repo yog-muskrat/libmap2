@@ -24,6 +24,7 @@ public:
 	virtual Map2::MapGroup::Type type() const { return MapGroup::MG_Formular; }
 
 	virtual bool addChild(MapObject *child);
+	virtual bool addChildren(QList<MapObject *> children);
 	virtual void setChildrenVisible(bool visible);
 
 	void moveBy(const QPoint &offset);

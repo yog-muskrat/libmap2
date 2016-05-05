@@ -216,6 +216,13 @@ void Map2::MapVectorObject::moveBy(double dxPlane, double dyPlane)
 
 	mCoordinate = helper()->objectGeoCoordinates( hObj ).first();
 
+
+	foreach(HOBJ hobj, mExtraHobjs)
+	{
+		mapRelocateObjectPlane(hobj, &dp);
+		mapCommitObject(hobj);
+	}
+
 	commit();
 }
 

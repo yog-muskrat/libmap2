@@ -38,7 +38,7 @@ void MapCanvas::setMapHandle(const HMAP &hnd)
 	mRepaint = true;
 }
 
-QPixmap MapCanvas::mapPreview(int width)
+QPixmap MapCanvas::mapPreview(quint16 width)
 {
 	if( mapHandle() <= 0)
 	{
@@ -47,10 +47,10 @@ QPixmap MapCanvas::mapPreview(int width)
 
 	long mapWidth = mapGetPictureWidth(mapHandle());
 
-	double ratio = (double)mapWidth / (double)width;
+	qreal ratio = (qreal)mapWidth / (qreal)width;
 
 	long mapScale = mapGetShowScale(mapHandle());
-	long newScale = mapScale * ratio;
+	qreal newScale = qreal(mapScale) * ratio;
 
 	long x = 0;
 	long y = 1;
@@ -60,7 +60,7 @@ QPixmap MapCanvas::mapPreview(int width)
 	long mapNewWidth = mapGetPictureWidth(mapHandle());
 	long mapNewHeight = mapGetPictureHeight(mapHandle());
 
-	int bytesPerLine = static_cast<int>(mapNewWidth * mMapBitDepth / 8);
+	int bytesPerLine = (int)(mapNewWidth * mMapBitDepth / 8);
 	int size = bytesPerLine * mapNewHeight;
 
 	char *dataBytes = AllocateTheMemory(size);
@@ -68,17 +68,17 @@ QPixmap MapCanvas::mapPreview(int width)
 
 	XIMAGEDESC ximage;
 	ximage.Point = dataBytes;
-	ximage.Width = static_cast<long>(mapNewWidth);
-	ximage.Height = static_cast<long>(mapNewHeight);
+	ximage.Width = (long)(mapNewWidth);
+	ximage.Height = (long)(mapNewHeight);
 	ximage.Depth = mMapBitDepth;
 	ximage.CellSize = mMapBitDepth / 8;
-	ximage.RowSize = static_cast<long>(bytesPerLine);
+	ximage.RowSize = (long)(bytesPerLine);
 
 	RECT rect;
 	rect.top = 0;
 	rect.left = 0;
-	rect.bottom = static_cast<long>(mapNewHeight);
-	rect.right = static_cast<long>(mapNewWidth);
+	rect.bottom = (long)(mapNewHeight);
+	rect.right = (long)(mapNewWidth);
 
 	mapPaintToXImage(mapHandle(), &ximage, 0, 0, &rect);
 	mapSetViewScale(mapHandle(), &x, &y, mapScale);
@@ -100,7 +100,7 @@ QPixmap MapCanvas::objectPreview(CoordPlane coord, QSize picSize) const
 		return p;
 	}
 
-	int bytesPerLine = static_cast<int>(picSize.width() * mMapBitDepth / 8);
+	int bytesPerLine = (int)(picSize.width() * mMapBitDepth / 8);
 	int size = bytesPerLine * picSize.height();
 
 	char *dataBytes = AllocateTheMemory(size);
@@ -108,11 +108,11 @@ QPixmap MapCanvas::objectPreview(CoordPlane coord, QSize picSize) const
 
 	XIMAGEDESC ximage;
 	ximage.Point = dataBytes;
-	ximage.Width = static_cast<long>(picSize.width());
-	ximage.Height = static_cast<long>(picSize.height());
+	ximage.Width = (long)(picSize.width());
+	ximage.Height = (long)(picSize.height());
 	ximage.Depth = mMapBitDepth;
 	ximage.CellSize = mMapBitDepth / 8;
-	ximage.RowSize = static_cast<long>(bytesPerLine);
+	ximage.RowSize = (long)(bytesPerLine);
 
 	double x = coord.x;
 	double y = coord.y;
@@ -120,10 +120,10 @@ QPixmap MapCanvas::objectPreview(CoordPlane coord, QSize picSize) const
 	mapPlaneToPicture(mapHandle(), &x, &y);
 
 	RECT rect;
-	rect.top = static_cast<long>( y - picSize.height() / 2 );
-	rect.left = static_cast<long>( x - picSize.width() / 2 );
-	rect.bottom = static_cast<long>(y + picSize.height() / 2);
-	rect.right = static_cast<long>(x + picSize.width() / 2);
+	rect.top = (long)( y - picSize.height() / 2 );
+	rect.left = (long)( x - picSize.width() / 2 );
+	rect.bottom = (long)(y + picSize.height() / 2);
+	rect.right = (long)(x + picSize.width() / 2);
 
 	mapPaintToXImage(mapHandle(), &ximage, 0, 0, &rect);
 
@@ -147,7 +147,7 @@ void MapCanvas::setMapTopLeft(const QPoint &point)
 	mRepaint = true;
 }
 
-void MapCanvas::setScale(double scale)
+void MapCanvas::setScale(qreal scale)
 {
 	QPoint point = mapTopLeft() + rect().center();
 
@@ -167,12 +167,12 @@ void MapCanvas::setScale(double scale)
 	setMapTopLeft(QPoint(x, y));
 }
 
-double MapCanvas::scale() const
+qreal MapCanvas::scale() const
 {
 	return mapGetShowScale( mapHandle() );
 }
 
-double MapCanvas::scaleRatio() const
+qreal MapCanvas::scaleRatio() const
 {
 	return mapGetMapScale(mMapHandle) / scale();
 }
@@ -199,7 +199,7 @@ void MapCanvas::paintEvent(QPaintEvent *e)
 	drawRect.setHeight( height() );
 	drawRect.setWidth( width() );
 
-	int bytesPerLine = static_cast<int>(drawRect.width() * mMapBitDepth / 8);
+	int bytesPerLine = (int)(drawRect.width() * mMapBitDepth / 8);
 	int size = bytesPerLine * drawRect.height();
 
 	char *dataBytes = AllocateTheMemory(size);
@@ -207,17 +207,17 @@ void MapCanvas::paintEvent(QPaintEvent *e)
 
 	XIMAGEDESC ximage;
 	ximage.Point = dataBytes;
-	ximage.Width = static_cast<long>(drawRect.width());
-	ximage.Height = static_cast<long>(drawRect.height());
+	ximage.Width = (long)(drawRect.width());
+	ximage.Height = (long)(drawRect.height());
 	ximage.Depth = mMapBitDepth;
 	ximage.CellSize = mMapBitDepth / 8;
-	ximage.RowSize = static_cast<long>(bytesPerLine);
+	ximage.RowSize = (long)(bytesPerLine);
 
 	RECT rect;
 	rect.top = drawRect.top();
 	rect.left = drawRect.left();
-	rect.bottom = static_cast<long>(drawRect.bottom());
-	rect.right = static_cast<long>(drawRect.right());
+	rect.bottom = (long)(drawRect.bottom());
+	rect.right = (long)(drawRect.right());
 
 	mapPaintToXImage(mMapHandle, &ximage, 0, 0, &rect);
 

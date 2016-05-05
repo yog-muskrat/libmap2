@@ -54,6 +54,31 @@ bool Map2::MapFormularGroup::addChild(Map2::MapObject *child)
 	return true;
 }
 
+bool Map2::MapFormularGroup::addChildren(QList<Map2::MapObject *> children)
+{
+	foreach(MapObject *child, children)
+	{
+		if(child->type() != MapObject::MO_Vector)
+		{
+			return false;
+		}
+	}
+
+	if(!MapGroup::addChildren(children))
+	{
+		return false;
+	}
+
+	foreach(MapObject *child, children)
+	{
+		mInitialCoordinates[child] = child->coordinateGeo();
+	}
+
+	updateChildrenDisplayCoordinates();
+
+	return true;
+}
+
 void Map2::MapFormularGroup::setChildrenVisible(bool visible)
 {
 	Q_ASSERT(parent());
@@ -65,8 +90,6 @@ void Map2::MapFormularGroup::setChildrenVisible(bool visible)
 	HSELECT hSelect = parent()->mapLayer()->selectHandle();
 
 	Map2::MapHelper *helper = parent()->mapLayer()->mapView()->helper();
-
-	qDebug()<<"Toggling coordinage at"<<formularCoordinate().toString();
 
 	if(visible)
 	{
@@ -91,8 +114,6 @@ void Map2::MapFormularGroup::updateChildrenDisplayCoordinates()
 {
 	arrangeChildren();
 	updateBorderCoords();
-
-//	qDebug() << "Updating children position for "<<parent()->name()<<mFormularCoord.toString();
 
 	if(mFormularCoord.isValid())
 	{
@@ -120,6 +141,7 @@ void Map2::MapFormularGroup::restoreInitialChildrenCoordinates()
 		Q_ASSERT(mvo && mInitialCoordinates.contains(mvo));
 
 		mvo->setCoordinates( mInitialCoordinates[mvo] );
+		mvo->setNameVisible(true);
 		if(mObjectsLabels.contains(mvo))
 		{
 			mvo->setNameVisible(true);
@@ -140,71 +162,71 @@ void Map2::MapFormularGroup::arrangeChildren()
 
 	Map2::MapHelper *helper = pParent->mapLayer()->mapView()->helper();
 
-	double scale = parentObj->mapLayer()->mapView()->scaleRatio();
+	qreal scale = parentObj->mapLayer()->mapView()->scaleRatio();
 	if(scale > 1)
 	{
 		scale = 1;
 	}
 
-	double padding = mPaddingPx * scale;
-	double spacing = mSpacingPx * scale;
+	qreal padding = mPaddingPx * scale;
+	qreal spacing = mSpacingPx * scale;
 
-	QPoint origin = helper->planeToPicture(parentObj->coordinatePlane()) + QPoint(padding, -padding);
+	QPointF origin = helper->planeToPicture(parentObj->coordinatePlane()) + QPointF(padding, -padding);
 
-	QRect rect = QRect( origin.x() - padding, origin.y() + padding, 0, 0 );
+	QRectF rect = QRectF( origin.x() - padding, origin.y() + padding, 0., 0. );
 
 	foreach(Map2::MapObject *child, mChildren)
 	{
 		MapVectorObject *mvo = dynamic_cast<MapVectorObject*>(child);
 		Q_ASSERT(mvo);
 
-		HOBJ textHobj = 0;
-
-		if(!mObjectsLabels.contains(mvo))
-		{
-			textHobj = createText(mvo->mapLayer(), mvo->coordinateGeo(), mvo->name());
-			mvo->setNameVisible(false);
-			mvo->addExtraHobj(textHobj);
-			mObjectsLabels[mvo] = textHobj;
-		}
-
-		textHobj = mObjectsLabels[mvo];
-
 		QRectF childRect = mvo->sizePix();
-		QRectF lblRect = textRect(textHobj);
 
-		QPoint childPos = origin;
-		childPos.rx() += (childRect.x() + (childRect.width() - childRect.x()))* scale;
+		QPointF childPos = origin;
+		childPos.rx() += (childRect.x() + (childRect.width() - childRect.x())) * scale;
 		childPos.ry() -= (childRect.height() - childRect.y()) * scale;
 
-		Map2::CoordPlane childCoord = helper->pictureToPlane(childPos);
+		Map2::CoordPlane childCoord = helper->pictureToPlane(childPos.toPoint());
 		mvo->setCoordinates(childCoord);
 		mvo->setRotationUse(false);
 
-		QPoint lblPos = origin;
+		QPointF lblPos = origin;
 		lblPos.rx() += spacing + (childRect.width() + (childRect.width() - childRect.x()))* scale;
 		lblPos.ry() -= childRect.height()*scale - childRect.y()*scale;
 
-		Map2::CoordPlane lblCoord = helper->pictureToPlane(lblPos);
-		mapUpdatePointPlane(textHobj, lblCoord.x, lblCoord.y, 1);
-		mapCommitObject(textHobj);
+		Map2::CoordPlane lblCoord = helper->pictureToPlane(lblPos.toPoint());
+
+		if(mObjectsLabels.contains(mvo))
+		{
+			HOBJ hobj = mObjectsLabels[mvo];
+			mapUpdatePointPlane(hobj, lblCoord.x, lblCoord.y, 1);
+			mapCommitObject(hobj);
+		}
+		else
+		{
+			mObjectsLabels[mvo] = createText(mvo->mapLayer(), mvo->coordinateGeo(), mvo->name());
+			mvo->setNameVisible(false);
+			mvo->addExtraHobj(mObjectsLabels[mvo]);
+		}
+
+		QRectF lblRect = textRect( mObjectsLabels[mvo] );
 
 		origin.ry() -= spacing + childRect.height()*scale;
 
 		if( rect.width() > ((childRect.width() + lblRect.width())*scale + 2 * padding + spacing) )
 		{
-			rect.setTopLeft( QPoint(rect.x(), origin.y() - padding) );
+			rect.setTopLeft( QPointF(rect.x(), origin.y() - padding) );
 		}
 		else
 		{
-			rect.setTopRight( QPoint(rect.x() + 2 * padding + spacing + (childRect.width() + lblRect.width()) * scale, origin.y() - padding - childRect.y() * scale) );
+			rect.setTopRight( QPointF(rect.x() + 2 * padding + spacing + (childRect.width() + lblRect.width()) * scale, origin.y() - padding - childRect.y() * scale) );
 		}
 	}
 
-	mBottomLeft = helper->pictureToPlane(rect.bottomLeft());
-	mBottomRight = helper->pictureToPlane(rect.bottomRight());
-	mTopLeft = helper->pictureToPlane(rect.topLeft());
-	mTopRight = helper->pictureToPlane(rect.topRight());
+	mBottomLeft = helper->pictureToPlane(rect.bottomLeft().toPoint());
+	mBottomRight = helper->pictureToPlane(rect.bottomRight().toPoint());
+	mTopLeft = helper->pictureToPlane(rect.topLeft().toPoint());
+	mTopRight = helper->pictureToPlane(rect.topRight().toPoint());
 }
 
 void Map2::MapFormularGroup::updateBorderCoords()
@@ -274,7 +296,7 @@ void Map2::MapFormularGroup::createBorderObject()
 
 	IMGLINE lineParm;
 	memset(&lineParm, 0x0, sizeof(IMGLINE));
-	lineParm.Thick = helper->px2mkm( mBorderWidthPx );
+	lineParm.Thick = (quint16) (helper->px2mkm(mBorderWidthPx));
 	lineParm.Color = RGB(mBorderColor.red(), mBorderColor.green(), mBorderColor.blue());
 
 	IMGPOLYGONGLASS polygonParm;
@@ -330,7 +352,7 @@ Map2::MapVectorObject *Map2::MapFormularGroup::vectorParent()
 
 HOBJ Map2::MapFormularGroup::createText(Map2::MapLayer *layer, Map2::Coord coordinate, const QString &text)
 {
-	double ratio = layer->mapView()->scaleRatio();
+	qreal ratio = layer->mapView()->scaleRatio();
 	if(ratio > 1)
 	{
 		ratio = 1;
@@ -339,12 +361,13 @@ HOBJ Map2::MapFormularGroup::createText(Map2::MapLayer *layer, Map2::Coord coord
 	HOBJ hobj = mapCreateSiteObject(layer->mapHandle(), layer->siteHandle(), IDDOUBLE2, 1);
 
 	mapRegisterDrawObject(hobj, 0, LOCAL_TITLE);
+
 	IMGTRUETEXT trueText;
 	memset(&trueText, 0x0, sizeof(IMGTRUETEXT));
 	trueText.Text.Color = RGB(mBorderColor.red(), mBorderColor.green(), mBorderColor.blue());
 	trueText.Text.BkgndColor = IMGC_TRANSPARENT;
 	trueText.Text.ShadowColor = IMGC_TRANSPARENT;
-	trueText.Text.Height = 4 * 1000 * ratio;
+	trueText.Text.Height = (quint16)( 4 * 1000 * ratio );
 	trueText.Text.CharSet = RUSSIAN_CHARSET;
 	trueText.Text.Horizontal = 1;
 
@@ -415,18 +438,6 @@ Qt::Alignment Map2::MapFormularGroup::formularAlignment() const
 
 Map2::Coord Map2::MapFormularGroup::formularCoordinate() const
 {
-//	Coord c;
-
-//	if(mBottomLeft == CoordPlane(0,0) && mTopRight == CoordPlane(0,0))
-//	{
-//		c = Coord();
-//	}
-//	else
-//	{
-//		MapHelper *helper = parent()->mapLayer()->mapView()->helper();
-//		c = helper->planeToGeo( CoordPlane(mBottomLeft.x + (mTopLeft.x - mBottomLeft.x)/2, mBottomLeft.y + (mBottomRight.y - mBottomLeft.y)/2) );
-//	}
-
 	return mFormularCoord;
 }
 
@@ -486,12 +497,11 @@ void Map2::MapFormularGroup::moveBy(const QPoint &offset)
 	{
 		obj->moveBy(dp.x, dp.y);
 
-		mapRelocateObjectPlane(mObjectsLabels[obj], &dp);
-		mapCommitObject(mObjectsLabels[obj]);
+//		mapRelocateObjectPlane(mObjectsLabels[obj], &dp);
+//		mapCommitObject(mObjectsLabels[obj]);
 	}
 
 	mFormularCoord = helper->planeToGeo(newCoord);
-//	qDebug() << "move mFormularCoord for"<<parent()->name()<<mFormularCoord.toString();
 
 	updateBorderCoords();
 }

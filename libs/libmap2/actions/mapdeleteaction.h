@@ -13,6 +13,7 @@ class MapDeleteAction : public MapAction
 {
 public:
 	explicit MapDeleteAction(Map2::MapView *view) : MapAction(view) {}
+	~MapDeleteAction() {}
 
 	virtual Map2::MapToolBar::Tools type() {return MapToolBar::DeleteObject;}
 
