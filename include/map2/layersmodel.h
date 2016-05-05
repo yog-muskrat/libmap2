@@ -62,6 +62,8 @@ private:
 	bool setEditRole(QModelIndex index, QVariant value);
 	bool checkIndex( const QModelIndex &idx) const;
 
+	void updateLayersOrder();
+
 	QList<MapLayer*> mLayers;
 };
 }

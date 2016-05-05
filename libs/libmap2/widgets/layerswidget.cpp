@@ -228,6 +228,8 @@ void LayersWidget::onMoveUp()
 
 	pMapView->layersModel()->moveRow(row, row-1);
 	pTableView->selectRow(row - 1);
+
+	onLayerClicked(pTableView->currentIndex());
 }
 
 void LayersWidget::onMoveDown()
@@ -241,6 +243,8 @@ void LayersWidget::onMoveDown()
 
 	pMapView->layersModel()->moveRow(row, row+1);
 	pTableView->selectRow(row + 1);
+
+	onLayerClicked(pTableView->currentIndex());
 }
 
 void LayersWidget::onToggleVisibility(bool visible)

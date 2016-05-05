@@ -35,6 +35,8 @@ int LayersModel::addLayer(Map2::MapLayer *layer)
 		connect(layer, SIGNAL(rowsRemoved(QModelIndex, int, int)), this, SLOT(onLayerUpdated()));
 		connect(layer, SIGNAL(rowsInserted(QModelIndex, int, int)), this, SLOT(onLayerUpdated()));
 
+		updateLayersOrder();
+
 		endInsertRows();
 	}
 
@@ -57,6 +59,7 @@ void LayersModel::removeLayer(int row)
 	MapLayer *l = mLayers.takeAt(row);
 	l->deleteFiles();
 	l->deleteLater();
+	updateLayersOrder();
 	endRemoveRows();
 }
 
@@ -108,18 +111,23 @@ bool LayersModel::containsKey(const QString &layerKey) const
 
 void LayersModel::moveRow(int from, int to)
 {
-	qDebug()<<"Move"<<from<<"to"<<to;
-
 	if(from < 0 || from >= rowCount() || to < 0 || to >= rowCount())
 	{
 		return;
 	}
 
-	beginMoveRows(QModelIndex(), from, from, QModelIndex(), to);
+	if(to > from)
+	{
+		beginMoveRows(QModelIndex(), from, from, QModelIndex(), to+1);
+	}
+	else
+	{
+		beginMoveRows(QModelIndex(), from, from, QModelIndex(), to);
+	}
 
-	MapLayer *l = mLayers.takeAt(from);
-	mLayers.insert(to, l);
-	qDebug()<<"    done!";
+	mLayers.move(from, to);
+
+	updateLayersOrder();
 
 	endMoveRows();
 }
@@ -337,10 +345,20 @@ void LayersModel::onLayerUpdated()
 
 	int row = mLayers.indexOf( layer );
 
-	emit dataChanged(index(row, 0), index(row, columnCount()));
+	emit dataChanged(index(row, 0), index(row, columnCount()-1));
 }
 
 bool LayersModel::checkIndex(const QModelIndex &idx) const
 {
 	return idx.isValid() && idx.row() < rowCount() && idx.column() < columnCount();
+}
+
+void LayersModel::updateLayersOrder()
+{
+	for(int i = 0; i < mLayers.count(); ++i)
+	{
+		MapLayer *l = mLayers.at(i);
+		int oldOrder = mapGetSiteNumber(l->mapHandle(), l->siteHandle());
+		mapChangeOrderSiteShow(l->mapHandle(), oldOrder, mLayers.count()-i );
+	}
 }
