@@ -89,6 +89,8 @@ public:
 
 	void addExtraHobj(HOBJ hobj);
 	void removeExtraHobj(HOBJ hobj);
+	QSet<HOBJ> extraHobjs() const {return mExtraHobjs;}
+
 
 private:
 	void setMapLayer(MapLayer *layer);
@@ -132,7 +134,7 @@ protected:
 	MapGroup *pParentGroup;
 	QList<MapGroup *> pChildGroups;
 
-	QSet<HOBJ> mExtraHobjs;
+	QSet<HOBJ> mExtraHobjs; //!< Дополнительные объекты карты, которые относятся к данному объекту - подписи, линии и т.п.
 
 	QPair<int, int> mDisplayRange; //!< Границы масштаба отображения. От 1:1 до 1:40 млн.
 };

@@ -235,7 +235,5 @@ void MapNavigation::dragFrameBy(int dx, int dy)
 	int x = (int) ((pFrame->x() + pFrame->rect().center().x())* mScaleX);
 	int y = (int) ((pFrame->y() + pFrame->rect().center().y()) * mScaleY);
 
-	qDebug()<<"Set center"<<QPoint(x,y);
-
 	pMapView->setCenter( QPoint(x, y) );
 }

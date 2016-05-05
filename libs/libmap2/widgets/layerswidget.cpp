@@ -32,6 +32,14 @@ LayersWidget::LayersWidget(QWidget *parent) : QWidget(parent), pMapView(0)
 	pTableView->setSelectionBehavior( QTableView::SelectRows );
 	pTableView->verticalHeader()->hide();
 
+	pbUp = new QPushButton(QIcon(":map2/arrow-up"), "");
+	pbUp->setToolTip("Поднять слой");
+	pbUp->setEnabled(false);
+
+	pbDown = new QPushButton(QIcon(":map2/arrow-down"), "");
+	pbDown->setToolTip("Опустить слой");
+	pbDown->setEnabled(false);
+
 	pbAdd = new QPushButton( QIcon(":map2/plus"), "");
 	pbAdd->setToolTip("Добавить слой");
 
@@ -54,6 +62,8 @@ LayersWidget::LayersWidget(QWidget *parent) : QWidget(parent), pMapView(0)
 	QHBoxLayout *btnLay = new QHBoxLayout();
 	btnLay->addWidget( title );
 	btnLay->addStretch();
+	btnLay->addWidget(pbUp);
+	btnLay->addWidget(pbDown);
 	btnLay->addWidget(pbAdd);
 	btnLay->addWidget(pbRemove);
 	btnLay->addWidget(pbVisibility);
@@ -69,6 +79,8 @@ LayersWidget::LayersWidget(QWidget *parent) : QWidget(parent), pMapView(0)
 
 	connect(pTableView, SIGNAL(clicked(QModelIndex)), this, SLOT(onLayerClicked(QModelIndex)));
 	connect(pTableView, SIGNAL(doubleClicked(QModelIndex)), this, SLOT(onLayerDoubleClicked(QModelIndex)));
+	connect(pbUp, SIGNAL(clicked(bool)), this, SLOT(onMoveUp()));
+	connect(pbDown, SIGNAL(clicked(bool)), this, SLOT(onMoveDown()));
 	connect(pbAdd, SIGNAL(clicked(bool)), this, SLOT(onAdd()));
 	connect(pbRemove, SIGNAL(clicked(bool)), this, SLOT(onRemove()));
 	connect(pbLock, SIGNAL(toggled(bool)), this, SLOT(onToggleLock(bool)));
@@ -126,6 +138,9 @@ void LayersWidget::onLayerClicked(const QModelIndex &index)
 	{
 		pMapView->setActiveLayer(l);
 	}
+
+	pbUp->setEnabled( index.row() > 0 );
+	pbDown->setEnabled( index.row() < pMapView->layersModel()->rowCount()-1 );
 
 	pbRemove->setEnabled(true);
 	pbVisibility->setEnabled( true );
@@ -200,6 +215,32 @@ void LayersWidget::onRemove()
 	pbRemove->setEnabled(false);
 	pbVisibility->setEnabled(false);
 	pbLock->setEnabled(false);
+}
+
+void LayersWidget::onMoveUp()
+{
+	int row = pTableView->currentIndex().row();
+
+	if(row < 1 )
+	{
+		return;
+	}
+
+	pMapView->layersModel()->moveRow(row, row-1);
+	pTableView->selectRow(row - 1);
+}
+
+void LayersWidget::onMoveDown()
+{
+	int row = pTableView->currentIndex().row();
+
+	if(row < 0 || row >= pTableView->model()->rowCount()-1 )
+	{
+		return;
+	}
+
+	pMapView->layersModel()->moveRow(row, row+1);
+	pTableView->selectRow(row + 1);
 }
 
 void LayersWidget::onToggleVisibility(bool visible)

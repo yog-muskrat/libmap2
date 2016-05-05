@@ -48,7 +48,7 @@ public:
 	virtual int childrenCount() const {return mChildren.count();}
 	virtual bool addChild(Map2::MapObject *child);
 	virtual bool addChildren(QList<Map2::MapObject*> children);
-	Map2::MapObject * takeChild(int pos);
+	virtual Map2::MapObject * takeChild(int pos);
 	Map2::MapObject * takeChild(Map2::MapObject *child);
 
 	void setDtorPolicy(Map2::MapGroup::DtorPolicy policy) {mDtorPolicy = policy;}

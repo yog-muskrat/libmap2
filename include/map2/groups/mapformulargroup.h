@@ -27,6 +27,8 @@ public:
 	virtual bool addChildren(QList<MapObject *> children);
 	virtual void setChildrenVisible(bool visible);
 
+	virtual Map2::MapObject * takeChild(int pos);
+
 	void moveBy(const QPoint &offset);
 
 	double borderWidthPx() const { return mBorderWidthPx; }
@@ -46,6 +48,7 @@ protected:
 
 private:
 	void restoreInitialChildrenCoordinates();
+	void restoreChildState(MapObject *child);
 
 	void arrangeChildren();
 	void updateBorderCoords();
@@ -53,8 +56,10 @@ private:
 
 	void createBorderObject();
 	MapVectorObject * vectorParent();
-	HOBJ createText(MapLayer *layer, Coord coordinate, const QString &text);
+	HOBJ createText(MapLayer *layer, CoordPlane coord, const QString &text);
 	QRectF textRect(HOBJ hobj) const;
+
+	void appendParentOverlay();
 
 	double mBorderWidthPx;
 	double mPaddingPx;
@@ -69,7 +74,6 @@ private:
 	CoordPlane mBottomRight;
 	CoordPlane mTopLeft;
 	CoordPlane mTopRight;
-//	QRect mRect;
 
 	Coord mFormularCoord;
 

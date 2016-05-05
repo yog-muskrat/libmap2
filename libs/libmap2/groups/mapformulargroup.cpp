@@ -110,6 +110,16 @@ void Map2::MapFormularGroup::setChildrenVisible(bool visible)
 	}
 }
 
+Map2::MapObject *Map2::MapFormularGroup::takeChild(int pos)
+{
+	if(pos >= 0 && pos < childrenCount())
+	{
+		restoreChildState( mChildren.at(pos));
+	}
+
+	return MapGroup::takeChild(pos);
+}
+
 void Map2::MapFormularGroup::updateChildrenDisplayCoordinates()
 {
 	arrangeChildren();
@@ -136,24 +146,30 @@ void Map2::MapFormularGroup::restoreInitialChildrenCoordinates()
 
 	foreach(Map2::MapObject *obj, mChildren)
 	{
-		MapVectorObject *mvo = dynamic_cast<MapVectorObject*>(obj);
-
-		Q_ASSERT(mvo && mInitialCoordinates.contains(mvo));
-
-		mvo->setCoordinates( mInitialCoordinates[mvo] );
-		mvo->setNameVisible(true);
-		if(mObjectsLabels.contains(mvo))
-		{
-			mvo->setNameVisible(true);
-			HOBJ hobj = mObjectsLabels.take(mvo);
-			mvo->removeExtraHobj(hobj);
-			mapDeleteObject(hobj);
-			mapFreeObject(hobj);
-		}
+		restoreChildState(obj);
 	}
 
 	mFormularCoord = Coord();
 }
+
+void Map2::MapFormularGroup::restoreChildState(MapObject *child)
+{
+	MapHelper *helper = parent()->mapLayer()->mapView()->helper();
+
+	MapVectorObject *mvo = dynamic_cast<MapVectorObject*>(child);
+	Q_ASSERT(mvo);
+
+	HOBJ hobj = mObjectsLabels.take(mvo);
+	Coord c = mInitialCoordinates.take(mvo);
+
+	mvo->removeExtraHobj(hobj);
+	mvo->setCoordinates(c);
+	mvo->setNameVisible(true);
+
+	helper->removeObject(hobj);
+	helper->clearHandle(&hobj);
+}
+
 
 void Map2::MapFormularGroup::arrangeChildren()
 {
@@ -196,20 +212,22 @@ void Map2::MapFormularGroup::arrangeChildren()
 
 		Map2::CoordPlane lblCoord = helper->pictureToPlane(lblPos.toPoint());
 
+		HOBJ lblHobj = 0;
 		if(mObjectsLabels.contains(mvo))
 		{
-			HOBJ hobj = mObjectsLabels[mvo];
-			mapUpdatePointPlane(hobj, lblCoord.x, lblCoord.y, 1);
-			mapCommitObject(hobj);
+			lblHobj = mObjectsLabels[mvo];
+			mapUpdatePointPlane(lblHobj, lblCoord.x, lblCoord.y, 1);
+			mapCommitObject(lblHobj);
 		}
 		else
 		{
-			mObjectsLabels[mvo] = createText(mvo->mapLayer(), mvo->coordinateGeo(), mvo->name());
+			lblHobj = createText(mvo->mapLayer(), lblCoord, mvo->name());
 			mvo->setNameVisible(false);
-			mvo->addExtraHobj(mObjectsLabels[mvo]);
+			mvo->addExtraHobj(lblHobj);
+			mObjectsLabels[mvo] = lblHobj;
 		}
 
-		QRectF lblRect = textRect( mObjectsLabels[mvo] );
+		QRectF lblRect = textRect( lblHobj );
 
 		origin.ry() -= spacing + childRect.height()*scale;
 
@@ -350,7 +368,7 @@ Map2::MapVectorObject *Map2::MapFormularGroup::vectorParent()
 	return parentObj;
 }
 
-HOBJ Map2::MapFormularGroup::createText(Map2::MapLayer *layer, Map2::Coord coordinate, const QString &text)
+HOBJ Map2::MapFormularGroup::createText(Map2::MapLayer *layer, Map2::CoordPlane coord, const QString &text)
 {
 	qreal ratio = layer->mapView()->scaleRatio();
 	if(ratio > 1)
@@ -358,7 +376,7 @@ HOBJ Map2::MapFormularGroup::createText(Map2::MapLayer *layer, Map2::Coord coord
 		ratio = 1;
 	}
 
-	HOBJ hobj = mapCreateSiteObject(layer->mapHandle(), layer->siteHandle(), IDDOUBLE2, 1);
+	HOBJ hobj = mapCreateSiteObject(layer->mapHandle(), layer->siteHandle()/*, IDDOUBLE2, 1*/);
 
 	mapRegisterDrawObject(hobj, 0, LOCAL_TITLE);
 
@@ -371,10 +389,8 @@ HOBJ Map2::MapFormularGroup::createText(Map2::MapLayer *layer, Map2::Coord coord
 	trueText.Text.CharSet = RUSSIAN_CHARSET;
 	trueText.Text.Horizontal = 1;
 
-	CoordPlane cp = layer->mapView()->helper()->geoToPlane( coordinate );
-
 	mapAppendDraw(hobj, IMG_TRUETEXT, (char*)&trueText);
-	mapAppendPointPlane(hobj, cp.x, cp.y);
+	mapAppendPointPlane(hobj, coord.x, coord.y);
 
 	QTextCodec *tc = Map2::RscViewer::codec();
 

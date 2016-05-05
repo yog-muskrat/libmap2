@@ -23,5 +23,7 @@
         <file alias="layers-off">img/layers-off.png</file>
         <file alias="text">img/format-text.png</file>
         <file alias="help">img/help.png</file>
+        <file alias="arrow-down">img/arrow-down.png</file>
+        <file alias="arrow-up">img/arrow-up.png</file>
     </qresource>
 </RCC>

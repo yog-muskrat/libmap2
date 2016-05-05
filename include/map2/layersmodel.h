@@ -40,6 +40,8 @@ public:
 
 	bool containsKey(const QString &layerKey) const;
 
+	void moveRow(int from, int to);
+
 	virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
 	virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
 	virtual QVariant data(const QModelIndex &index, int role = Qt::DisplayRole) const;

@@ -27,6 +27,8 @@ public:
 
 	virtual void setNameVisible(bool visible = true);
 
+	HOBJ hobj() const {return hObj;} /// На время теста. Потом удалить.
+
 private:
 	double mRotation;
 	QString mRscKey;

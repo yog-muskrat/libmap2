@@ -263,7 +263,6 @@ void MapObject::setDisplayRange(int min, int max)
 void MapObject::addExtraHobj(HOBJ hobj)
 {
 	mExtraHobjs.insert(hobj);
-
 	setHidden(isHiden());
 }
 

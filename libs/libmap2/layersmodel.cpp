@@ -3,11 +3,11 @@
 
 #include "gis.h"
 
+#include <QFont>
 #include <QIcon>
 #include <QDebug>
 #include <QPixmap>
 #include <QApplication>
-#include <QFont>
 
 using namespace Map2;
 
@@ -104,6 +104,24 @@ MapLayer *LayersModel::layerByKey(const QString &key) const
 bool LayersModel::containsKey(const QString &layerKey) const
 {
 	return layerByKey(layerKey) != 0;
+}
+
+void LayersModel::moveRow(int from, int to)
+{
+	qDebug()<<"Move"<<from<<"to"<<to;
+
+	if(from < 0 || from >= rowCount() || to < 0 || to >= rowCount())
+	{
+		return;
+	}
+
+	beginMoveRows(QModelIndex(), from, from, QModelIndex(), to);
+
+	MapLayer *l = mLayers.takeAt(from);
+	mLayers.insert(to, l);
+	qDebug()<<"    done!";
+
+	endMoveRows();
 }
 
 int LayersModel::rowCount(const QModelIndex &parent) const

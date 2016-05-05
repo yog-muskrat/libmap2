@@ -31,12 +31,16 @@ private slots:
 	void onLayerDoubleClicked(const QModelIndex &index);
 	void onAdd();
 	void onRemove();
+	void onMoveUp();
+	void onMoveDown();
 	void onToggleVisibility(bool visible);
 	void onToggleLock(bool locked);
 
 private:
 	MapView *pMapView;
 	QTableView *pTableView;
+	QPushButton *pbUp;
+	QPushButton *pbDown;
 	QPushButton *pbAdd;
 	QPushButton *pbRemove;
 	QPushButton *pbVisibility;
